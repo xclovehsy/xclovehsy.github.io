@@ -1,110 +1,135 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>二叉树遍历</title>
-    <url>/2021/10/09/%E4%BA%8C%E5%8F%89%E6%A0%91%E9%81%8D%E5%8E%86/</url>
-    <content><![CDATA[<h1 id="二叉树概述"><a href="#二叉树概述" class="headerlink" title="二叉树概述"></a>二叉树概述</h1><ul>
-<li><p>二叉树是一种经常用到的数据结构，用来模拟具有树状结构性质的数据集合。</p>
+    <title>git的基本使用</title>
+    <url>/2022/09/09/git%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/</url>
+    <content><![CDATA[<h1 id="git的基本使用"><a href="#git的基本使用" class="headerlink" title="git的基本使用"></a>git的基本使用</h1><h2 id="仓库管理"><a href="#仓库管理" class="headerlink" title="仓库管理"></a>仓库管理</h2><ol>
+<li><p>初始化仓库</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git init</span><br></pre></td></tr></table></figure></li>
+<li><p>添加/删除文件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git add/rm [filename]</span><br><span class="line">git add . # 添加所有文件</span><br></pre></td></tr></table></figure></li>
+<li><p>提交代码到本地仓库</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git commit -m &#x27;commit file</span><br></pre></td></tr></table></figure></li>
+<li><p>查看仓库状态</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git status</span><br></pre></td></tr></table></figure></li>
+<li><p>添加远程仓库url</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git remote add origin [repository url]</span><br></pre></td></tr></table></figure></li>
+<li><p>同步本地仓库代码</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git pull origin master</span><br></pre></td></tr></table></figure></li>
+<li><p>上传代码到远程仓库</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 第一次提交</span><br><span class="line"># 将本地的master分支和远程仓库origin的master分支关联</span><br><span class="line">git push -u origin master   </span><br><span class="line"></span><br><span class="line"># 经常使用</span><br><span class="line">git push origin master</span><br><span class="line"></span><br><span class="line"># 强行提交，谨慎使用 </span><br><span class="line"># f表示force</span><br><span class="line">git push origin master -f </span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="分支管理"><a href="#分支管理" class="headerlink" title="分支管理"></a>分支管理</h2><h3 id="本地操作"><a href="#本地操作" class="headerlink" title="本地操作"></a>本地操作</h3><ol>
+<li><p>查看分支</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git branch</span><br><span class="line"></span><br><span class="line"># 查看所用分支，以及其关联的远程分支</span><br><span class="line">git branch -a</span><br></pre></td></tr></table></figure></li>
+<li><p>创建分支</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git branch [branch name]</span><br></pre></td></tr></table></figure></li>
+<li><p>切换分支</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git checkout [branch name]</span><br></pre></td></tr></table></figure></li>
+<li><p>分支快速创建和切换</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git checkout -b [branch name]</span><br></pre></td></tr></table></figure></li>
+<li><p>分支合并</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 首先需要切换到合并的主分支上去</span><br><span class="line">git merge [branch name]</span><br></pre></td></tr></table></figure>
+
+<p><strong>遇到冲突时的分支合并</strong><br>如果在两个不同的分支中，对同一个文件进行了不同的修改，Git 就没法干净的合并它们。 此时，我们需要打开这些包含冲突的文件然后手动解决冲突。</p>
 </li>
-<li><p>二叉树是一种更为典型的树状结构。如它名字所描述的那样，二叉树是每个节点最多有两个子树的树结构，通常子树被称作“左子树”和“右子树”。</p>
-</li>
-</ul>
-<p>定义二叉树的节点</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">//Definition for a binary tree node.</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">TreeNode</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span> val;</span><br><span class="line">    TreeNode *left;</span><br><span class="line">    TreeNode *right;</span><br><span class="line">    <span class="built_in">TreeNode</span>() : <span class="built_in">val</span>(<span class="number">0</span>), <span class="built_in">left</span>(<span class="literal">nullptr</span>),<span class="built_in">right</span>(<span class="literal">nullptr</span>) &#123;&#125;</span><br><span class="line">    <span class="built_in">TreeNode</span>(<span class="keyword">int</span> x) : <span class="built_in">val</span>(x), <span class="built_in">left</span>(<span class="literal">nullptr</span>), <span class="built_in">right</span>(<span class="literal">nullptr</span>) &#123;&#125;</span><br><span class="line">    <span class="built_in">TreeNode</span>(<span class="keyword">int</span> x, TreeNode *left, TreeNode right) : <span class="built_in">val</span>(x), <span class="built_in">left</span>(left), <span class="built_in">right</span>(right) &#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
-
-<p>常见的二叉树遍历方式有<strong>前序遍历、中序遍历、后序遍历、层序遍历</strong>。下面实现二叉树遍历的四种方式：</p>
-<h1 id="遍历方式"><a href="#遍历方式" class="headerlink" title="遍历方式"></a>遍历方式</h1><h2 id="前序遍历"><a href="#前序遍历" class="headerlink" title="前序遍历"></a>前序遍历</h2><p>前序遍历的顺序是 <strong>根节点-&gt;左节点-&gt;右节点</strong></p>
-<p>下列二叉树的前序遍历为： A B D E C F</p>
-<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209090012434.png" alt="image-20211009130611162"></p>
-<p><strong>递归实现</strong></p>
-<p>利用递归实现前序遍历十分简单</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="keyword">int</span>&gt; <span class="title">preorderTraversal</span><span class="params">(TreeNode* root)</span></span>&#123;</span><br><span class="line">    vector&lt;<span class="keyword">int</span>&gt; ans;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">dfs</span>(root, ans);</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">dfs</span><span class="params">(TreeNode* root, vector&lt;<span class="keyword">int</span>&gt; ans)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(root == <span class="literal">nullptr</span>)&#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    ans.<span class="built_in">push_back</span>(root-&gt;val);</span><br><span class="line">    <span class="built_in">dfs</span>(root-&gt;left);</span><br><span class="line">    <span class="built_in">dfs</span>(root-&gt;right);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p><strong>栈实现方法</strong></p>
-<p>利用栈实现前序遍历的核心是将树节点push到栈中然后在合适的时间从栈中弹出。</p>
-<ul>
-<li>首先将左节点push到栈中，push的同时访问当前节点数据。直到当前节点的左节点为nullptr。</li>
-<li>判断栈是否为空，如果不为空就弹出当前栈顶节点，并push栈顶节点的右节点。</li>
-<li>迭代上述操作。</li>
-</ul>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="keyword">int</span>&gt; <span class="title">preorderTraversal</span><span class="params">(TreeNode* root)</span> </span>&#123;</span><br><span class="line">    stack&lt;TreeNode *&gt; mySta;</span><br><span class="line">    vector&lt;<span class="keyword">int</span>&gt; ans;</span><br><span class="line">    TreeNode* cur = root;</span><br><span class="line">    <span class="keyword">while</span>(cur != <span class="literal">nullptr</span> || !mySta.<span class="built_in">empty</span>())&#123;</span><br><span class="line">        <span class="keyword">while</span>(cur != <span class="literal">nullptr</span>)&#123;</span><br><span class="line">            mySta.<span class="built_in">push</span>(cur);</span><br><span class="line">            ans.<span class="built_in">push_back</span>(cur-&gt;val);</span><br><span class="line">            <span class="comment">// mySta.push(cur);</span></span><br><span class="line">            cur = cur-&gt;left;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(!mySta.<span class="built_in">empty</span>())&#123;</span><br><span class="line">            cur = mySta.<span class="built_in">top</span>();</span><br><span class="line">            mySta.<span class="built_in">pop</span>();</span><br><span class="line">            cur = cur-&gt;right;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="中序遍历"><a href="#中序遍历" class="headerlink" title="中序遍历"></a>中序遍历</h2><p>中序遍历的顺序是 <strong>左节点-&gt;根节点-&gt;右节点</strong></p>
-<p>下列二叉树的中序遍历为： D  B E A F C</p>
-<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209090013617.png" alt="image-20211009135839077"></p>
-<p><strong>递归实现</strong></p>
-<p>利用递归实现中序遍历十分简单</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="keyword">int</span>&gt; <span class="title">inorderTraversal</span><span class="params">(TreeNode* root)</span></span>&#123;</span><br><span class="line">    vector&lt;<span class="keyword">int</span>&gt; ans;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">dfs</span>(root, ans);</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">dfs</span><span class="params">(TreeNode* root, vector&lt;<span class="keyword">int</span>&gt; ans)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(root == <span class="literal">nullptr</span>)&#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">dfs</span>(root-&gt;left);</span><br><span class="line">    ans.<span class="built_in">push_back</span>(root-&gt;val);</span><br><span class="line">    <span class="built_in">dfs</span>(root-&gt;right);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p><strong>栈实现方法</strong></p>
-<p>利用栈实现中序遍历的核心与前序遍历相同，只是需要注意访问节点数据的时机有所不同。</p>
-<ul>
-<li>首先将左节点push到栈中直到当前节点的左节点为nullptr。</li>
-<li>判断栈是否为空，如果不为空就访问当前栈顶节点，并弹出当前栈顶节点，并push栈顶节点的右节点。</li>
-<li>迭代上述操作。</li>
-</ul>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="keyword">int</span>&gt; <span class="title">inorderTraversal</span><span class="params">(TreeNode* root)</span> </span>&#123;</span><br><span class="line">        vector&lt;<span class="keyword">int</span>&gt; ans;</span><br><span class="line">        stack&lt;TreeNode*&gt; mySta;</span><br><span class="line">        <span class="comment">// mySta.push(root);</span></span><br><span class="line"></span><br><span class="line">        TreeNode *cur = root;</span><br><span class="line">        <span class="keyword">while</span>(cur != <span class="literal">nullptr</span> || !mySta.<span class="built_in">empty</span>())&#123;</span><br><span class="line">            <span class="keyword">while</span>(cur != <span class="literal">nullptr</span>)&#123;</span><br><span class="line">                mySta.<span class="built_in">push</span>(cur);</span><br><span class="line">                cur = cur-&gt;left;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span>(!mySta.<span class="built_in">empty</span>())&#123;</span><br><span class="line">                cur = mySta.<span class="built_in">top</span>();</span><br><span class="line">                mySta.<span class="built_in">pop</span>();</span><br><span class="line">                ans.<span class="built_in">push_back</span>(cur-&gt;val);</span><br><span class="line">                cur = cur-&gt;right;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="后序遍历"><a href="#后序遍历" class="headerlink" title="后序遍历"></a>后序遍历</h2><p>后序遍历的顺序是 <strong>左节点-&gt;右节点-&gt;根节点</strong></p>
-<p>下列二叉树的后序遍历为： D E B F C A</p>
-<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209090014059.jpeg" alt="image-20211009140543901"></p>
-<p><strong>递归实现</strong></p>
-<p>利用递归实现前序遍历十分简单</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="keyword">int</span>&gt; <span class="title">postorderTraversal</span><span class="params">(TreeNode* root)</span></span>&#123;</span><br><span class="line">    vector&lt;<span class="keyword">int</span>&gt; ans;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">dfs</span>(root, ans);</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">dfs</span><span class="params">(TreeNode* root, vector&lt;<span class="keyword">int</span>&gt; ans)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(root == <span class="literal">nullptr</span>)&#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">dfs</span>(root-&gt;left);</span><br><span class="line">    <span class="built_in">dfs</span>(root-&gt;right);</span><br><span class="line">    ans.<span class="built_in">push_back</span>(root-&gt;val);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p><strong>栈实现方法</strong></p>
-<p>利用栈实现二叉树的后序遍历的核心与前序遍历相同。但需要注意的是，如果直接使用栈来实现后序遍历会相对比较麻烦，因为需要控制第二次访问根节点才能将栈顶元素弹出，从而需要一个额外的栈来实现节点的访问计数。因此我将讨论后序遍历与前序遍历之间的关系，来寻找更加简便的方法。</p>
-<p>根据前面的讨论我们可以得知 </p>
-<ul>
-<li><strong>前序遍历</strong>访问节点的顺序是 <strong>根节点-&gt;左节点-&gt;右节点</strong></li>
-<li><strong>后序遍历</strong>访问节点的顺序是 <strong>左节点-&gt;右节点-&gt;根节点</strong></li>
-</ul>
-<p>假设我们将前序遍历的左右节点访问顺序交换，我们将会得到 <strong>根节点-&gt;右节点-&gt;左节点</strong> 的访问顺序。</p>
-<p>接着将上述的顺序进行reverse。得到的顺序是 <strong>左节点-&gt;右节点-&gt;根节点</strong> 恰好和后序遍历的顺序相同。</p>
-<p>因此我们只需要将前序遍历的栈实现方式中的所有<strong>左节点改为右节点</strong>，<strong>右节点改为左节点</strong>。同时在最后对结果进行<strong>reverse</strong>即可。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="keyword">int</span>&gt; <span class="title">postorderTraversal</span><span class="params">(TreeNode* root)</span> </span>&#123;</span><br><span class="line">    stack&lt;TreeNode *&gt; mySta;</span><br><span class="line">    vector&lt;<span class="keyword">int</span>&gt; ans;</span><br><span class="line">    TreeNode* cur = root;</span><br><span class="line">    <span class="keyword">while</span>(cur != <span class="literal">nullptr</span> || !mySta.<span class="built_in">empty</span>())&#123;</span><br><span class="line">        <span class="keyword">while</span>(cur != <span class="literal">nullptr</span>)&#123;</span><br><span class="line">            mySta.<span class="built_in">push</span>(cur);</span><br><span class="line">            ans.<span class="built_in">push_back</span>(cur-&gt;val);</span><br><span class="line">            <span class="comment">// mySta.push(cur);</span></span><br><span class="line">            cur = cur-&gt;right;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(!mySta.<span class="built_in">empty</span>())&#123;</span><br><span class="line">            cur = mySta.<span class="built_in">top</span>();</span><br><span class="line">            mySta.<span class="built_in">pop</span>();</span><br><span class="line">            cur = cur-&gt;left;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">reverse</span>(ans.<span class="built_in">begin</span>(),ans.<span class="built_in">end</span>());</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="层序遍历"><a href="#层序遍历" class="headerlink" title="层序遍历"></a>层序遍历</h2><p>层序遍历就是<strong>逐层遍历树结构</strong>。</p>
-<p><strong>广度优先搜索</strong>是一种广泛运用在树或图这类数据结构中，遍历或搜索的算法。 该算法从一个根节点开始，首先访问节点本身。 然后遍历它的相邻节点，其次遍历它的二级邻节点、三级邻节点，以此类推。</p>
-<p>当我们在树中进行广度优先搜索时，我们访问的节点的顺序是按照层序遍历顺序的。</p>
-<p>下列二叉树的后序遍历为：A B C D E F</p>
-<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209090014780.png" alt="image-20211009142500875"></p>
-<p><strong>广度优先搜索实现</strong></p>
-<p>广度优先搜索的核心是<strong>队列</strong>。将队首元素出队，如果该节点有子节点则将子节点入队。直到队首节点没有子节点，并且队列中没有节点时，遍历结束。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">vector&lt;vector&lt;<span class="keyword">int</span>&gt;&gt; <span class="built_in">levelOrder</span>(TreeNode* root) &#123;</span><br><span class="line">    queue&lt;TreeNode*&gt; myQueue;</span><br><span class="line">    vector&lt;vector&lt;<span class="keyword">int</span>&gt;&gt; ans;</span><br><span class="line">    <span class="keyword">if</span>(root == <span class="literal">nullptr</span>)&#123;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    myQueue.<span class="built_in">push</span>(root);</span><br><span class="line">    <span class="keyword">while</span>(!myQueue.<span class="built_in">empty</span>())&#123;</span><br><span class="line">        <span class="keyword">int</span> cnt = myQueue.<span class="built_in">size</span>();</span><br><span class="line">        vector&lt;<span class="keyword">int</span>&gt; temp;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i&lt;cnt; i++)&#123;</span><br><span class="line">            TreeNode *cur = myQueue.<span class="built_in">front</span>();</span><br><span class="line">            myQueue.<span class="built_in">pop</span>();</span><br><span class="line">            temp.<span class="built_in">push_back</span>(cur-&gt;val);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span>(cur-&gt;left != <span class="literal">nullptr</span>)&#123;</span><br><span class="line">                myQueue.<span class="built_in">push</span>(cur-&gt;left);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(cur-&gt;right != <span class="literal">nullptr</span>)&#123;</span><br><span class="line">                myQueue.<span class="built_in">push</span>(cur-&gt;right);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        ans.<span class="built_in">push_back</span>(temp);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+<li><p>删除分支</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git branch -d [branch name]</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="远程操作"><a href="#远程操作" class="headerlink" title="远程操作"></a>远程操作</h3><ol>
+<li><p>查看远程仓库分支</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git remote show [repository name]</span><br></pre></td></tr></table></figure></li>
+<li><p>本地分支推送到远程仓库分支</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># -u 表示把本地分支和远程分支进行关联，只在第一次推送的时候需要带 -u 参数</span><br><span class="line">git push -u 远程仓库的别名 本地分支名称: 远程分支名称</span><br><span class="line"></span><br><span class="line"># 案例</span><br><span class="line">git push -u origin payment:pay</span><br><span class="line"></span><br><span class="line"># 如果希望远程分支的名称和本地分支名称保持一直，可以对命令进行简化：</span><br><span class="line">git push -u origin payment</span><br></pre></td></tr></table></figure></li>
+<li><p>跟踪分支</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 从远程仓库中，把对应的远程分支下载到本地仓库，名字保持一致</span><br><span class="line">git checkout 远程分支的名称</span><br><span class="line"></span><br><span class="line"># 从远程仓库中，把对应的远程分支下载到本地仓库，并把下载的本地分支进行重命名</span><br><span class="line">git checkout -b 本地分支名称 远程仓库名称/远程分支名称</span><br><span class="line"></span><br><span class="line"># 案例  把远程仓库origin里面的pay分支下载并重命名为payment分支</span><br><span class="line">git checkout -b payment origin/pay</span><br></pre></td></tr></table></figure></li>
+<li><p>拉取远程分支最新代码</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git pull</span><br></pre></td></tr></table></figure></li>
+<li><p>删除远程分支</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git push origin --delete [branch name]</span><br></pre></td></tr></table></figure></li>
+</ol>
 ]]></content>
       <categories>
-        <category>数据结构</category>
+        <category>卓越工程师</category>
       </categories>
       <tags>
-        <tag>二叉树</tag>
+        <tag>git</tag>
       </tags>
   </entry>
   <entry>
     <title>hexo博客搭建</title>
     <url>/2022/09/08/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/</url>
-    <content><![CDATA[<h1 id="推送博客文件"><a href="#推送博客文件" class="headerlink" title="推送博客文件"></a>推送博客文件</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo clean # 清空之前的文件</span><br><span class="line">hexo generate # 生成静态文章 hexo g</span><br><span class="line">hexo deploy # 部署博客 hexo d</span><br></pre></td></tr></table></figure>
+    <content><![CDATA[<h2 id="推送博客文件"><a href="#推送博客文件" class="headerlink" title="推送博客文件"></a>推送博客文件</h2><ol>
+<li><p>清空之前的文件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br></pre></td></tr></table></figure></li>
+<li><p>生成静态文章</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo generate</span><br><span class="line"></span><br><span class="line"># 简写</span><br><span class="line">hexo g</span><br></pre></td></tr></table></figure></li>
+<li><p>部署博客</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo deploy </span><br><span class="line"></span><br><span class="line"># 简写 </span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="本地测试"><a href="#本地测试" class="headerlink" title="本地测试"></a>本地测试</h2><ol>
+<li><p>生成静态文件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo g</span><br></pre></td></tr></table></figure></li>
+<li><p>打开本地服务器</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo server</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="写文章"><a href="#写文章" class="headerlink" title="写文章"></a>写文章</h2><ol>
+<li><p>新建文章</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo new &quot;title&quot;</span><br></pre></td></tr></table></figure></li>
+<li><p>新建草稿文件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo new draft &quot;title&quot;</span><br></pre></td></tr></table></figure></li>
+<li><p>新建界面</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo new page &quot;title&quot;</span><br></pre></td></tr></table></figure></li>
+</ol>
+]]></content>
+      <categories>
+        <category>卓越工程师</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>linux常用指令</title>
+    <url>/2022/09/09/linux%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4/</url>
+    <content><![CDATA[<h1 id="Linux常用指令"><a href="#Linux常用指令" class="headerlink" title="Linux常用指令"></a>Linux常用指令</h1><h2 id="档案与目录管理"><a href="#档案与目录管理" class="headerlink" title="档案与目录管理"></a>档案与目录管理</h2><h3 id="切换路径"><a href="#切换路径" class="headerlink" title="切换路径"></a>切换路径</h3><ol>
+<li><p>绝对路径</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 绝对路径，路径前+“/” 表示绝对路径</span><br><span class="line">cd /home/xc  </span><br></pre></td></tr></table></figure></li>
+<li><p>相对路径</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cd test </span><br></pre></td></tr></table></figure></li>
+<li><p>显示当前路径</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pwd</span><br></pre></td></tr></table></figure></li>
+<li><p>清空终端信息</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">clear</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>###显示文件列表</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 当前目录下的文件、目录名</span><br><span class="line">ls	</span><br><span class="line"></span><br><span class="line"># 当前目录下的文件、目录的详细信息</span><br><span class="line">ll 	</span><br><span class="line"></span><br><span class="line"># 当前目录下含有“test”的目录以及其详细信息</span><br><span class="line">ll test*	</span><br></pre></td></tr></table></figure>
 
 
 
-<h1 id="本地测试"><a href="#本地测试" class="headerlink" title="本地测试"></a>本地测试</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo g # 生成静态文件</span><br><span class="line">hexo server # 打开本地服务器</span><br></pre></td></tr></table></figure>
+<p>###文件目录管理</p>
+<ol>
+<li><p>创建目录</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mkdir [list name]	</span><br></pre></td></tr></table></figure></li>
+<li><p>删除空目录</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">rmdir [list name]	</span><br></pre></td></tr></table></figure></li>
+<li><p>删除文件 </p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 文件名需要和ls中的对应</span><br><span class="line">rm [file name] 	</span><br></pre></td></tr></table></figure></li>
+<li><p>删除非空目录</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 目录可不为空 </span><br><span class="line"># r-表示循环 f-表示force强力</span><br><span class="line">rm -rf [list name]	</span><br></pre></td></tr></table></figure></li>
+<li><p>复制目录或文件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 复制文件 </span><br><span class="line"># 相对路径 or 绝对路径</span><br><span class="line">cp -r [origin file path] [destination file path]</span><br><span class="line"></span><br><span class="line"># 复制目录 </span><br><span class="line"># 相对路径 or 绝对路径</span><br><span class="line">cp -r [origin list path] [destination file path]</span><br></pre></td></tr></table></figure></li>
+<li><p>移动目录或文件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 移动文件 </span><br><span class="line"># 相对路径 or 绝对路径</span><br><span class="line">mv [origin file path] [destination file path]</span><br><span class="line"></span><br><span class="line"># 移动目录 </span><br><span class="line"># 相对路径 or 绝对路径</span><br><span class="line">mv [origin list path] [destination file path]</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="管理文件"><a href="#管理文件" class="headerlink" title="管理文件"></a>管理文件</h2><p>###创建文件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 在当前路径下创建一个名为[file name]的文件, 需要后缀</span><br><span class="line">touch [file name] 	</span><br></pre></td></tr></table></figure>
 
 
 
-<h1 id="新建文章"><a href="#新建文章" class="headerlink" title="新建文章"></a>新建文章</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo new &quot;title&quot; # 新建文章</span><br><span class="line">hexo new draft &quot;title&quot; # 新建草稿文件</span><br><span class="line">hexo new page &quot;title&quot; # 新建界面</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="查看文件"><a href="#查看文件" class="headerlink" title="查看文件"></a>查看文件</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 显示文件内容</span><br><span class="line">cat [file name]</span><br><span class="line"></span><br><span class="line"># 显示文件内容（源码形式）</span><br><span class="line">cat -A [file name]</span><br><span class="line"></span><br><span class="line"># 一行一行显示文件内容</span><br><span class="line">more [file name]</span><br><span class="line"></span><br><span class="line"># 一行一行显示文件内容（可以翻页，但是没找到关闭的方式..）</span><br><span class="line">less [file name]</span><br><span class="line"></span><br><span class="line"># 显示文件头几行，n表示显示的行数</span><br><span class="line">head -n [file name]	</span><br><span class="line"></span><br><span class="line"># 显示文件尾几行，n表示显示的行数</span><br><span class="line">tail -n [file name]	</span><br></pre></td></tr></table></figure>
 
 
 
@@ -113,7 +138,7 @@
         <category>卓越工程师</category>
       </categories>
       <tags>
-        <tag>hexo</tag>
+        <tag>linux</tag>
       </tags>
   </entry>
   <entry>
@@ -238,6 +263,99 @@
       <tags>
         <tag>语文</tag>
         <tag>hsy</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>二叉树遍历</title>
+    <url>/2021/10/09/%E4%BA%8C%E5%8F%89%E6%A0%91%E9%81%8D%E5%8E%86/</url>
+    <content><![CDATA[<h1 id="二叉树概述"><a href="#二叉树概述" class="headerlink" title="二叉树概述"></a>二叉树概述</h1><ul>
+<li><p>二叉树是一种经常用到的数据结构，用来模拟具有树状结构性质的数据集合。</p>
+</li>
+<li><p>二叉树是一种更为典型的树状结构。如它名字所描述的那样，二叉树是每个节点最多有两个子树的树结构，通常子树被称作“左子树”和“右子树”。</p>
+</li>
+</ul>
+<p>定义二叉树的节点</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">//Definition for a binary tree node.</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">TreeNode</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span> val;</span><br><span class="line">    TreeNode *left;</span><br><span class="line">    TreeNode *right;</span><br><span class="line">    <span class="built_in">TreeNode</span>() : <span class="built_in">val</span>(<span class="number">0</span>), <span class="built_in">left</span>(<span class="literal">nullptr</span>),<span class="built_in">right</span>(<span class="literal">nullptr</span>) &#123;&#125;</span><br><span class="line">    <span class="built_in">TreeNode</span>(<span class="keyword">int</span> x) : <span class="built_in">val</span>(x), <span class="built_in">left</span>(<span class="literal">nullptr</span>), <span class="built_in">right</span>(<span class="literal">nullptr</span>) &#123;&#125;</span><br><span class="line">    <span class="built_in">TreeNode</span>(<span class="keyword">int</span> x, TreeNode *left, TreeNode right) : <span class="built_in">val</span>(x), <span class="built_in">left</span>(left), <span class="built_in">right</span>(right) &#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
+<p>常见的二叉树遍历方式有<strong>前序遍历、中序遍历、后序遍历、层序遍历</strong>。下面实现二叉树遍历的四种方式：</p>
+<h1 id="遍历方式"><a href="#遍历方式" class="headerlink" title="遍历方式"></a>遍历方式</h1><h2 id="前序遍历"><a href="#前序遍历" class="headerlink" title="前序遍历"></a>前序遍历</h2><p>前序遍历的顺序是 <strong>根节点-&gt;左节点-&gt;右节点</strong></p>
+<p>下列二叉树的前序遍历为： A B D E C F</p>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209090012434.png" alt="image-20211009130611162"></p>
+<p><strong>递归实现</strong></p>
+<p>利用递归实现前序遍历十分简单</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="keyword">int</span>&gt; <span class="title">preorderTraversal</span><span class="params">(TreeNode* root)</span></span>&#123;</span><br><span class="line">    vector&lt;<span class="keyword">int</span>&gt; ans;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">dfs</span>(root, ans);</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">dfs</span><span class="params">(TreeNode* root, vector&lt;<span class="keyword">int</span>&gt; ans)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(root == <span class="literal">nullptr</span>)&#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    ans.<span class="built_in">push_back</span>(root-&gt;val);</span><br><span class="line">    <span class="built_in">dfs</span>(root-&gt;left);</span><br><span class="line">    <span class="built_in">dfs</span>(root-&gt;right);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>栈实现方法</strong></p>
+<p>利用栈实现前序遍历的核心是将树节点push到栈中然后在合适的时间从栈中弹出。</p>
+<ul>
+<li>首先将左节点push到栈中，push的同时访问当前节点数据。直到当前节点的左节点为nullptr。</li>
+<li>判断栈是否为空，如果不为空就弹出当前栈顶节点，并push栈顶节点的右节点。</li>
+<li>迭代上述操作。</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="keyword">int</span>&gt; <span class="title">preorderTraversal</span><span class="params">(TreeNode* root)</span> </span>&#123;</span><br><span class="line">    stack&lt;TreeNode *&gt; mySta;</span><br><span class="line">    vector&lt;<span class="keyword">int</span>&gt; ans;</span><br><span class="line">    TreeNode* cur = root;</span><br><span class="line">    <span class="keyword">while</span>(cur != <span class="literal">nullptr</span> || !mySta.<span class="built_in">empty</span>())&#123;</span><br><span class="line">        <span class="keyword">while</span>(cur != <span class="literal">nullptr</span>)&#123;</span><br><span class="line">            mySta.<span class="built_in">push</span>(cur);</span><br><span class="line">            ans.<span class="built_in">push_back</span>(cur-&gt;val);</span><br><span class="line">            <span class="comment">// mySta.push(cur);</span></span><br><span class="line">            cur = cur-&gt;left;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(!mySta.<span class="built_in">empty</span>())&#123;</span><br><span class="line">            cur = mySta.<span class="built_in">top</span>();</span><br><span class="line">            mySta.<span class="built_in">pop</span>();</span><br><span class="line">            cur = cur-&gt;right;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="中序遍历"><a href="#中序遍历" class="headerlink" title="中序遍历"></a>中序遍历</h2><p>中序遍历的顺序是 <strong>左节点-&gt;根节点-&gt;右节点</strong></p>
+<p>下列二叉树的中序遍历为： D  B E A F C</p>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209090013617.png" alt="image-20211009135839077"></p>
+<p><strong>递归实现</strong></p>
+<p>利用递归实现中序遍历十分简单</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="keyword">int</span>&gt; <span class="title">inorderTraversal</span><span class="params">(TreeNode* root)</span></span>&#123;</span><br><span class="line">    vector&lt;<span class="keyword">int</span>&gt; ans;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">dfs</span>(root, ans);</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">dfs</span><span class="params">(TreeNode* root, vector&lt;<span class="keyword">int</span>&gt; ans)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(root == <span class="literal">nullptr</span>)&#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">dfs</span>(root-&gt;left);</span><br><span class="line">    ans.<span class="built_in">push_back</span>(root-&gt;val);</span><br><span class="line">    <span class="built_in">dfs</span>(root-&gt;right);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>栈实现方法</strong></p>
+<p>利用栈实现中序遍历的核心与前序遍历相同，只是需要注意访问节点数据的时机有所不同。</p>
+<ul>
+<li>首先将左节点push到栈中直到当前节点的左节点为nullptr。</li>
+<li>判断栈是否为空，如果不为空就访问当前栈顶节点，并弹出当前栈顶节点，并push栈顶节点的右节点。</li>
+<li>迭代上述操作。</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="keyword">int</span>&gt; <span class="title">inorderTraversal</span><span class="params">(TreeNode* root)</span> </span>&#123;</span><br><span class="line">        vector&lt;<span class="keyword">int</span>&gt; ans;</span><br><span class="line">        stack&lt;TreeNode*&gt; mySta;</span><br><span class="line">        <span class="comment">// mySta.push(root);</span></span><br><span class="line"></span><br><span class="line">        TreeNode *cur = root;</span><br><span class="line">        <span class="keyword">while</span>(cur != <span class="literal">nullptr</span> || !mySta.<span class="built_in">empty</span>())&#123;</span><br><span class="line">            <span class="keyword">while</span>(cur != <span class="literal">nullptr</span>)&#123;</span><br><span class="line">                mySta.<span class="built_in">push</span>(cur);</span><br><span class="line">                cur = cur-&gt;left;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span>(!mySta.<span class="built_in">empty</span>())&#123;</span><br><span class="line">                cur = mySta.<span class="built_in">top</span>();</span><br><span class="line">                mySta.<span class="built_in">pop</span>();</span><br><span class="line">                ans.<span class="built_in">push_back</span>(cur-&gt;val);</span><br><span class="line">                cur = cur-&gt;right;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="后序遍历"><a href="#后序遍历" class="headerlink" title="后序遍历"></a>后序遍历</h2><p>后序遍历的顺序是 <strong>左节点-&gt;右节点-&gt;根节点</strong></p>
+<p>下列二叉树的后序遍历为： D E B F C A</p>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209090014059.jpeg" alt="image-20211009140543901"></p>
+<p><strong>递归实现</strong></p>
+<p>利用递归实现前序遍历十分简单</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="keyword">int</span>&gt; <span class="title">postorderTraversal</span><span class="params">(TreeNode* root)</span></span>&#123;</span><br><span class="line">    vector&lt;<span class="keyword">int</span>&gt; ans;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">dfs</span>(root, ans);</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">dfs</span><span class="params">(TreeNode* root, vector&lt;<span class="keyword">int</span>&gt; ans)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(root == <span class="literal">nullptr</span>)&#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">dfs</span>(root-&gt;left);</span><br><span class="line">    <span class="built_in">dfs</span>(root-&gt;right);</span><br><span class="line">    ans.<span class="built_in">push_back</span>(root-&gt;val);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>栈实现方法</strong></p>
+<p>利用栈实现二叉树的后序遍历的核心与前序遍历相同。但需要注意的是，如果直接使用栈来实现后序遍历会相对比较麻烦，因为需要控制第二次访问根节点才能将栈顶元素弹出，从而需要一个额外的栈来实现节点的访问计数。因此我将讨论后序遍历与前序遍历之间的关系，来寻找更加简便的方法。</p>
+<p>根据前面的讨论我们可以得知 </p>
+<ul>
+<li><strong>前序遍历</strong>访问节点的顺序是 <strong>根节点-&gt;左节点-&gt;右节点</strong></li>
+<li><strong>后序遍历</strong>访问节点的顺序是 <strong>左节点-&gt;右节点-&gt;根节点</strong></li>
+</ul>
+<p>假设我们将前序遍历的左右节点访问顺序交换，我们将会得到 <strong>根节点-&gt;右节点-&gt;左节点</strong> 的访问顺序。</p>
+<p>接着将上述的顺序进行reverse。得到的顺序是 <strong>左节点-&gt;右节点-&gt;根节点</strong> 恰好和后序遍历的顺序相同。</p>
+<p>因此我们只需要将前序遍历的栈实现方式中的所有<strong>左节点改为右节点</strong>，<strong>右节点改为左节点</strong>。同时在最后对结果进行<strong>reverse</strong>即可。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;<span class="keyword">int</span>&gt; <span class="title">postorderTraversal</span><span class="params">(TreeNode* root)</span> </span>&#123;</span><br><span class="line">    stack&lt;TreeNode *&gt; mySta;</span><br><span class="line">    vector&lt;<span class="keyword">int</span>&gt; ans;</span><br><span class="line">    TreeNode* cur = root;</span><br><span class="line">    <span class="keyword">while</span>(cur != <span class="literal">nullptr</span> || !mySta.<span class="built_in">empty</span>())&#123;</span><br><span class="line">        <span class="keyword">while</span>(cur != <span class="literal">nullptr</span>)&#123;</span><br><span class="line">            mySta.<span class="built_in">push</span>(cur);</span><br><span class="line">            ans.<span class="built_in">push_back</span>(cur-&gt;val);</span><br><span class="line">            <span class="comment">// mySta.push(cur);</span></span><br><span class="line">            cur = cur-&gt;right;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(!mySta.<span class="built_in">empty</span>())&#123;</span><br><span class="line">            cur = mySta.<span class="built_in">top</span>();</span><br><span class="line">            mySta.<span class="built_in">pop</span>();</span><br><span class="line">            cur = cur-&gt;left;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">reverse</span>(ans.<span class="built_in">begin</span>(),ans.<span class="built_in">end</span>());</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="层序遍历"><a href="#层序遍历" class="headerlink" title="层序遍历"></a>层序遍历</h2><p>层序遍历就是<strong>逐层遍历树结构</strong>。</p>
+<p><strong>广度优先搜索</strong>是一种广泛运用在树或图这类数据结构中，遍历或搜索的算法。 该算法从一个根节点开始，首先访问节点本身。 然后遍历它的相邻节点，其次遍历它的二级邻节点、三级邻节点，以此类推。</p>
+<p>当我们在树中进行广度优先搜索时，我们访问的节点的顺序是按照层序遍历顺序的。</p>
+<p>下列二叉树的后序遍历为：A B C D E F</p>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209090014780.png" alt="image-20211009142500875"></p>
+<p><strong>广度优先搜索实现</strong></p>
+<p>广度优先搜索的核心是<strong>队列</strong>。将队首元素出队，如果该节点有子节点则将子节点入队。直到队首节点没有子节点，并且队列中没有节点时，遍历结束。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">vector&lt;vector&lt;<span class="keyword">int</span>&gt;&gt; <span class="built_in">levelOrder</span>(TreeNode* root) &#123;</span><br><span class="line">    queue&lt;TreeNode*&gt; myQueue;</span><br><span class="line">    vector&lt;vector&lt;<span class="keyword">int</span>&gt;&gt; ans;</span><br><span class="line">    <span class="keyword">if</span>(root == <span class="literal">nullptr</span>)&#123;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    myQueue.<span class="built_in">push</span>(root);</span><br><span class="line">    <span class="keyword">while</span>(!myQueue.<span class="built_in">empty</span>())&#123;</span><br><span class="line">        <span class="keyword">int</span> cnt = myQueue.<span class="built_in">size</span>();</span><br><span class="line">        vector&lt;<span class="keyword">int</span>&gt; temp;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i&lt;cnt; i++)&#123;</span><br><span class="line">            TreeNode *cur = myQueue.<span class="built_in">front</span>();</span><br><span class="line">            myQueue.<span class="built_in">pop</span>();</span><br><span class="line">            temp.<span class="built_in">push_back</span>(cur-&gt;val);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span>(cur-&gt;left != <span class="literal">nullptr</span>)&#123;</span><br><span class="line">                myQueue.<span class="built_in">push</span>(cur-&gt;left);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(cur-&gt;right != <span class="literal">nullptr</span>)&#123;</span><br><span class="line">                myQueue.<span class="built_in">push</span>(cur-&gt;right);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        ans.<span class="built_in">push_back</span>(temp);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>数据结构</category>
+      </categories>
+      <tags>
+        <tag>二叉树</tag>
       </tags>
   </entry>
   <entry>
