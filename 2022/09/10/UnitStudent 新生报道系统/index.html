@@ -1,0 +1,213 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>UnitStudent 新生报道系统 | XcloveHsy's Blog</title><meta name="keywords" content="python,uniapp"><meta name="author" content="徐cc"><meta name="copyright" content="徐cc"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="UnitStudent 新生报道系统2022-8-19 中软国际实训项目   github项目：https:&#x2F;&#x2F;github.com&#x2F;xclovehsy&#x2F;uniStudent  1. 项目简介软件名称：UnitStudent新生报道系统">
+<meta property="og:type" content="article">
+<meta property="og:title" content="UnitStudent 新生报道系统">
+<meta property="og:url" content="https://xclovehsy.github.io/2022/09/10/UnitStudent%20%E6%96%B0%E7%94%9F%E6%8A%A5%E9%81%93%E7%B3%BB%E7%BB%9F/index.html">
+<meta property="og:site_name" content="XcloveHsy&#39;s Blog">
+<meta property="og:description" content="UnitStudent 新生报道系统2022-8-19 中软国际实训项目   github项目：https:&#x2F;&#x2F;github.com&#x2F;xclovehsy&#x2F;uniStudent  1. 项目简介软件名称：UnitStudent新生报道系统">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209082215894.png">
+<meta property="article:published_time" content="2022-09-10T00:34:51.000Z">
+<meta property="article:modified_time" content="2022-09-10T15:49:11.129Z">
+<meta property="article:author" content="徐cc">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="uniapp">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209082215894.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://xclovehsy.github.io/2022/09/10/UnitStudent%20%E6%96%B0%E7%94%9F%E6%8A%A5%E9%81%93%E7%B3%BB%E7%BB%9F/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js',
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+    },
+    fancybox: {
+      js: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'UnitStudent 新生报道系统',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-09-10 23:49:11'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if (GLOBAL_CONFIG_SITE.isHome && /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209091450019.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">16</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">标签</div><div class="length-num">15</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 链接</span><i class="fas fa-chevron-down expand hide"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209082215894.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">XcloveHsy's Blog</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 链接</span><i class="fas fa-chevron-down expand hide"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></li></ul></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">UnitStudent 新生报道系统</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="fa-fw post-meta-icon far fa-calendar-alt"></i><span class="post-meta-label">发表于</span><time datetime="2022-09-10T00:34:51.000Z" title="undefined 2022-09-10 08:34:51">2022-09-10</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E9%A1%B9%E7%9B%AE/">项目</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">508</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="UnitStudent 新生报道系统"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="UnitStudent-新生报道系统"><a href="#UnitStudent-新生报道系统" class="headerlink" title="UnitStudent 新生报道系统"></a>UnitStudent 新生报道系统</h1><p>2022-8-19 中软国际实训项目 </p>
+<blockquote>
+<p>github项目：<a target="_blank" rel="noopener" href="https://github.com/xclovehsy/uniStudent">https://github.com/xclovehsy/uniStudent</a></p>
+</blockquote>
+<h2 id="1-项目简介"><a href="#1-项目简介" class="headerlink" title="1. 项目简介"></a>1. 项目简介</h2><p><strong>软件名称：</strong><br>UnitStudent新生报道系统</p>
+<p><strong>软件应用：</strong><br>该系统将主要面向重庆财经学院软件学院的2022级新生以及所有老师，使整个新生报道流程信息化，让新生和老师能够实时了解到新生报道的进行情况。<br>新生报道系统结合新生报到时的需求，利用网络的即时性，提高新生报到工作效率，减少报道所需，为报道的新生提供即时准确的报道相关信息，同时可以对自己的性格进行简单的测评，帮助新生进一步了解自己；<br>在帮助新生顺利完成报道的同时也为新生报到的规范化和信息化管理打坚实的基础。</p>
+<h2 id="2-需求分析"><a href="#2-需求分析" class="headerlink" title="2. 需求分析"></a>2. 需求分析</h2><p><strong>需求范围：</strong><br>重庆财经学院软件学院</p>
+<p><strong>系统包括的功能范围：</strong></p>
+<ol>
+<li>学校功能</li>
+<li>查看新生报道实时进展</li>
+<li>查看新生相关信息（专业，性别，地区，年龄）</li>
+<li>查看新生职业性格大体分布</li>
+</ol>
+<p><strong>新生功能：</strong></p>
+<ol>
+<li> 填写自身相关信息</li>
+<li> 进行职业性格测试</li>
+<li> 查看报道流程</li>
+<li> 查看报道实时进展</li>
+<li> 查看新生相关信息（专业，性别，地区，年龄）</li>
+<li> 查看学校概况</li>
+</ol>
+<h2 id="3-运行环境"><a href="#3-运行环境" class="headerlink" title="3. 运行环境"></a>3. 运行环境</h2><p>本软件开发所使用的语言以及开发工具：</p>
+<p>开发平台及工具；MySQL、Hbuilder X、Pycharm</p>
+<p>通信协议：HTTP，TCP/IP</p>
+<p>前端使用uniapp框架，后端使用python语言，fastapi进行接口的实现。</p>
+<h2 id="4-项目预览"><a href="#4-项目预览" class="headerlink" title="4. 项目预览"></a>4. 项目预览</h2><h3 id="4-1-应用框架"><a href="#4-1-应用框架" class="headerlink" title="4.1. 应用框架"></a>4.1. 应用框架</h3><hr>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209021443731.png" alt="image-20220902144331571"></p>
+<h3 id="4-2-流程图"><a href="#4-2-流程图" class="headerlink" title="4.2. 流程图"></a>4.2. 流程图</h3><hr>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209021444357.png" alt="image-20220902144458239"></p>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209021446848.png" alt="image-20220902144602780"></p>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209021453406.png" alt="image-20220902145359327"></p>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209021454389.png" alt="image-20220902145410313"></p>
+<h3 id="4-3-项目界面"><a href="#4-3-项目界面" class="headerlink" title="4.3. 项目界面"></a>4.3. 项目界面</h3><h4 id="4-3-1-信息录入"><a href="#4-3-1-信息录入" class="headerlink" title="4.3.1. 信息录入"></a>4.3.1. 信息录入</h4><hr>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209100813507.jpg" alt="Screenshot_20220909_212753_com.tencent.mm"></p>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209100822778.jpg"></p>
+<h4 id="4-3-2-信息总览"><a href="#4-3-2-信息总览" class="headerlink" title="4.3.2. 信息总览"></a>4.3.2. 信息总览</h4><hr>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209100812240.jpg" alt="Screenshot_20220909_212208_com.tencent.mm"></p>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209100812765.jpg" alt="Screenshot_20220909_212216_com.tencent.mm"></p>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209100812753.jpg" alt="Screenshot_20220909_212225_com.tencent.mm"></p>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209100813592.jpg" alt="Screenshot_20220909_212230_com.tencent.mm"></p>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209100813636.jpg" alt="Screenshot_20220909_212240_com.tencent.mm"></p>
+<h4 id="4-3-3-数据面板"><a href="#4-3-3-数据面板" class="headerlink" title="4.3.3. 数据面板"></a>4.3.3. 数据面板</h4><hr>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209100814029.jpg" alt="Screenshot_20220909_212823_com.tencent.mm"></p>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209100814845.jpg" alt="Screenshot_20220909_212828_com.tencent.mm"></p>
+<h4 id="4-3-4-新生指南"><a href="#4-3-4-新生指南" class="headerlink" title="4.3.4. 新生指南"></a>4.3.4. 新生指南</h4><hr>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209100813181.jpg" alt="Screenshot_20220909_212342_com.tencent.mm"></p>
+<h4 id="4-3-5-性格测试"><a href="#4-3-5-性格测试" class="headerlink" title="4.3.5. 性格测试"></a>4.3.5. 性格测试</h4><hr>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209100814203.jpg" alt="Screenshot_20220909_212354_com.tencent.mm"></p>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209100814152.jpg" alt="Screenshot_20220909_212613_com.tencent.mm"></p>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209100814481.jpg" alt="Screenshot_20220909_212627_com.tencent.mm"></p>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209100814850.jpg" alt="Screenshot_20220909_212642_com.tencent.mm"></p>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209100814057.jpg" alt="Screenshot_20220909_212702_com.tencent.mm"></p>
+<h4 id="4-3-6-大数据面板"><a href="#4-3-6-大数据面板" class="headerlink" title="4.3.6. 大数据面板"></a>4.3.6. 大数据面板</h4><hr>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209021514993.jpg" alt="image-20220902150435623"></p>
+<h2 id="5-程序入口"><a href="#5-程序入口" class="headerlink" title="5. 程序入口"></a>5. 程序入口</h2><p><strong>程序入口二维码：</strong></p>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209102321648.jpg" alt="-170c280b23612a5c"></p>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209102321486.jpg" alt="-1bf9d8e9c0a82e3"></p>
+<blockquote>
+<p>大数据面板：<a target="_blank" rel="noopener" href="http://v.yuntus.com/tcv/0590A5ac63f90BA555CE76d4686F0772">http://v.yuntus.com/tcv/0590A5ac63f90BA555CE76d4686F0772</a></p>
+</blockquote>
+</article><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/python/">python</a><a class="post-meta__tags" href="/tags/uniapp/">uniapp</a></div><div class="post_share"><div class="social-share" data-image="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209082215894.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/09/10/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%AF%86%E5%88%AB%E6%89%8B%E5%86%99%E6%95%B0%E5%AD%97/"><img class="prev-cover" src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209082215894.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">神经网络识别手写数字</div></div></a></div><div class="next-post pull-right"><a href="/2022/09/09/%E9%81%97%E4%BC%A0%E7%AE%97%E6%B3%95%E8%A7%A3%E5%86%B3%E6%97%85%E8%A1%8C%E5%95%86%E9%97%AE%E9%A2%98/"><img class="next-cover" src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209082215894.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">遗传算法解决旅行商问题</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#UnitStudent-%E6%96%B0%E7%94%9F%E6%8A%A5%E9%81%93%E7%B3%BB%E7%BB%9F"><span class="toc-text">UnitStudent 新生报道系统</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E9%A1%B9%E7%9B%AE%E7%AE%80%E4%BB%8B"><span class="toc-text">1. 项目简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E9%9C%80%E6%B1%82%E5%88%86%E6%9E%90"><span class="toc-text">2. 需求分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E8%BF%90%E8%A1%8C%E7%8E%AF%E5%A2%83"><span class="toc-text">3. 运行环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E9%A1%B9%E7%9B%AE%E9%A2%84%E8%A7%88"><span class="toc-text">4. 项目预览</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E5%BA%94%E7%94%A8%E6%A1%86%E6%9E%B6"><span class="toc-text">4.1. 应用框架</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="toc-text">4.2. 流程图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-%E9%A1%B9%E7%9B%AE%E7%95%8C%E9%9D%A2"><span class="toc-text">4.3. 项目界面</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-1-%E4%BF%A1%E6%81%AF%E5%BD%95%E5%85%A5"><span class="toc-text">4.3.1. 信息录入</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-2-%E4%BF%A1%E6%81%AF%E6%80%BB%E8%A7%88"><span class="toc-text">4.3.2. 信息总览</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-3-%E6%95%B0%E6%8D%AE%E9%9D%A2%E6%9D%BF"><span class="toc-text">4.3.3. 数据面板</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-4-%E6%96%B0%E7%94%9F%E6%8C%87%E5%8D%97"><span class="toc-text">4.3.4. 新生指南</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-5-%E6%80%A7%E6%A0%BC%E6%B5%8B%E8%AF%95"><span class="toc-text">4.3.5. 性格测试</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-3-6-%E5%A4%A7%E6%95%B0%E6%8D%AE%E9%9D%A2%E6%9D%BF"><span class="toc-text">4.3.6. 大数据面板</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E7%A8%8B%E5%BA%8F%E5%85%A5%E5%8F%A3"><span class="toc-text">5. 程序入口</span></a></li></ol></li></ol></div></div></div></div></main><footer id="footer" style="background-image: url('https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209082215894.png')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By 徐cc</div><div class="footer_custom_text">Hi, welcome to my Blog</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/search/local-search.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

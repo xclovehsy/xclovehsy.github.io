@@ -1,0 +1,215 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>网络白板的java实现 | XcloveHsy's Blog</title><meta name="keywords" content="java"><meta name="author" content="徐cc"><meta name="copyright" content="徐cc"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="网络白板的java实现 github项目：https:&#x2F;&#x2F;github.com&#x2F;xclovehsy&#x2F;whiteBoard  1. 简介1.1. 项目需求网络白板利用面相对象的思想设计适合可扩展的图形类集，利用java gui的mvc模式设计用户的绘图流程，利用java的套接字编程实现多客户端的数据共享方法，利用多线程机制实现绘图和数据传输的并发控制机制">
+<meta property="og:type" content="article">
+<meta property="og:title" content="网络白板的java实现">
+<meta property="og:url" content="https://xclovehsy.github.io/2022/09/10/%E7%BD%91%E7%BB%9C%E7%99%BD%E6%9D%BF%E7%9A%84java%E5%AE%9E%E7%8E%B0/index.html">
+<meta property="og:site_name" content="XcloveHsy&#39;s Blog">
+<meta property="og:description" content="网络白板的java实现 github项目：https:&#x2F;&#x2F;github.com&#x2F;xclovehsy&#x2F;whiteBoard  1. 简介1.1. 项目需求网络白板利用面相对象的思想设计适合可扩展的图形类集，利用java gui的mvc模式设计用户的绘图流程，利用java的套接字编程实现多客户端的数据共享方法，利用多线程机制实现绘图和数据传输的并发控制机制">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209082215894.png">
+<meta property="article:published_time" content="2022-09-10T15:57:16.000Z">
+<meta property="article:modified_time" content="2022-09-10T16:13:17.579Z">
+<meta property="article:author" content="徐cc">
+<meta property="article:tag" content="java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209082215894.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://xclovehsy.github.io/2022/09/10/%E7%BD%91%E7%BB%9C%E7%99%BD%E6%9D%BF%E7%9A%84java%E5%AE%9E%E7%8E%B0/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js',
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+    },
+    fancybox: {
+      js: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '网络白板的java实现',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-09-11 00:13:17'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if (GLOBAL_CONFIG_SITE.isHome && /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209091450019.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">16</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">标签</div><div class="length-num">15</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 链接</span><i class="fas fa-chevron-down expand hide"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209082215894.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">XcloveHsy's Blog</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 链接</span><i class="fas fa-chevron-down expand hide"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></li></ul></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">网络白板的java实现</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="fa-fw post-meta-icon far fa-calendar-alt"></i><span class="post-meta-label">发表于</span><time datetime="2022-09-10T15:57:16.000Z" title="undefined 2022-09-10 23:57:16">2022-09-10</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E9%A1%B9%E7%9B%AE/">项目</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.1k</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="网络白板的java实现"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="网络白板的java实现"><a href="#网络白板的java实现" class="headerlink" title="网络白板的java实现"></a>网络白板的java实现</h1><blockquote>
+<p>github项目：<a target="_blank" rel="noopener" href="https://github.com/xclovehsy/whiteBoard">https://github.com/xclovehsy/whiteBoard</a></p>
+</blockquote>
+<h2 id="1-简介"><a href="#1-简介" class="headerlink" title="1. 简介"></a>1. 简介</h2><h3 id="1-1-项目需求"><a href="#1-1-项目需求" class="headerlink" title="1.1. 项目需求"></a>1.1. 项目需求</h3><p>网络白板利用面相对象的思想设计适合可扩展的图形类集，利用java gui的mvc模式设计用户的绘图流程，利用java的套接字编程实现多客户端的数据共享方法，利用多线程机制实现绘图和数据传输的并发控制机制</p>
+<h3 id="1-2-实现功能"><a href="#1-2-实现功能" class="headerlink" title="1.2. 实现功能"></a>1.2. 实现功能</h3><ol>
+<li>程序能够在窗体上根据用户的选择绘制不同形状（3个以上）的图形；</li>
+<li>程序能够修改图形的属性（颜色和大小）和位置（利用鼠标移动选定的图形）；</li>
+<li>网络客户端的程序能够协同绘图（一个用户绘图其他用户均可见绘图效果）；</li>
+<li>程序能够以文件的形式保存绘图结果，下次启动程序后能够读取绘图结果文件再现绘图效果。</li>
+</ol>
+<p><strong>开发语言：</strong><br>Java</p>
+<p><strong>开发平台：</strong><br>Intellij IDEA 2021.2.2</p>
+<h2 id="2-项目设计"><a href="#2-项目设计" class="headerlink" title="2. 项目设计"></a>2. 项目设计</h2><h3 id="2-1-MVC设计流程："><a href="#2-1-MVC设计流程：" class="headerlink" title="2.1. MVC设计流程："></a>2.1. MVC设计流程：</h3><p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209061101956.gif" alt="img"></p>
+<ol>
+<li>GUIServer作为服务器接受客户端发送的图形数据，并将图形数据写入Data.txt文件中保存，同时将图形数据发送到各个客户端。</li>
+<li>用户操作OpenGLApp画板。每画一个图形，程序会将数据发送到服务器。同时接受服务器传输的图形数据进行绘图。</li>
+<li>Data.txt文件用于保存图形数据，每当服务器开启时将会读取文件中上次保存的图形数据，并发送到各个客户端进行绘图。</li>
+</ol>
+<h3 id="2-2-程序架构设计"><a href="#2-2-程序架构设计" class="headerlink" title="2.2. 程序架构设计"></a>2.2. 程序架构设计</h3><h4 id="2-2-1-整体结构框架"><a href="#2-2-1-整体结构框架" class="headerlink" title="2.2.1. 整体结构框架"></a>2.2.1. 整体结构框架</h4><p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209061101514.gif" alt="img"></p>
+<p>该程序代码共有三个部分</p>
+<ol>
+<li>app为网络白板客户的主程序</li>
+<li>graph为图形包，里面包含了各种图形的数据，例如圆形、立方体、长方形等等。</li>
+<li>server负责服务器数据的接受与发送，以及数据的保存</li>
+<li>Data.txt用于保存图形数据</li>
+</ol>
+<hr>
+<h4 id="2-2-2-app结构"><a href="#2-2-2-app结构" class="headerlink" title="2.2.2. app结构"></a>2.2.2. app结构</h4><p>OpenGLApp为网络白板客户端的主程序，负责GUI的显示，图形的绘制、发送数据、接受服务器发送的数据等，同时实现了1、根据用户的选择绘制不同形状（3个以上）的图形；2、修改图形的属性（颜色和大小）和位置（利用鼠标移动选定的图形）等功能。</p>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209061102231.gif" alt="img"></p>
+<hr>
+<h4 id="2-2-3-graph结构"><a href="#2-2-3-graph结构" class="headerlink" title="2.2.3. graph结构"></a>2.2.3. graph结构</h4><ol>
+<li>Shape类是图形类的抽象父类, 它包含一个抽象方法draw(),在他的派生类中都实现了draw（）方法、各自的属性和属性的修改方法；</li>
+<li>Graphic是用来存储当前已有的对象和绘制已有的对象；</li>
+<li>Cube、Circle、Rectangle等均是Shape的子类。</li>
+</ol>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209061103998.gif" alt="img"></p>
+<p><strong>Graph包类图如下（可见附件三）</strong></p>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209061104406.jpg" alt="img"></p>
+<hr>
+<h4 id="2-2-4-server结构"><a href="#2-2-4-server结构" class="headerlink" title="2.2.4. server结构"></a>2.2.4. server结构</h4><ol>
+<li>   GUIServer为服务器端，接受客户端发送的图形数据，并将图形数据写入Data.txt文件中保存。</li>
+<li>   SeverThread多线程操作，可以并发的接受多个客户端的数据，并传送数据。</li>
+</ol>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209061105343.gif" alt="img"></p>
+<h3 id="2-3-UML类图"><a href="#2-3-UML类图" class="headerlink" title="2.3. UML类图"></a>2.3. UML类图</h3><p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209061105680.jpg" alt="img"></p>
+<h2 id="3-项目展示"><a href="#3-项目展示" class="headerlink" title="3. 项目展示"></a>3. 项目展示</h2><h3 id="3-1-主界面"><a href="#3-1-主界面" class="headerlink" title="3.1. 主界面"></a>3.1. 主界面</h3><p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209061106996.gif" alt="img"></p>
+<h3 id="3-2-功能测试"><a href="#3-2-功能测试" class="headerlink" title="3.2. 功能测试"></a>3.2. 功能测试</h3><h4 id="3-2-1-绘制图形"><a href="#3-2-1-绘制图形" class="headerlink" title="3.2.1 绘制图形"></a>3.2.1 绘制图形</h4><p><strong>程序能够在窗体上根据用户的选择绘制不同形状（3个以上）的图形；</strong></p>
+<p>该程序可以根据用户需要绘制不同的图形，通过点击面板上不同的图形按钮设置当前绘制的图形种类。例如圆形、椭圆、立方体、长方形、三角形等</p>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209061106005.gif" alt="img"></p>
+<h4 id="3-2-2-修改图形"><a href="#3-2-2-修改图形" class="headerlink" title="3.2.2. 修改图形"></a>3.2.2. 修改图形</h4><p><strong>程序能够修改图形的属性（颜色和大小）和位置（利用鼠标移动选定的图形）；</strong></p>
+<p>可以选择不同的线条颜色以及填充颜色</p>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209061106011.gif" alt="img"></p>
+<h4 id="3-2-3-网络协同"><a href="#3-2-3-网络协同" class="headerlink" title="3.2.3. 网络协同"></a>3.2.3. 网络协同</h4><p><strong>网络客户端的程序能够协同绘图（一个用户绘图其他用户均可见绘图效果）；</strong></p>
+<p>打开sever.GUISever服务器程序，等待其他画板的连接</p>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209061107060.gif" alt="img"></p>
+<p>同时将网络白板客户端程序运行4次服务器连接上程序</p>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209061107064.gif" alt="img"></p>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209061107082.gif" alt="img"></p>
+<ul>
+<li>在客户端1绘制图形将会传输其他客户端白板中。</li>
+<li>在一个客户端中对图形进行修改，其他客户端的图形也会修改。即网络客户端的程序能够协同绘图（一个用户绘图其他用户均可见绘图效果）；</li>
+</ul>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209061107093.gif" alt="img"></p>
+<hr>
+<p><strong>更多功能请查看说明文档</strong></p>
+</article><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/java/">java</a></div><div class="post_share"><div class="social-share" data-image="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209082215894.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/09/11/%E6%96%87%E4%BB%B6%E7%AE%A1%E7%90%86%E5%99%A8%E7%9A%84java%E5%AE%9E%E7%8E%B0/"><img class="prev-cover" src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209082215894.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">文件管理器的java实现</div></div></a></div><div class="next-post pull-right"><a href="/2022/09/10/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%AF%86%E5%88%AB%E6%89%8B%E5%86%99%E6%95%B0%E5%AD%97/"><img class="next-cover" src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209082215894.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">神经网络识别手写数字</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E7%99%BD%E6%9D%BF%E7%9A%84java%E5%AE%9E%E7%8E%B0"><span class="toc-text">网络白板的java实现</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E7%AE%80%E4%BB%8B"><span class="toc-text">1. 简介</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E9%A1%B9%E7%9B%AE%E9%9C%80%E6%B1%82"><span class="toc-text">1.1. 项目需求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E5%AE%9E%E7%8E%B0%E5%8A%9F%E8%83%BD"><span class="toc-text">1.2. 实现功能</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E9%A1%B9%E7%9B%AE%E8%AE%BE%E8%AE%A1"><span class="toc-text">2. 项目设计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-MVC%E8%AE%BE%E8%AE%A1%E6%B5%81%E7%A8%8B%EF%BC%9A"><span class="toc-text">2.1. MVC设计流程：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E7%A8%8B%E5%BA%8F%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1"><span class="toc-text">2.2. 程序架构设计</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2-1-%E6%95%B4%E4%BD%93%E7%BB%93%E6%9E%84%E6%A1%86%E6%9E%B6"><span class="toc-text">2.2.1. 整体结构框架</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2-2-app%E7%BB%93%E6%9E%84"><span class="toc-text">2.2.2. app结构</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2-3-graph%E7%BB%93%E6%9E%84"><span class="toc-text">2.2.3. graph结构</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2-4-server%E7%BB%93%E6%9E%84"><span class="toc-text">2.2.4. server结构</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-UML%E7%B1%BB%E5%9B%BE"><span class="toc-text">2.3. UML类图</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E9%A1%B9%E7%9B%AE%E5%B1%95%E7%A4%BA"><span class="toc-text">3. 项目展示</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E4%B8%BB%E7%95%8C%E9%9D%A2"><span class="toc-text">3.1. 主界面</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95"><span class="toc-text">3.2. 功能测试</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-1-%E7%BB%98%E5%88%B6%E5%9B%BE%E5%BD%A2"><span class="toc-text">3.2.1 绘制图形</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-2-%E4%BF%AE%E6%94%B9%E5%9B%BE%E5%BD%A2"><span class="toc-text">3.2.2. 修改图形</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-3-%E7%BD%91%E7%BB%9C%E5%8D%8F%E5%90%8C"><span class="toc-text">3.2.3. 网络协同</span></a></li></ol></li></ol></li></ol></li></ol></div></div></div></div></main><footer id="footer" style="background-image: url('https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209082215894.png')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By 徐cc</div><div class="footer_custom_text">Hi, welcome to my Blog</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/search/local-search.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
