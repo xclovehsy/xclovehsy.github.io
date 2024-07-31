@@ -49,6 +49,146 @@ Q[i])\)</span></p>
       </tags>
   </entry>
   <entry>
+    <title>RL强化学习（一）</title>
+    <url>/2024/07/31/RL%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89/</url>
+    <content><![CDATA[<h1 id="rl强化学习一">RL强化学习（一）</h1>
+<h2 id="概率统计">概率统计</h2>
+<p><strong>随机变量：</strong>一个未知的量，它的值取决于一个随机事件的结果。</p>
+<p><strong>概率密度函数：</strong>随机变量在某个确定的取值点附近的可能性（连续概率分布
+&amp; 离散概率分布）</p>
+<p><strong>期望：</strong>连续分布（p(x)和f(x)的乘积做定积分） &amp;
+离散分布（对p(x)和f(x)的乘积进行连加）</p>
+<p>随机抽样： from numpy.random import choice / sample =
+choice(['a','b','c'], size=100, p=[0.2,0,5,0,3])</p>
+<h2 id="简介">简介</h2>
+<h3 id="基本概念">基本概念</h3>
+<ul>
+<li><p>监督学习：
+用于处理<strong>分类与回归问题</strong>，这类问题的任务是对输入X与输入Y之间的映射关系进行拟合，从而对不同X对应的Y进行预测</p></li>
+<li><p>强化学习：用于求解<strong>序列决策问题</strong>，这一类问题的任务是求解一个策略用于指导机器在不同状态下选择最佳动作。</p></li>
+</ul>
+<p>核心思想：强化学习的做法是让机器自行对动作进行探索，然后根据环境的反馈，不断地对策略进行调整，最终目标是使得环境收益尽可能地大。</p>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231205150300996.png" alt="image-20231205150300996">
+<figcaption aria-hidden="true">image-20231205150300996</figcaption>
+</figure>
+<h3 id="state-action">State &amp; Action</h3>
+<blockquote>
+<p>马尔可夫决策过程</p>
+</blockquote>
+<p>马尔可夫决策：<span class="math inline">\(\left(S_t, A_t, R_t,
+P_t\right)\)</span></p>
+<ul>
+<li><p><span class="math inline">\(S_t:\)</span> 环境状态</p></li>
+<li><p><span class="math inline">\(A_t\)</span> : 智能体的动作</p></li>
+<li><p><span class="math inline">\(Policy\ \pi:\)</span>
+状态到动作之间的映射</p></li>
+<li><p><span class="math inline">\(\boldsymbol{R}_t\)</span> : 奖励函数,
+取决于当前状态与动作</p></li>
+<li><p><span class="math inline">\(P_t=p\left(S_{t+1}=s^{\prime} \mid
+S_t=s, A_t=a\right)\)</span> : 状态转移概率</p></li>
+<li><p>学习与决策者被称为<strong>智能体</strong> （agent）</p></li>
+<li><p>与智能体交互的部分则称为<strong>环境</strong> （state）</p></li>
+</ul>
+<p><strong>环境下一时刻的状态与奖励均只取决于当前时刻的状态与智能体的动作</strong>（action）</p>
+<h3 id="policy-pi">Policy <span class="math inline">\(\pi\)</span></h3>
+<p>本质是一个概率密度函数，根据观测到的状态来进行决策，来控制agent运动。
+<span class="math display">\[
+\pi(a \mid s)=P(A=a \mid S=s)
+\]</span></p>
+<h3 id="state-transition">State Transition</h3>
+<p>状态转移可以使用p函数表示，条件概率密度函数,意思是如果观测到当前的状态s以及动作a，p函数输出s’的概率</p>
+<p><span class="math display">\[
+p\left(s^{\prime} \mid s, a\right)=P\left(S^{\prime}=s^{\prime} \mid
+S=s, A=a\right)
+\]</span></p>
+<h3 id="rewardr_t-returnu_t">Reward（<span class="math inline">\(R_t\)</span>） &amp; Return（<span class="math inline">\(U_t\)</span>）</h3>
+<blockquote>
+<p>Reward（奖励）</p>
+</blockquote>
+<p><span class="math display">\[
+R_t=R\left(s_t, a_t\right) \quad
+\]</span></p>
+<p><strong>短期利益，</strong>在某状态下采取某动作的好坏，在当前环境中获得的<strong>短期利益</strong>，只考虑动作对当前状态的影响</p>
+<blockquote>
+<p>Return（收益）Discounted Return</p>
+</blockquote>
+<p><span class="math display">\[
+\quad U_t = R_{t+1}+\gamma R_{t+2}+\gamma^2
+R_{t+3}+\cdots=\sum_{k=0}^{\infty} \gamma^k R_{t+k+1} \quad
+\]</span></p>
+<p><strong>长远利益，</strong>t时刻的return叫做 <span class="math inline">\(U_t\)</span> or <span class="math inline">\(G_t\)</span>。
+指将t时刻到未来所有折扣奖励之和（<strong><span class="math inline">\(\gamma\)</span>
+折扣因子</strong>，超参数，并且越往后，衰减越大），<strong>当前的奖励比未来奖励影响大</strong>。</p>
+<p>某一时刻<span class="math inline">\(t\)</span>，对于未来<span class="math inline">\(R_i(i&gt;t)\)</span>，依赖于所有<span class="math inline">\(S_i\)</span>以及<span class="math inline">\(A_i\)</span>，由于Action、State的转移是随机的，因此
+<span class="math inline">\(U_t\)</span> 是一个随机变量</p>
+<h3 id="action-value-functionq_pi">Action-Value Function（<span class="math inline">\(Q_\pi\)</span>）</h3>
+<blockquote>
+<p>动作-状态价值函数 <span class="math inline">\(Q_\pi(s_t,a_t)\)</span></p>
+</blockquote>
+<p><strong>表示在给定状态-动作对的条件下未来依据某策略做决策所能获得的平均收益</strong></p>
+<p>Discounted Return: <span class="math inline">\(U_t=R_t+\gamma
+R_{t+1}+\gamma^2 R_{t+2}+\gamma^3 R_{t+3}+\cdots\)</span></p>
+<p>定义<span class="math inline">\(Policy\ \pi\)</span>的 Action-value
+function： <span class="math display">\[
+Q_\pi\left(s_t, a_t\right)={\mathbb{E}}\left[U_t \mid S_t=s_t,
+A_t=a_t\right] .
+\]</span></p>
+<p>由于 <span class="math inline">\(U_t\)</span> 依赖于 <span class="math inline">\(A_t, A_{t+1}, A_{t+2}, \cdots\)</span> 以及 <span class="math inline">\(S_t, S_{t+1}, S_{t+2},
+\cdots\)</span>，而Action和State的转移是随机的。</p>
+<p>因此<span class="math inline">\(U_t\)</span>是一个随机变量，它依赖所有的动作和状态，在t时刻并不知道<span class="math inline">\(U_t\)</span>是什么，因此求期望<span class="math inline">\(\mathbb{E}\)</span>积掉随机性。</p>
+<p>利用期望<span class="math inline">\(\mathbb{E}\)</span>消除<span class="math inline">\(A_i,S_i(i&gt;t)\)</span>，留下<span class="math inline">\(A_t,S_t\)</span></p>
+<blockquote>
+<p>最优动作价值函数（Optimal Action-Value Function）<span class="math inline">\(Q^\star(s_t,a_t)\)</span></p>
+</blockquote>
+<p><strong>定义最佳策略下的动作价值函数为最优价值函数</strong> <span class="math display">\[
+Q^*\left(s_t, a_t\right)=\max _\pi Q_\pi\left(s_t, a_t\right) .
+\]</span> <strong>核心：</strong>求解最优策略也就等价于求解最优Q值。</p>
+<p><strong>学习目标</strong>：学习到一个最优策略 <span class="math inline">\(\pi^*\)</span>,
+使智能体在任意状态下的价值最大最优动作-状态价值函数（最优 <span class="math inline">\(\mathrm{Q}\)</span> 值）</p>
+<h3 id="state-value-function-v_pi">State-Value Function (<span class="math inline">\(V_\pi\)</span>)</h3>
+<blockquote>
+<p>状态价值函数 <span class="math inline">\(V_\pi(s_t)\)</span></p>
+</blockquote>
+<p><span class="math inline">\(V_\pi\)</span>是动作价值函数<span class="math inline">\(Q_\pi\)</span>的期望。</p>
+<p><span class="math inline">\(Q_\pi(s_t,a_t)\)</span>和<span class="math inline">\(Policy\ \pi,\ s_t,\ a_t\)</span>有关，将动作<span class="math inline">\(a_t\)</span>作为随机变量，然后期望<span class="math inline">\(\mathbb{E}\)</span>把<span class="math inline">\(A_t\)</span>消掉，求期望得到的<span class="math inline">\(V_\pi\)</span>只与<span class="math inline">\(Policy\ \pi,\ s_t\)</span>有关。 <span class="math display">\[
+V_\pi\left(s_t\right)=\mathrm{E}_A\left[Q_\pi\left(s_t, A\right)\right]
+\]</span> <strong>作用</strong>：</p>
+<ol type="1">
+<li><p>对于给定的 <span class="math inline">\(\pi\)</span> ，<span class="math inline">\(V_\pi\)</span> 评价当前的<span class="math inline">\(s_t\)</span>好不好</p></li>
+<li><p>评估 <span class="math inline">\(Policy\ \pi\)</span>
+的好坏</p></li>
+</ol>
+<h3 id="随机性">随机性</h3>
+<blockquote>
+<p>动作随机</p>
+</blockquote>
+<p>动作是根据<span class="math inline">\(Policy\
+\pi\)</span>随机抽样得到的，利用<span class="math inline">\(Policy\
+\pi\)</span>来控制Agent.</p>
+<p>给定当前状态 S，Agent的动作A是按照<span class="math inline">\(Policy\
+\pi\)</span>输出的概率来随机抽样 <span class="math display">\[
+\begin{aligned}
+&amp; \mathbb{P}[A=a \mid S=s]=\pi(a \mid s)
+\end{aligned}
+\]</span></p>
+<blockquote>
+<p>状态转移随机</p>
+</blockquote>
+<p>Environment用状态转移函数p算出概率，然后用随机抽样得到下一个状态S’
+<span class="math display">\[
+\mathbb{P}\left[S^{\prime}=s^{\prime} \mid S=s,
+A=a\right]=p\left(s^{\prime} \mid s, a\right)
+\]</span></p>
+]]></content>
+      <categories>
+        <category>强化学习</category>
+      </categories>
+      <tags>
+        <tag>概率统计</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>RL强化学习（三）</title>
     <url>/2024/07/31/RL%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%89%EF%BC%89/</url>
     <content><![CDATA[<h1 id="rl强化学习三">RL强化学习（三）</h1>
@@ -313,6 +453,251 @@ v\left(s_t ; \mathbf{w}\right)}{\partial \mathbf{w}}\)</span></li>
       <tags>
         <tag>策略学习</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>RL强化学习（五）</title>
+    <url>/2024/07/31/RL%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%BA%94%EF%BC%89/</url>
+    <content><![CDATA[<h1 id="rl强化学习五">RL强化学习（五）</h1>
+<h2 id="多智能体强化学习">多智能体强化学习</h2>
+<p>一个系统中存在多个决策者</p>
+<p><strong>面临的困难</strong></p>
+<ul>
+<li><p>环境非平稳变化（马尔科夫特性不再满足），每个智能体所对应的环境包含了其他智能体的策略，其他智能体策略的变化导致环境变化的非平稳性。</p></li>
+<li><p>局部可观，智能体只能观测到环境的部分状态</p></li>
+<li><p>集中式学习不可行，需要一个集中式控制中心与智能体之间进行大量的信息交互，神经网络的输入输出维度会随智能体数目指数增大，难以收敛。</p></li>
+</ul>
+<h2 id="基本概念">基本概念</h2>
+<h3 id="agent的关系">Agent的关系</h3>
+<ul>
+<li><p>Fully
+cooperative，两个Agent需要相互配合才能完成任务（工业机器人）</p></li>
+<li><p>Fully
+competitive，一方的收益是另一方的损失（捕食者和猎物）</p></li>
+<li><p>Mixed Cooperative &amp;
+competitive，既有竞争又有合作（足球机器人，队伍内是合作，队伍间是博弈）</p></li>
+<li><p>Self-interested，利己主义，只想最大化自己的利益，动作可能让别人获益or损失，不关心别人的利益（股票的期货交易系统、无人车）</p></li>
+</ul>
+<h3 id="state-action">State &amp; Action</h3>
+<p>There are <span class="math inline">\(n\)</span> agents.</p>
+<p>Let <span class="math inline">\(S\)</span> be the state.</p>
+<p>Let <span class="math inline">\(A^i\)</span> be the <span class="math inline">\(i\)</span>-th agent's action.</p>
+<p>State transition: <span class="math inline">\(p\left(s^{\prime} \mid
+s, a^1, \cdots, a^n\right)=\mathbb{P}\left(S^{\prime}=s^{\prime} \mid
+S=s, A^1=a^1, \cdots, A^n=a^n\right).\)</span></p>
+<p>The next state, <span class="math inline">\(S^{\prime}\)</span>,
+depends on all the agents' actions.</p>
+<p>每个Agent的Action都可能影响Env的下个State，所以每个Agent都可以影响其他Agent</p>
+<h3 id="rewards">Rewards</h3>
+<p>Let <span class="math inline">\(R^i\)</span> be the reward received
+by the <span class="math inline">\(i\)</span>-th agent.</p>
+<p>Fully cooperative: <span class="math inline">\(R^1=R^2=\cdots=R^n\)</span>.</p>
+<p>Fully competitive: <span class="math inline">\(R^1
+\propto-R^2\)</span>.</p>
+<p><span class="math inline">\(R^i\)</span> depends on <span class="math inline">\(A^i\)</span> as well as all the other agents'
+actions <span class="math inline">\(\left\{A^j\right\}_{j \neq
+i}\)</span>.</p>
+<h3 id="returns">Returns</h3>
+<p>Let <span class="math inline">\(R_t^i\)</span> be the reward received
+by the <span class="math inline">\(i\)</span>-th agent at time <span class="math inline">\(t\)</span>. Return (of the <span class="math inline">\(i\)</span>-th agent): <span class="math display">\[
+U_t^i=R_t^i+R_{t+1}^i+R_{t+2}^i+R_{t+3}^i+\cdots
+\]</span></p>
+<p>Discounted return (of the <span class="math inline">\(i\)</span>-th
+agent): <span class="math display">\[
+U_t^i=R_t^i+\gamma \cdot R_{t+1}^i+\gamma^2 \cdot R_{t+2}^i+\gamma^3
+\cdot R_{t+3}^i+\cdots
+\]</span></p>
+<p>Here, <span class="math inline">\(\gamma \in[0,1]\)</span> is the
+discount rate.</p>
+<h3 id="policy-network">Policy Network</h3>
+<p>Each agent has its own policy network: <span class="math inline">\(\pi\left(a^i \mid s ;
+\boldsymbol{\theta}^i\right)\)</span>.</p>
+<p>Policy networks can be exchangeable: <span class="math inline">\(\boldsymbol{\theta}^1=\boldsymbol{\theta}^2=\cdots=\boldsymbol{\theta}^n\)</span>.</p>
+<ul>
+<li>Self-driving cars can have the same policy.</li>
+</ul>
+<p>Policy networks can be nonexchangeable: <span class="math inline">\(\boldsymbol{\theta}^i \neq
+\boldsymbol{\theta}^j\)</span>.</p>
+<ul>
+<li>Soccer players have different roles, e.g., striker, defender,
+goalkeeper.</li>
+</ul>
+<h3 id="state-value-function">State-Value Function</h3>
+<p>State-value of the <span class="math inline">\(i\)</span>-th agent:
+(不仅依赖自己的策略，同时依赖其他所有Agent的策略) <span class="math display">\[
+V^i\left(s_t ; \boldsymbol{\theta}^1, \cdots,
+\boldsymbol{\theta}^n\right)=\mathbb{E}\left[U_t^i \mid S_t=s_t\right] .
+\]</span></p>
+<p>The expectation is taken w.r.t. all the future actions and states
+except <span class="math inline">\(S_t\)</span>.</p>
+<p>Randomness in actions: <span class="math inline">\(A_t^j \sim
+\pi\left(\cdot \mid s_t ; \boldsymbol{\theta}^j\right)\)</span>, for all
+<span class="math inline">\(j=1, \cdots, n\)</span>. (That is why the
+state-value <span class="math inline">\(V^i\)</span> depends on <span class="math inline">\(\boldsymbol{\theta}^1, \cdots,
+\boldsymbol{\theta}^n\)</span>.)</p>
+<h2 id="nash-equilibrium纳什均衡">Nash Equilibrium（纳什均衡）</h2>
+<p>Multi-Agent问题收敛的条件</p>
+<p>当其他所有Agent的政策保持不变时，第 <span class="math inline">\(i\)</span>
+个Agent无法通过改变自己的Policy获得更好的预期收益。</p>
+<p>每个Agent都在对其他Agent的Policy做出最佳反应。</p>
+<p>在这种平衡状态下，大家都没动机去改变自己策略</p>
+<p>如果使用Single-Agent的策略梯度算法直接用于Mulit-Agent问题上</p>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231206092127067.png" alt="image-20231206092127067">
+<figcaption aria-hidden="true">image-20231206092127067</figcaption>
+</figure>
+<p>The <span class="math inline">\(i\)</span>-th agent's policy network:
+<span class="math inline">\(\pi\left(a^i \mid s ;
+\boldsymbol{\theta}^i\right)\)</span>.</p>
+<p>The <span class="math inline">\(i\)</span>-th agent's state-value
+function: <span class="math inline">\(V^i\left(s ;
+\boldsymbol{\theta}^1, \cdots,
+\boldsymbol{\theta}^n\right)\)</span>.</p>
+<p>Objective function: <span class="math inline">\(J^i\left(\boldsymbol{\theta}^1, \cdots,
+\boldsymbol{\theta}^n\right)=\mathbb{E}_S\left[V^i\left(S ;
+\boldsymbol{\theta}^1, \cdots,
+\boldsymbol{\theta}^n\right)\right]\)</span>.</p>
+<p>Learn the policy network's parameter, <span class="math inline">\(\boldsymbol{\theta}^i\)</span>, by <span class="math display">\[
+\max _{\boldsymbol{\theta}^i} J^i\left(\boldsymbol{\theta}^1, \cdots,
+\boldsymbol{\theta}^n\right)
+\]</span></p>
+<ul>
+<li>The <span class="math inline">\(1^{\text {st }}\)</span> agent
+solves: <span class="math inline">\(\quad \max
+_{\theta^1}J^1\left(\boldsymbol{\theta}^1, \boldsymbol{\theta}^2,
+\cdots, \boldsymbol{\theta}^n)\right.\)</span>.</li>
+<li>The <span class="math inline">\(2^{\text {nd }}\)</span> agent
+solves: <span class="math inline">\(\quad \max _{\theta^2}
+J^2\left(\boldsymbol{\theta}^1, \boldsymbol{\theta}^2, \cdots,
+\boldsymbol{\theta}^n\right)\)</span>.</li>
+<li>...</li>
+<li>The <span class="math inline">\(n^{\text {th }}\)</span> agent
+solves: <span class="math inline">\(\quad \max _{\boldsymbol{\theta}^n}
+J^n\left(\boldsymbol{\theta}^1, \boldsymbol{\theta}^2, \cdots,
+\boldsymbol{\theta}^n\right)\)</span>.</li>
+</ul>
+<p>每个Agent没有共同的目标，各自更新自己的<span class="math inline">\(\theta^i\)</span>，一个Agent更新策略，可能导致其他所有Agent的目标函数发生变化，大家的目标函数都在不停的发生变化，导致训练很难收敛</p>
+<p>所以不能将Single-Agent的训练策略应用与Multi-Agent问题</p>
+<h2 id="centralized-vs-decentralized">Centralized Vs Decentralized</h2>
+<h3 id="architectures">Architectures</h3>
+<ul>
+<li><p>Fully
+decentralized，每个Agent都用自己观测到的observation、reward去训练策略，Agent之间不通信</p></li>
+<li><p>Fully
+centralized，所有Agent将信息发给中央控制器，中央控制器负责做decision，Agent负责执行</p></li>
+<li><p>Centralized training with decentralized
+execution，中央控制器在训练阶段收集各Agent信息，帮助训练Agent策略网络，训练结束后，Agent自己利用策略网络做decision，不依赖中央控制器通信</p></li>
+</ul>
+<h3 id="partial-observation">Partial Observation</h3>
+<p>An agent may or may not have full knowledge of the state, <span class="math inline">\(s\)</span>.</p>
+<p>Let <span class="math inline">\(o^i\)</span> be the <span class="math inline">\(i\)</span>-th agent's observation.</p>
+<p>Partial observation: <span class="math inline">\(o^i \neq
+S\)</span>.</p>
+<p>Full observation: <span class="math inline">\(\quad
+o^1=\cdots=o^n=s\)</span>.</p>
+<h3 id="fully-decentralized">Fully Decentralized</h3>
+<p>本质就是Single-Agent reinforce learning</p>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231206094004380.png" alt="image-20231206094004380">
+<figcaption aria-hidden="true">image-20231206094004380</figcaption>
+</figure>
+<p>The <span class="math inline">\(i\)</span>-th agent has a policy
+network (actor): <span class="math inline">\(\pi\left(a^i \mid o^i ;
+\boldsymbol{\theta}^i\right)\)</span>.</p>
+<p>The <span class="math inline">\(i\)</span>-th agent has a value
+network (critic): <span class="math inline">\(q\left(o^i, a^i ;
+\mathbf{w}^i\right)\)</span>.</p>
+<p>Agents do not share observations and actions.</p>
+<p>Train the policy and value networks in the same way as the
+single-agent setting.</p>
+<p>This does not work well.</p>
+<h3 id="fully-centralized">Fully Centralized</h3>
+<p>各Agent中没有策略网络，将观测到的信息传递给中央控制器，控制器负责做决策。
+<span class="math display">\[
+\pi\left(a^i \mid o^1, \cdots, o^n ; \boldsymbol{\theta}^i\right) \text
+{, for all } i=1,2, \cdots, n \text {. }
+\]</span> <img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231206094349263.png" alt="image-20231206094349263"></p>
+<p>Let <span class="math inline">\(\mathbf{a}=\left[a^1, a^2, \cdots,
+a^n\right]\)</span> contain all the agents' actions.</p>
+<p>Let <span class="math inline">\(\mathbf{o}=\left[o^1, o^2, \cdots,
+o^n\right]\)</span> contain all the agents' observations.</p>
+<p>The central controller knows <span class="math inline">\(\mathbf{a},
+\mathbf{o}\)</span>, and all the rewards.</p>
+<p>The controller has <span class="math inline">\(n\)</span> policy
+networks and <span class="math inline">\(n\)</span> value networks:</p>
+<ul>
+<li>Policy network (actor) for the <span class="math inline">\(i\)</span>-th agent: <span class="math inline">\(\pi\left(a^i \mid o ;
+\boldsymbol{\theta}^i\right)\)</span>.</li>
+<li>Value network (critic) for the <span class="math inline">\(i\)</span>-th agent: <span class="math inline">\(q\left(o, \mathbf{a} ;
+\mathbf{w}^i\right)\)</span>.</li>
+</ul>
+<p><strong>Centralized Training:</strong> Training is performed by the
+controller.</p>
+<ul>
+<li>The controller knows all the observations, actions, and
+rewards.</li>
+<li>Train <span class="math inline">\(\pi\left(a^i \mid 0 ;
+\boldsymbol{\theta}^i\right)\)</span> using policy gradient.</li>
+<li>Train <span class="math inline">\(q\left(\mathbf{o}, \mathbf{a} ;
+\mathbf{w}^i\right)\)</span> using TD algorithm.</li>
+</ul>
+<p><strong>Centralized Execution:</strong> Decisions are made by the
+controller.</p>
+<ul>
+<li>For all <span class="math inline">\(i\)</span>, the <span class="math inline">\(i\)</span>-th agent sends its observation, <span class="math inline">\(o^i\)</span>, to the controller.</li>
+<li>The controller knows <span class="math inline">\(\mathbf{o}=\left[o^1, o^2, \cdots,
+o^n\right]\)</span>.</li>
+<li>For all <span class="math inline">\(i\)</span>, the controller
+samples action by <span class="math inline">\(a^i \sim \pi\left(\cdot
+\mid \mathbf{o} ; \boldsymbol{\theta}^i\right)\)</span> and sends <span class="math inline">\(a^i\)</span> to the <span class="math inline">\(i\)</span>-th agent.</li>
+</ul>
+<p>中央控制器知道全局的信息，可以帮所有Agent做出好的决策</p>
+<p>但执行速度较慢，Agent都没有决策权，需要等中央来做决策（发送、同步信息都需要花时间，等最慢的Agent）</p>
+<h3 id="centralized-training-with-decentralized-execution">Centralized
+Training with Decentralized Execution</h3>
+<p>Each agent has its own policy network (actor): <span class="math inline">\(\pi\left(a^i \mid o^i ;
+\boldsymbol{\theta}^i\right)\)</span>.</p>
+<p>The central controller has <span class="math inline">\(n\)</span>
+value networks (critics): <span class="math inline">\(q\left(0,
+\mathbf{a} ; \mathbf{w}^i\right)\)</span>.</p>
+<p><strong>Centralized Training:</strong> During training, the central
+controller knows all the agents' observations, actions, and rewards.</p>
+<p><strong>Decentralized Execution:</strong> During execution, the
+central controller and its value networks are not used.</p>
+<h4 id="训练阶段">训练阶段</h4>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231206095643649.png" alt="image-20231206095643649">
+<figcaption aria-hidden="true">image-20231206095643649</figcaption>
+</figure>
+<p>The central controller trains the critics, <span class="math inline">\(q\left(\mathbf{o}, \mathbf{a} ;
+\mathbf{w}^i\right)\)</span>, for all <span class="math inline">\(i\)</span>.</p>
+<p>To update <span class="math inline">\(\mathbf{w}^i\)</span>,
+<strong>TD algorithm</strong> takes as inputs:</p>
+<ul>
+<li>All the actions: <span class="math inline">\(\mathrm{a}=\left[a^1,
+a^2, \cdots, a^n\right]\)</span>.</li>
+<li>All the observations: <span class="math inline">\(\mathbf{o}=\left[o^1, o^2, \cdots,
+o^n\right]\)</span>.</li>
+<li>The <span class="math inline">\(i\)</span>-th reward: <span class="math inline">\(r^i\)</span>.</li>
+</ul>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231206095819592.png" alt="image-20231206095819592">
+<figcaption aria-hidden="true">image-20231206095819592</figcaption>
+</figure>
+<p>Each agent locally trains the actor, <span class="math inline">\(\pi\left(a^i \mid o^i ;
+\boldsymbol{\theta}^i\right)\)</span>, using <strong>policy
+gradient.</strong></p>
+<p>To update <span class="math inline">\(\boldsymbol{\theta}^i\)</span>,
+the policy gradient algorithm takes as input <span class="math inline">\(\left(a^i, o^i, a^i\right)\)</span>,</p>
+<h4 id="执行阶段">执行阶段</h4>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231206100104303.png" alt="image-20231206100104303">
+<figcaption aria-hidden="true">image-20231206100104303</figcaption>
+</figure>
+<p>每个Agent独立接受observation，依据自己的策略网络做决策，Agent之间不通信</p>
+]]></content>
+      <categories>
+        <category>强化学习</category>
+      </categories>
   </entry>
   <entry>
     <title>RL强化学习（二）</title>
@@ -1082,436 +1467,6 @@ Proximal Policy Optimization（DPPO）</h2>
       </tags>
   </entry>
   <entry>
-    <title>RL强化学习（一）</title>
-    <url>/2024/07/31/RL%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89/</url>
-    <content><![CDATA[<h1 id="rl强化学习一">RL强化学习（一）</h1>
-<h2 id="概率统计">概率统计</h2>
-<p><strong>随机变量：</strong>一个未知的量，它的值取决于一个随机事件的结果。</p>
-<p><strong>概率密度函数：</strong>随机变量在某个确定的取值点附近的可能性（连续概率分布
-&amp; 离散概率分布）</p>
-<p><strong>期望：</strong>连续分布（p(x)和f(x)的乘积做定积分） &amp;
-离散分布（对p(x)和f(x)的乘积进行连加）</p>
-<p>随机抽样： from numpy.random import choice / sample =
-choice(['a','b','c'], size=100, p=[0.2,0,5,0,3])</p>
-<h2 id="简介">简介</h2>
-<h3 id="基本概念">基本概念</h3>
-<ul>
-<li><p>监督学习：
-用于处理<strong>分类与回归问题</strong>，这类问题的任务是对输入X与输入Y之间的映射关系进行拟合，从而对不同X对应的Y进行预测</p></li>
-<li><p>强化学习：用于求解<strong>序列决策问题</strong>，这一类问题的任务是求解一个策略用于指导机器在不同状态下选择最佳动作。</p></li>
-</ul>
-<p>核心思想：强化学习的做法是让机器自行对动作进行探索，然后根据环境的反馈，不断地对策略进行调整，最终目标是使得环境收益尽可能地大。</p>
-<figure>
-<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231205150300996.png" alt="image-20231205150300996">
-<figcaption aria-hidden="true">image-20231205150300996</figcaption>
-</figure>
-<h3 id="state-action">State &amp; Action</h3>
-<blockquote>
-<p>马尔可夫决策过程</p>
-</blockquote>
-<p>马尔可夫决策：<span class="math inline">\(\left(S_t, A_t, R_t,
-P_t\right)\)</span></p>
-<ul>
-<li><p><span class="math inline">\(S_t:\)</span> 环境状态</p></li>
-<li><p><span class="math inline">\(A_t\)</span> : 智能体的动作</p></li>
-<li><p><span class="math inline">\(Policy\ \pi:\)</span>
-状态到动作之间的映射</p></li>
-<li><p><span class="math inline">\(\boldsymbol{R}_t\)</span> : 奖励函数,
-取决于当前状态与动作</p></li>
-<li><p><span class="math inline">\(P_t=p\left(S_{t+1}=s^{\prime} \mid
-S_t=s, A_t=a\right)\)</span> : 状态转移概率</p></li>
-<li><p>学习与决策者被称为<strong>智能体</strong> （agent）</p></li>
-<li><p>与智能体交互的部分则称为<strong>环境</strong> （state）</p></li>
-</ul>
-<p><strong>环境下一时刻的状态与奖励均只取决于当前时刻的状态与智能体的动作</strong>（action）</p>
-<h3 id="policy-pi">Policy <span class="math inline">\(\pi\)</span></h3>
-<p>本质是一个概率密度函数，根据观测到的状态来进行决策，来控制agent运动。
-<span class="math display">\[
-\pi(a \mid s)=P(A=a \mid S=s)
-\]</span></p>
-<h3 id="state-transition">State Transition</h3>
-<p>状态转移可以使用p函数表示，条件概率密度函数,意思是如果观测到当前的状态s以及动作a，p函数输出s’的概率</p>
-<p><span class="math display">\[
-p\left(s^{\prime} \mid s, a\right)=P\left(S^{\prime}=s^{\prime} \mid
-S=s, A=a\right)
-\]</span></p>
-<h3 id="rewardr_t-returnu_t">Reward（<span class="math inline">\(R_t\)</span>） &amp; Return（<span class="math inline">\(U_t\)</span>）</h3>
-<blockquote>
-<p>Reward（奖励）</p>
-</blockquote>
-<p><span class="math display">\[
-R_t=R\left(s_t, a_t\right) \quad
-\]</span></p>
-<p><strong>短期利益，</strong>在某状态下采取某动作的好坏，在当前环境中获得的<strong>短期利益</strong>，只考虑动作对当前状态的影响</p>
-<blockquote>
-<p>Return（收益）Discounted Return</p>
-</blockquote>
-<p><span class="math display">\[
-\quad U_t = R_{t+1}+\gamma R_{t+2}+\gamma^2
-R_{t+3}+\cdots=\sum_{k=0}^{\infty} \gamma^k R_{t+k+1} \quad
-\]</span></p>
-<p><strong>长远利益，</strong>t时刻的return叫做 <span class="math inline">\(U_t\)</span> or <span class="math inline">\(G_t\)</span>。
-指将t时刻到未来所有折扣奖励之和（<strong><span class="math inline">\(\gamma\)</span>
-折扣因子</strong>，超参数，并且越往后，衰减越大），<strong>当前的奖励比未来奖励影响大</strong>。</p>
-<p>某一时刻<span class="math inline">\(t\)</span>，对于未来<span class="math inline">\(R_i(i&gt;t)\)</span>，依赖于所有<span class="math inline">\(S_i\)</span>以及<span class="math inline">\(A_i\)</span>，由于Action、State的转移是随机的，因此
-<span class="math inline">\(U_t\)</span> 是一个随机变量</p>
-<h3 id="action-value-functionq_pi">Action-Value Function（<span class="math inline">\(Q_\pi\)</span>）</h3>
-<blockquote>
-<p>动作-状态价值函数 <span class="math inline">\(Q_\pi(s_t,a_t)\)</span></p>
-</blockquote>
-<p><strong>表示在给定状态-动作对的条件下未来依据某策略做决策所能获得的平均收益</strong></p>
-<p>Discounted Return: <span class="math inline">\(U_t=R_t+\gamma
-R_{t+1}+\gamma^2 R_{t+2}+\gamma^3 R_{t+3}+\cdots\)</span></p>
-<p>定义<span class="math inline">\(Policy\ \pi\)</span>的 Action-value
-function： <span class="math display">\[
-Q_\pi\left(s_t, a_t\right)={\mathbb{E}}\left[U_t \mid S_t=s_t,
-A_t=a_t\right] .
-\]</span></p>
-<p>由于 <span class="math inline">\(U_t\)</span> 依赖于 <span class="math inline">\(A_t, A_{t+1}, A_{t+2}, \cdots\)</span> 以及 <span class="math inline">\(S_t, S_{t+1}, S_{t+2},
-\cdots\)</span>，而Action和State的转移是随机的。</p>
-<p>因此<span class="math inline">\(U_t\)</span>是一个随机变量，它依赖所有的动作和状态，在t时刻并不知道<span class="math inline">\(U_t\)</span>是什么，因此求期望<span class="math inline">\(\mathbb{E}\)</span>积掉随机性。</p>
-<p>利用期望<span class="math inline">\(\mathbb{E}\)</span>消除<span class="math inline">\(A_i,S_i(i&gt;t)\)</span>，留下<span class="math inline">\(A_t,S_t\)</span></p>
-<blockquote>
-<p>最优动作价值函数（Optimal Action-Value Function）<span class="math inline">\(Q^\star(s_t,a_t)\)</span></p>
-</blockquote>
-<p><strong>定义最佳策略下的动作价值函数为最优价值函数</strong> <span class="math display">\[
-Q^*\left(s_t, a_t\right)=\max _\pi Q_\pi\left(s_t, a_t\right) .
-\]</span> <strong>核心：</strong>求解最优策略也就等价于求解最优Q值。</p>
-<p><strong>学习目标</strong>：学习到一个最优策略 <span class="math inline">\(\pi^*\)</span>,
-使智能体在任意状态下的价值最大最优动作-状态价值函数（最优 <span class="math inline">\(\mathrm{Q}\)</span> 值）</p>
-<h3 id="state-value-function-v_pi">State-Value Function (<span class="math inline">\(V_\pi\)</span>)</h3>
-<blockquote>
-<p>状态价值函数 <span class="math inline">\(V_\pi(s_t)\)</span></p>
-</blockquote>
-<p><span class="math inline">\(V_\pi\)</span>是动作价值函数<span class="math inline">\(Q_\pi\)</span>的期望。</p>
-<p><span class="math inline">\(Q_\pi(s_t,a_t)\)</span>和<span class="math inline">\(Policy\ \pi,\ s_t,\ a_t\)</span>有关，将动作<span class="math inline">\(a_t\)</span>作为随机变量，然后期望<span class="math inline">\(\mathbb{E}\)</span>把<span class="math inline">\(A_t\)</span>消掉，求期望得到的<span class="math inline">\(V_\pi\)</span>只与<span class="math inline">\(Policy\ \pi,\ s_t\)</span>有关。 <span class="math display">\[
-V_\pi\left(s_t\right)=\mathrm{E}_A\left[Q_\pi\left(s_t, A\right)\right]
-\]</span> <strong>作用</strong>：</p>
-<ol type="1">
-<li><p>对于给定的 <span class="math inline">\(\pi\)</span> ，<span class="math inline">\(V_\pi\)</span> 评价当前的<span class="math inline">\(s_t\)</span>好不好</p></li>
-<li><p>评估 <span class="math inline">\(Policy\ \pi\)</span>
-的好坏</p></li>
-</ol>
-<h3 id="随机性">随机性</h3>
-<blockquote>
-<p>动作随机</p>
-</blockquote>
-<p>动作是根据<span class="math inline">\(Policy\
-\pi\)</span>随机抽样得到的，利用<span class="math inline">\(Policy\
-\pi\)</span>来控制Agent.</p>
-<p>给定当前状态 S，Agent的动作A是按照<span class="math inline">\(Policy\
-\pi\)</span>输出的概率来随机抽样 <span class="math display">\[
-\begin{aligned}
-&amp; \mathbb{P}[A=a \mid S=s]=\pi(a \mid s)
-\end{aligned}
-\]</span></p>
-<blockquote>
-<p>状态转移随机</p>
-</blockquote>
-<p>Environment用状态转移函数p算出概率，然后用随机抽样得到下一个状态S’
-<span class="math display">\[
-\mathbb{P}\left[S^{\prime}=s^{\prime} \mid S=s,
-A=a\right]=p\left(s^{\prime} \mid s, a\right)
-\]</span></p>
-]]></content>
-      <categories>
-        <category>强化学习</category>
-      </categories>
-      <tags>
-        <tag>概率统计</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>STL技巧</title>
-    <url>/2024/07/30/STL/</url>
-    <content><![CDATA[<h1 id="stl技巧">STL技巧</h1>
-<h2 id="vector数组">vector数组</h2>
-<p>变长数组，倍增的思想</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()  返回元素个数</span><br><span class="line"><span class="built_in">empty</span>()  返回是否为空</span><br><span class="line"><span class="built_in">clear</span>()  清空</span><br><span class="line"><span class="built_in">front</span>()/<span class="built_in">back</span>()</span><br><span class="line"><span class="built_in">push_back</span>()/<span class="built_in">pop_back</span>()</span><br><span class="line"><span class="built_in">begin</span>()/<span class="built_in">end</span>()</span><br><span class="line">[]</span><br><span class="line">\\ 支持比较运算，按字典序</span><br></pre></td></tr></table></figure>
-<h2 id="pairint-int二元组">pair&lt;int, int&gt;二元组</h2>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">first, 第一个元素</span><br><span class="line">second, 第二个元素</span><br><span class="line">支持比较运算，以first为第一关键字，以second为第二关键字（字典序）</span><br></pre></td></tr></table></figure>
-<h2 id="string字符串">string字符串</h2>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()/<span class="built_in">length</span>()  返回字符串长度</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">clear</span>()</span><br><span class="line"><span class="built_in">substr</span>(起始下标，(子串长度))  返回子串</span><br><span class="line"><span class="built_in">c_str</span>()  返回字符串所在字符数组的起始地址</span><br></pre></td></tr></table></figure>
-<h2 id="queue队列">queue队列</h2>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">push</span>()  向队尾插入一个元素</span><br><span class="line"><span class="built_in">front</span>()  返回队头元素</span><br><span class="line"><span class="built_in">back</span>()  返回队尾元素</span><br><span class="line"><span class="built_in">pop</span>()  弹出队头元素</span><br></pre></td></tr></table></figure>
-<h2 id="priority_queue优先队列">priority_queue优先队列</h2>
-<p>默认是大根堆 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">push</span>()  \\ 插入一个元素</span><br><span class="line"><span class="built_in">top</span>()  返回堆顶元素</span><br><span class="line"><span class="built_in">pop</span>()  弹出堆顶元素</span><br><span class="line">定义成小根堆的方式：priority_queue&lt;<span class="keyword">int</span>, vector&lt;<span class="keyword">int</span>&gt;, greater&lt;<span class="keyword">int</span>&gt;&gt; q;</span><br></pre></td></tr></table></figure></p>
-<h2 id="stack栈">stack栈</h2>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">push</span>()  向栈顶插入一个元素</span><br><span class="line"><span class="built_in">top</span>()  返回栈顶元素</span><br><span class="line"><span class="built_in">pop</span>()  弹出栈顶元素</span><br></pre></td></tr></table></figure>
-<h2 id="deque双端队列">deque双端队列</h2>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">clear</span>()</span><br><span class="line"><span class="built_in">front</span>()/<span class="built_in">back</span>()</span><br><span class="line"><span class="built_in">push_back</span>()/<span class="built_in">pop_back</span>()</span><br><span class="line"><span class="built_in">push_front</span>()/<span class="built_in">pop_front</span>()</span><br><span class="line"><span class="built_in">begin</span>()/<span class="built_in">end</span>()</span><br><span class="line">[]</span><br></pre></td></tr></table></figure>
-<h2 id="set集合map字典">set集合&amp;map字典</h2>
-<p>基于平衡二叉树（红黑树），动态维护有序序列 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">clear</span>()</span><br><span class="line"><span class="built_in">begin</span>()/<span class="built_in">end</span>()</span><br><span class="line">++, -- 返回前驱和后继，时间复杂度 <span class="built_in">O</span>(logn)</span><br></pre></td></tr></table></figure></p>
-<h3 id="setmultiset">set&amp;multiset</h3>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">insert</span>()  插入一个数</span><br><span class="line"><span class="built_in">find</span>()  查找一个数</span><br><span class="line"><span class="built_in">count</span>()  返回某一个数的个数</span><br><span class="line"><span class="built_in">erase</span>()</span><br><span class="line">    (<span class="number">1</span>) 输入是一个数x，删除所有<span class="function">x   <span class="title">O</span><span class="params">(k + logn)</span></span></span><br><span class="line"><span class="function">    <span class="params">(<span class="number">2</span>)</span> 输入一个迭代器，删除这个迭代器</span></span><br><span class="line"><span class="function"><span class="title">lower_bound</span><span class="params">()</span>/<span class="title">upper_bound</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    <span class="title">lower_bound</span><span class="params">(x)</span>  返回大于等于x的最小的数的迭代器</span></span><br><span class="line"><span class="function">    <span class="title">upper_bound</span><span class="params">(x)</span>  返回大于x的最小的数的迭代器</span></span><br></pre></td></tr></table></figure>
-<h3 id="mapmultimap">map&amp;multimap</h3>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">insert</span>()  插入的数是一个<span class="function">pair</span></span><br><span class="line"><span class="function"><span class="title">erase</span><span class="params">()</span>  输入的参数是pair或者迭代器</span></span><br><span class="line"><span class="function"><span class="title">find</span><span class="params">()</span></span></span><br><span class="line"><span class="function">[]  注意multimap不支持此操作。 时间复杂度是 <span class="title">O</span><span class="params">(logn)</span></span></span><br><span class="line"><span class="function"><span class="title">lower_bound</span><span class="params">()</span>/<span class="title">upper_bound</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure>
-<h2 id="unordered哈希表">unordered哈希表</h2>
-<ul>
-<li><p>unordered_set</p></li>
-<li><p>unordered_map</p></li>
-<li><p>unordered_multiset</p></li>
-<li><p>unordered_multimap</p></li>
-</ul>
-<p>和上面类似，增删改查的时间复杂度是 O(1) 不支持
-lower_bound()/upper_bound()， 迭代器的++，--</p>
-<h2 id="bitset圧位">bitset圧位</h2>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">bitset&lt;10000&gt; s;</span><br><span class="line">~, &amp;, |, ^</span><br><span class="line">&gt;&gt;, &lt;&lt;</span><br><span class="line">==, !=</span><br><span class="line">[]</span><br><span class="line"></span><br><span class="line"><span class="built_in">count</span>()  返回有多少个<span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">any</span>()  判断是否至少有一个<span class="number">1</span></span><br><span class="line"><span class="built_in">none</span>()  判断是否全为<span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span>()  把所有位置成<span class="number">1</span></span><br><span class="line"><span class="built_in">set</span>(k, v)  将第k位变成v</span><br><span class="line"><span class="built_in">reset</span>()  把所有位变成<span class="number">0</span></span><br><span class="line"><span class="built_in">flip</span>()  等价于~</span><br><span class="line"><span class="built_in">flip</span>(k) 把第k位取反</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>算法笔记</category>
-      </categories>
-      <tags>
-        <tag>c++</tag>
-        <tag>STL</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>RL强化学习（五）</title>
-    <url>/2024/07/31/RL%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%BA%94%EF%BC%89/</url>
-    <content><![CDATA[<h1 id="rl强化学习五">RL强化学习（五）</h1>
-<h2 id="多智能体强化学习">多智能体强化学习</h2>
-<p>一个系统中存在多个决策者</p>
-<p><strong>面临的困难</strong></p>
-<ul>
-<li><p>环境非平稳变化（马尔科夫特性不再满足），每个智能体所对应的环境包含了其他智能体的策略，其他智能体策略的变化导致环境变化的非平稳性。</p></li>
-<li><p>局部可观，智能体只能观测到环境的部分状态</p></li>
-<li><p>集中式学习不可行，需要一个集中式控制中心与智能体之间进行大量的信息交互，神经网络的输入输出维度会随智能体数目指数增大，难以收敛。</p></li>
-</ul>
-<h2 id="基本概念">基本概念</h2>
-<h3 id="agent的关系">Agent的关系</h3>
-<ul>
-<li><p>Fully
-cooperative，两个Agent需要相互配合才能完成任务（工业机器人）</p></li>
-<li><p>Fully
-competitive，一方的收益是另一方的损失（捕食者和猎物）</p></li>
-<li><p>Mixed Cooperative &amp;
-competitive，既有竞争又有合作（足球机器人，队伍内是合作，队伍间是博弈）</p></li>
-<li><p>Self-interested，利己主义，只想最大化自己的利益，动作可能让别人获益or损失，不关心别人的利益（股票的期货交易系统、无人车）</p></li>
-</ul>
-<h3 id="state-action">State &amp; Action</h3>
-<p>There are <span class="math inline">\(n\)</span> agents.</p>
-<p>Let <span class="math inline">\(S\)</span> be the state.</p>
-<p>Let <span class="math inline">\(A^i\)</span> be the <span class="math inline">\(i\)</span>-th agent's action.</p>
-<p>State transition: <span class="math inline">\(p\left(s^{\prime} \mid
-s, a^1, \cdots, a^n\right)=\mathbb{P}\left(S^{\prime}=s^{\prime} \mid
-S=s, A^1=a^1, \cdots, A^n=a^n\right).\)</span></p>
-<p>The next state, <span class="math inline">\(S^{\prime}\)</span>,
-depends on all the agents' actions.</p>
-<p>每个Agent的Action都可能影响Env的下个State，所以每个Agent都可以影响其他Agent</p>
-<h3 id="rewards">Rewards</h3>
-<p>Let <span class="math inline">\(R^i\)</span> be the reward received
-by the <span class="math inline">\(i\)</span>-th agent.</p>
-<p>Fully cooperative: <span class="math inline">\(R^1=R^2=\cdots=R^n\)</span>.</p>
-<p>Fully competitive: <span class="math inline">\(R^1
-\propto-R^2\)</span>.</p>
-<p><span class="math inline">\(R^i\)</span> depends on <span class="math inline">\(A^i\)</span> as well as all the other agents'
-actions <span class="math inline">\(\left\{A^j\right\}_{j \neq
-i}\)</span>.</p>
-<h3 id="returns">Returns</h3>
-<p>Let <span class="math inline">\(R_t^i\)</span> be the reward received
-by the <span class="math inline">\(i\)</span>-th agent at time <span class="math inline">\(t\)</span>. Return (of the <span class="math inline">\(i\)</span>-th agent): <span class="math display">\[
-U_t^i=R_t^i+R_{t+1}^i+R_{t+2}^i+R_{t+3}^i+\cdots
-\]</span></p>
-<p>Discounted return (of the <span class="math inline">\(i\)</span>-th
-agent): <span class="math display">\[
-U_t^i=R_t^i+\gamma \cdot R_{t+1}^i+\gamma^2 \cdot R_{t+2}^i+\gamma^3
-\cdot R_{t+3}^i+\cdots
-\]</span></p>
-<p>Here, <span class="math inline">\(\gamma \in[0,1]\)</span> is the
-discount rate.</p>
-<h3 id="policy-network">Policy Network</h3>
-<p>Each agent has its own policy network: <span class="math inline">\(\pi\left(a^i \mid s ;
-\boldsymbol{\theta}^i\right)\)</span>.</p>
-<p>Policy networks can be exchangeable: <span class="math inline">\(\boldsymbol{\theta}^1=\boldsymbol{\theta}^2=\cdots=\boldsymbol{\theta}^n\)</span>.</p>
-<ul>
-<li>Self-driving cars can have the same policy.</li>
-</ul>
-<p>Policy networks can be nonexchangeable: <span class="math inline">\(\boldsymbol{\theta}^i \neq
-\boldsymbol{\theta}^j\)</span>.</p>
-<ul>
-<li>Soccer players have different roles, e.g., striker, defender,
-goalkeeper.</li>
-</ul>
-<h3 id="state-value-function">State-Value Function</h3>
-<p>State-value of the <span class="math inline">\(i\)</span>-th agent:
-(不仅依赖自己的策略，同时依赖其他所有Agent的策略) <span class="math display">\[
-V^i\left(s_t ; \boldsymbol{\theta}^1, \cdots,
-\boldsymbol{\theta}^n\right)=\mathbb{E}\left[U_t^i \mid S_t=s_t\right] .
-\]</span></p>
-<p>The expectation is taken w.r.t. all the future actions and states
-except <span class="math inline">\(S_t\)</span>.</p>
-<p>Randomness in actions: <span class="math inline">\(A_t^j \sim
-\pi\left(\cdot \mid s_t ; \boldsymbol{\theta}^j\right)\)</span>, for all
-<span class="math inline">\(j=1, \cdots, n\)</span>. (That is why the
-state-value <span class="math inline">\(V^i\)</span> depends on <span class="math inline">\(\boldsymbol{\theta}^1, \cdots,
-\boldsymbol{\theta}^n\)</span>.)</p>
-<h2 id="nash-equilibrium纳什均衡">Nash Equilibrium（纳什均衡）</h2>
-<p>Multi-Agent问题收敛的条件</p>
-<p>当其他所有Agent的政策保持不变时，第 <span class="math inline">\(i\)</span>
-个Agent无法通过改变自己的Policy获得更好的预期收益。</p>
-<p>每个Agent都在对其他Agent的Policy做出最佳反应。</p>
-<p>在这种平衡状态下，大家都没动机去改变自己策略</p>
-<p>如果使用Single-Agent的策略梯度算法直接用于Mulit-Agent问题上</p>
-<figure>
-<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231206092127067.png" alt="image-20231206092127067">
-<figcaption aria-hidden="true">image-20231206092127067</figcaption>
-</figure>
-<p>The <span class="math inline">\(i\)</span>-th agent's policy network:
-<span class="math inline">\(\pi\left(a^i \mid s ;
-\boldsymbol{\theta}^i\right)\)</span>.</p>
-<p>The <span class="math inline">\(i\)</span>-th agent's state-value
-function: <span class="math inline">\(V^i\left(s ;
-\boldsymbol{\theta}^1, \cdots,
-\boldsymbol{\theta}^n\right)\)</span>.</p>
-<p>Objective function: <span class="math inline">\(J^i\left(\boldsymbol{\theta}^1, \cdots,
-\boldsymbol{\theta}^n\right)=\mathbb{E}_S\left[V^i\left(S ;
-\boldsymbol{\theta}^1, \cdots,
-\boldsymbol{\theta}^n\right)\right]\)</span>.</p>
-<p>Learn the policy network's parameter, <span class="math inline">\(\boldsymbol{\theta}^i\)</span>, by <span class="math display">\[
-\max _{\boldsymbol{\theta}^i} J^i\left(\boldsymbol{\theta}^1, \cdots,
-\boldsymbol{\theta}^n\right)
-\]</span></p>
-<ul>
-<li>The <span class="math inline">\(1^{\text {st }}\)</span> agent
-solves: <span class="math inline">\(\quad \max
-_{\theta^1}J^1\left(\boldsymbol{\theta}^1, \boldsymbol{\theta}^2,
-\cdots, \boldsymbol{\theta}^n)\right.\)</span>.</li>
-<li>The <span class="math inline">\(2^{\text {nd }}\)</span> agent
-solves: <span class="math inline">\(\quad \max _{\theta^2}
-J^2\left(\boldsymbol{\theta}^1, \boldsymbol{\theta}^2, \cdots,
-\boldsymbol{\theta}^n\right)\)</span>.</li>
-<li>...</li>
-<li>The <span class="math inline">\(n^{\text {th }}\)</span> agent
-solves: <span class="math inline">\(\quad \max _{\boldsymbol{\theta}^n}
-J^n\left(\boldsymbol{\theta}^1, \boldsymbol{\theta}^2, \cdots,
-\boldsymbol{\theta}^n\right)\)</span>.</li>
-</ul>
-<p>每个Agent没有共同的目标，各自更新自己的<span class="math inline">\(\theta^i\)</span>，一个Agent更新策略，可能导致其他所有Agent的目标函数发生变化，大家的目标函数都在不停的发生变化，导致训练很难收敛</p>
-<p>所以不能将Single-Agent的训练策略应用与Multi-Agent问题</p>
-<h2 id="centralized-vs-decentralized">Centralized Vs Decentralized</h2>
-<h3 id="architectures">Architectures</h3>
-<ul>
-<li><p>Fully
-decentralized，每个Agent都用自己观测到的observation、reward去训练策略，Agent之间不通信</p></li>
-<li><p>Fully
-centralized，所有Agent将信息发给中央控制器，中央控制器负责做decision，Agent负责执行</p></li>
-<li><p>Centralized training with decentralized
-execution，中央控制器在训练阶段收集各Agent信息，帮助训练Agent策略网络，训练结束后，Agent自己利用策略网络做decision，不依赖中央控制器通信</p></li>
-</ul>
-<h3 id="partial-observation">Partial Observation</h3>
-<p>An agent may or may not have full knowledge of the state, <span class="math inline">\(s\)</span>.</p>
-<p>Let <span class="math inline">\(o^i\)</span> be the <span class="math inline">\(i\)</span>-th agent's observation.</p>
-<p>Partial observation: <span class="math inline">\(o^i \neq
-S\)</span>.</p>
-<p>Full observation: <span class="math inline">\(\quad
-o^1=\cdots=o^n=s\)</span>.</p>
-<h3 id="fully-decentralized">Fully Decentralized</h3>
-<p>本质就是Single-Agent reinforce learning</p>
-<figure>
-<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231206094004380.png" alt="image-20231206094004380">
-<figcaption aria-hidden="true">image-20231206094004380</figcaption>
-</figure>
-<p>The <span class="math inline">\(i\)</span>-th agent has a policy
-network (actor): <span class="math inline">\(\pi\left(a^i \mid o^i ;
-\boldsymbol{\theta}^i\right)\)</span>.</p>
-<p>The <span class="math inline">\(i\)</span>-th agent has a value
-network (critic): <span class="math inline">\(q\left(o^i, a^i ;
-\mathbf{w}^i\right)\)</span>.</p>
-<p>Agents do not share observations and actions.</p>
-<p>Train the policy and value networks in the same way as the
-single-agent setting.</p>
-<p>This does not work well.</p>
-<h3 id="fully-centralized">Fully Centralized</h3>
-<p>各Agent中没有策略网络，将观测到的信息传递给中央控制器，控制器负责做决策。
-<span class="math display">\[
-\pi\left(a^i \mid o^1, \cdots, o^n ; \boldsymbol{\theta}^i\right) \text
-{, for all } i=1,2, \cdots, n \text {. }
-\]</span> <img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231206094349263.png" alt="image-20231206094349263"></p>
-<p>Let <span class="math inline">\(\mathbf{a}=\left[a^1, a^2, \cdots,
-a^n\right]\)</span> contain all the agents' actions.</p>
-<p>Let <span class="math inline">\(\mathbf{o}=\left[o^1, o^2, \cdots,
-o^n\right]\)</span> contain all the agents' observations.</p>
-<p>The central controller knows <span class="math inline">\(\mathbf{a},
-\mathbf{o}\)</span>, and all the rewards.</p>
-<p>The controller has <span class="math inline">\(n\)</span> policy
-networks and <span class="math inline">\(n\)</span> value networks:</p>
-<ul>
-<li>Policy network (actor) for the <span class="math inline">\(i\)</span>-th agent: <span class="math inline">\(\pi\left(a^i \mid o ;
-\boldsymbol{\theta}^i\right)\)</span>.</li>
-<li>Value network (critic) for the <span class="math inline">\(i\)</span>-th agent: <span class="math inline">\(q\left(o, \mathbf{a} ;
-\mathbf{w}^i\right)\)</span>.</li>
-</ul>
-<p><strong>Centralized Training:</strong> Training is performed by the
-controller.</p>
-<ul>
-<li>The controller knows all the observations, actions, and
-rewards.</li>
-<li>Train <span class="math inline">\(\pi\left(a^i \mid 0 ;
-\boldsymbol{\theta}^i\right)\)</span> using policy gradient.</li>
-<li>Train <span class="math inline">\(q\left(\mathbf{o}, \mathbf{a} ;
-\mathbf{w}^i\right)\)</span> using TD algorithm.</li>
-</ul>
-<p><strong>Centralized Execution:</strong> Decisions are made by the
-controller.</p>
-<ul>
-<li>For all <span class="math inline">\(i\)</span>, the <span class="math inline">\(i\)</span>-th agent sends its observation, <span class="math inline">\(o^i\)</span>, to the controller.</li>
-<li>The controller knows <span class="math inline">\(\mathbf{o}=\left[o^1, o^2, \cdots,
-o^n\right]\)</span>.</li>
-<li>For all <span class="math inline">\(i\)</span>, the controller
-samples action by <span class="math inline">\(a^i \sim \pi\left(\cdot
-\mid \mathbf{o} ; \boldsymbol{\theta}^i\right)\)</span> and sends <span class="math inline">\(a^i\)</span> to the <span class="math inline">\(i\)</span>-th agent.</li>
-</ul>
-<p>中央控制器知道全局的信息，可以帮所有Agent做出好的决策</p>
-<p>但执行速度较慢，Agent都没有决策权，需要等中央来做决策（发送、同步信息都需要花时间，等最慢的Agent）</p>
-<h3 id="centralized-training-with-decentralized-execution">Centralized
-Training with Decentralized Execution</h3>
-<p>Each agent has its own policy network (actor): <span class="math inline">\(\pi\left(a^i \mid o^i ;
-\boldsymbol{\theta}^i\right)\)</span>.</p>
-<p>The central controller has <span class="math inline">\(n\)</span>
-value networks (critics): <span class="math inline">\(q\left(0,
-\mathbf{a} ; \mathbf{w}^i\right)\)</span>.</p>
-<p><strong>Centralized Training:</strong> During training, the central
-controller knows all the agents' observations, actions, and rewards.</p>
-<p><strong>Decentralized Execution:</strong> During execution, the
-central controller and its value networks are not used.</p>
-<h4 id="训练阶段">训练阶段</h4>
-<figure>
-<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231206095643649.png" alt="image-20231206095643649">
-<figcaption aria-hidden="true">image-20231206095643649</figcaption>
-</figure>
-<p>The central controller trains the critics, <span class="math inline">\(q\left(\mathbf{o}, \mathbf{a} ;
-\mathbf{w}^i\right)\)</span>, for all <span class="math inline">\(i\)</span>.</p>
-<p>To update <span class="math inline">\(\mathbf{w}^i\)</span>,
-<strong>TD algorithm</strong> takes as inputs:</p>
-<ul>
-<li>All the actions: <span class="math inline">\(\mathrm{a}=\left[a^1,
-a^2, \cdots, a^n\right]\)</span>.</li>
-<li>All the observations: <span class="math inline">\(\mathbf{o}=\left[o^1, o^2, \cdots,
-o^n\right]\)</span>.</li>
-<li>The <span class="math inline">\(i\)</span>-th reward: <span class="math inline">\(r^i\)</span>.</li>
-</ul>
-<figure>
-<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231206095819592.png" alt="image-20231206095819592">
-<figcaption aria-hidden="true">image-20231206095819592</figcaption>
-</figure>
-<p>Each agent locally trains the actor, <span class="math inline">\(\pi\left(a^i \mid o^i ;
-\boldsymbol{\theta}^i\right)\)</span>, using <strong>policy
-gradient.</strong></p>
-<p>To update <span class="math inline">\(\boldsymbol{\theta}^i\)</span>,
-the policy gradient algorithm takes as input <span class="math inline">\(\left(a^i, o^i, a^i\right)\)</span>,</p>
-<h4 id="执行阶段">执行阶段</h4>
-<figure>
-<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231206100104303.png" alt="image-20231206100104303">
-<figcaption aria-hidden="true">image-20231206100104303</figcaption>
-</figure>
-<p>每个Agent独立接受observation，依据自己的策略网络做决策，Agent之间不通信</p>
-]]></content>
-      <categories>
-        <category>强化学习</category>
-      </categories>
-  </entry>
-  <entry>
     <title>git指令</title>
     <url>/2022/09/09/git%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/</url>
     <content><![CDATA[<h1 id="git指令">git指令</h1>
@@ -1578,6 +1533,51 @@ the policy gradient algorithm takes as input <span class="math inline">\(\left(a
       </categories>
       <tags>
         <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>STL技巧</title>
+    <url>/2024/07/30/STL/</url>
+    <content><![CDATA[<h1 id="stl技巧">STL技巧</h1>
+<h2 id="vector数组">vector数组</h2>
+<p>变长数组，倍增的思想</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()  返回元素个数</span><br><span class="line"><span class="built_in">empty</span>()  返回是否为空</span><br><span class="line"><span class="built_in">clear</span>()  清空</span><br><span class="line"><span class="built_in">front</span>()/<span class="built_in">back</span>()</span><br><span class="line"><span class="built_in">push_back</span>()/<span class="built_in">pop_back</span>()</span><br><span class="line"><span class="built_in">begin</span>()/<span class="built_in">end</span>()</span><br><span class="line">[]</span><br><span class="line">\\ 支持比较运算，按字典序</span><br></pre></td></tr></table></figure>
+<h2 id="pairint-int二元组">pair&lt;int, int&gt;二元组</h2>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">first, 第一个元素</span><br><span class="line">second, 第二个元素</span><br><span class="line">支持比较运算，以first为第一关键字，以second为第二关键字（字典序）</span><br></pre></td></tr></table></figure>
+<h2 id="string字符串">string字符串</h2>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()/<span class="built_in">length</span>()  返回字符串长度</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">clear</span>()</span><br><span class="line"><span class="built_in">substr</span>(起始下标，(子串长度))  返回子串</span><br><span class="line"><span class="built_in">c_str</span>()  返回字符串所在字符数组的起始地址</span><br></pre></td></tr></table></figure>
+<h2 id="queue队列">queue队列</h2>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">push</span>()  向队尾插入一个元素</span><br><span class="line"><span class="built_in">front</span>()  返回队头元素</span><br><span class="line"><span class="built_in">back</span>()  返回队尾元素</span><br><span class="line"><span class="built_in">pop</span>()  弹出队头元素</span><br></pre></td></tr></table></figure>
+<h2 id="priority_queue优先队列">priority_queue优先队列</h2>
+<p>默认是大根堆 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">push</span>()  \\ 插入一个元素</span><br><span class="line"><span class="built_in">top</span>()  返回堆顶元素</span><br><span class="line"><span class="built_in">pop</span>()  弹出堆顶元素</span><br><span class="line">定义成小根堆的方式：priority_queue&lt;<span class="keyword">int</span>, vector&lt;<span class="keyword">int</span>&gt;, greater&lt;<span class="keyword">int</span>&gt;&gt; q;</span><br></pre></td></tr></table></figure></p>
+<h2 id="stack栈">stack栈</h2>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">push</span>()  向栈顶插入一个元素</span><br><span class="line"><span class="built_in">top</span>()  返回栈顶元素</span><br><span class="line"><span class="built_in">pop</span>()  弹出栈顶元素</span><br></pre></td></tr></table></figure>
+<h2 id="deque双端队列">deque双端队列</h2>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">clear</span>()</span><br><span class="line"><span class="built_in">front</span>()/<span class="built_in">back</span>()</span><br><span class="line"><span class="built_in">push_back</span>()/<span class="built_in">pop_back</span>()</span><br><span class="line"><span class="built_in">push_front</span>()/<span class="built_in">pop_front</span>()</span><br><span class="line"><span class="built_in">begin</span>()/<span class="built_in">end</span>()</span><br><span class="line">[]</span><br></pre></td></tr></table></figure>
+<h2 id="set集合map字典">set集合&amp;map字典</h2>
+<p>基于平衡二叉树（红黑树），动态维护有序序列 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">clear</span>()</span><br><span class="line"><span class="built_in">begin</span>()/<span class="built_in">end</span>()</span><br><span class="line">++, -- 返回前驱和后继，时间复杂度 <span class="built_in">O</span>(logn)</span><br></pre></td></tr></table></figure></p>
+<h3 id="setmultiset">set&amp;multiset</h3>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">insert</span>()  插入一个数</span><br><span class="line"><span class="built_in">find</span>()  查找一个数</span><br><span class="line"><span class="built_in">count</span>()  返回某一个数的个数</span><br><span class="line"><span class="built_in">erase</span>()</span><br><span class="line">    (<span class="number">1</span>) 输入是一个数x，删除所有<span class="function">x   <span class="title">O</span><span class="params">(k + logn)</span></span></span><br><span class="line"><span class="function">    <span class="params">(<span class="number">2</span>)</span> 输入一个迭代器，删除这个迭代器</span></span><br><span class="line"><span class="function"><span class="title">lower_bound</span><span class="params">()</span>/<span class="title">upper_bound</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    <span class="title">lower_bound</span><span class="params">(x)</span>  返回大于等于x的最小的数的迭代器</span></span><br><span class="line"><span class="function">    <span class="title">upper_bound</span><span class="params">(x)</span>  返回大于x的最小的数的迭代器</span></span><br></pre></td></tr></table></figure>
+<h3 id="mapmultimap">map&amp;multimap</h3>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">insert</span>()  插入的数是一个<span class="function">pair</span></span><br><span class="line"><span class="function"><span class="title">erase</span><span class="params">()</span>  输入的参数是pair或者迭代器</span></span><br><span class="line"><span class="function"><span class="title">find</span><span class="params">()</span></span></span><br><span class="line"><span class="function">[]  注意multimap不支持此操作。 时间复杂度是 <span class="title">O</span><span class="params">(logn)</span></span></span><br><span class="line"><span class="function"><span class="title">lower_bound</span><span class="params">()</span>/<span class="title">upper_bound</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure>
+<h2 id="unordered哈希表">unordered哈希表</h2>
+<ul>
+<li><p>unordered_set</p></li>
+<li><p>unordered_map</p></li>
+<li><p>unordered_multiset</p></li>
+<li><p>unordered_multimap</p></li>
+</ul>
+<p>和上面类似，增删改查的时间复杂度是 O(1) 不支持
+lower_bound()/upper_bound()， 迭代器的++，--</p>
+<h2 id="bitset圧位">bitset圧位</h2>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">bitset&lt;10000&gt; s;</span><br><span class="line">~, &amp;, |, ^</span><br><span class="line">&gt;&gt;, &lt;&lt;</span><br><span class="line">==, !=</span><br><span class="line">[]</span><br><span class="line"></span><br><span class="line"><span class="built_in">count</span>()  返回有多少个<span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">any</span>()  判断是否至少有一个<span class="number">1</span></span><br><span class="line"><span class="built_in">none</span>()  判断是否全为<span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span>()  把所有位置成<span class="number">1</span></span><br><span class="line"><span class="built_in">set</span>(k, v)  将第k位变成v</span><br><span class="line"><span class="built_in">reset</span>()  把所有位变成<span class="number">0</span></span><br><span class="line"><span class="built_in">flip</span>()  等价于~</span><br><span class="line"><span class="built_in">flip</span>(k) 把第k位取反</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>算法笔记</category>
+      </categories>
+      <tags>
+        <tag>c++</tag>
+        <tag>STL</tag>
       </tags>
   </entry>
   <entry>
@@ -1736,91 +1736,6 @@ the policy gradient algorithm takes as input <span class="math inline">\(\left(a
       <tags>
         <tag>python</tag>
         <tag>uniapp</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>hexo博客搭建</title>
-    <url>/2022/09/08/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/</url>
-    <content><![CDATA[<h1 id="hexo博客搭建">hexo博客搭建</h1>
-<h2 id="推送博客文件">推送博客文件</h2>
-<h3 id="清空之前的文件">清空之前的文件</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br></pre></td></tr></table></figure>
-<h3 id="生成静态文章">生成静态文章</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo generate</span><br><span class="line"></span><br><span class="line"># 简写</span><br><span class="line">hexo g</span><br></pre></td></tr></table></figure>
-<h3 id="部署博客">部署博客</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo deploy </span><br><span class="line"></span><br><span class="line"># 简写 </span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
-<h2 id="本地测试">本地测试</h2>
-<h3 id="生成静态文件">生成静态文件</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo g</span><br></pre></td></tr></table></figure>
-<h3 id="打开本地服务器">打开本地服务器</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo server</span><br></pre></td></tr></table></figure>
-<h2 id="写文章">写文章</h2>
-<h3 id="新建文章">新建文章</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo new &quot;title&quot;</span><br></pre></td></tr></table></figure>
-<h3 id="新建草稿文件">新建草稿文件</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo new draft &quot;title&quot;</span><br></pre></td></tr></table></figure>
-<h3 id="新建界面">新建界面</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo new page &quot;title&quot;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>常用技巧</category>
-      </categories>
-      <tags>
-        <tag>hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>linux常用指令</title>
-    <url>/2022/09/09/linux%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4/</url>
-    <content><![CDATA[<h1 id="linux常用指令">Linux常用指令</h1>
-<h2 id="档案与目录管理">档案与目录管理</h2>
-<h3 id="切换路径">切换路径</h3>
-<h4 id="绝对路径">绝对路径</h4>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 绝对路径，路径前+“/” 表示绝对路径</span><br><span class="line">cd /home/xc  </span><br></pre></td></tr></table></figure>
-<h4 id="相对路径">相对路径</h4>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cd test </span><br></pre></td></tr></table></figure>
-<h4 id="显示当前路径">显示当前路径</h4>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pwd</span><br></pre></td></tr></table></figure>
-<h4 id="清空终端信息">清空终端信息</h4>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">clear</span><br></pre></td></tr></table></figure>
-<h3 id="显示文件列表">显示文件列表</h3>
-<h4 id="当前目录下的文件目录名">当前目录下的文件、目录名</h4>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
-<h4 id="文件目录的详细信息">文件、目录的详细信息</h4>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ll</span><br></pre></td></tr></table></figure>
-<h4 id="指定文件名">指定文件名</h4>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 当前目录下含有“test”的目录以及其详细信息</span><br><span class="line">ll test*</span><br></pre></td></tr></table></figure>
-<h3 id="文件目录管理">文件目录管理</h3>
-<h4 id="创建目录">创建目录</h4>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mkdir [list name]	</span><br></pre></td></tr></table></figure>
-<h4 id="删除空目录">删除空目录</h4>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">rmdir [list name]	</span><br></pre></td></tr></table></figure>
-<h4 id="删除文件">删除文件</h4>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 文件名需要和ls中的对应</span><br><span class="line">rm [file name] 	</span><br></pre></td></tr></table></figure>
-<h4 id="删除非空目录">删除非空目录</h4>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 目录可不为空 </span><br><span class="line"># r-表示循环 f-表示force强力</span><br><span class="line">rm -rf [list name]	</span><br></pre></td></tr></table></figure>
-<h4 id="复制目录或文件">复制目录或文件</h4>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 复制文件 </span><br><span class="line"># 相对路径 or 绝对路径</span><br><span class="line">cp -r [origin file path] [destination file path]</span><br><span class="line"></span><br><span class="line"># 复制目录 </span><br><span class="line"># 相对路径 or 绝对路径</span><br><span class="line">cp -r [origin list path] [destination file path]</span><br></pre></td></tr></table></figure>
-<h4 id="移动目录或文件">移动目录或文件</h4>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 移动文件 </span><br><span class="line"># 相对路径 or 绝对路径</span><br><span class="line">mv [origin file path] [destination file path]</span><br><span class="line"></span><br><span class="line"># 移动目录 </span><br><span class="line"># 相对路径 or 绝对路径</span><br><span class="line">mv [origin list path] [destination file path]</span><br></pre></td></tr></table></figure>
-<h2 id="管理文件">管理文件</h2>
-<h3 id="创建文件">创建文件</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 在当前路径下创建一个名为[file name]的文件, 需要后缀</span><br><span class="line">touch [file name] 	</span><br></pre></td></tr></table></figure>
-<h3 id="查看文件">查看文件</h3>
-<h4 id="显示文件内容">显示文件内容</h4>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cat [file name]</span><br></pre></td></tr></table></figure>
-<h4 id="显示文件源码内容">显示文件源码内容</h4>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cat -A [file name]</span><br></pre></td></tr></table></figure>
-<h4 id="按行显示">按行显示</h4>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 一行一行显示文件内容</span><br><span class="line">more [file name]</span><br><span class="line"></span><br><span class="line"># 一行一行显示文件内容（可以翻页，但是没找到关闭的方式..）</span><br><span class="line">less [file name]</span><br></pre></td></tr></table></figure>
-<h4 id="显示部分内容">显示部分内容</h4>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 显示文件头几行，n表示显示的行数</span><br><span class="line">head -n [file name]	</span><br><span class="line"></span><br><span class="line"># 显示文件尾几行，n表示显示的行数</span><br><span class="line">tail -n [file name]	</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>常用技巧</category>
-      </categories>
-      <tags>
-        <tag>linux</tag>
       </tags>
   </entry>
   <entry>
@@ -2010,6 +1925,91 @@ with Integers (poj.org)</a></p>
       <tags>
         <tag>二叉树</tag>
         <tag>数据结构</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hexo博客搭建</title>
+    <url>/2022/09/08/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/</url>
+    <content><![CDATA[<h1 id="hexo博客搭建">hexo博客搭建</h1>
+<h2 id="推送博客文件">推送博客文件</h2>
+<h3 id="清空之前的文件">清空之前的文件</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br></pre></td></tr></table></figure>
+<h3 id="生成静态文章">生成静态文章</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo generate</span><br><span class="line"></span><br><span class="line"># 简写</span><br><span class="line">hexo g</span><br></pre></td></tr></table></figure>
+<h3 id="部署博客">部署博客</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo deploy </span><br><span class="line"></span><br><span class="line"># 简写 </span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
+<h2 id="本地测试">本地测试</h2>
+<h3 id="生成静态文件">生成静态文件</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo g</span><br></pre></td></tr></table></figure>
+<h3 id="打开本地服务器">打开本地服务器</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo server</span><br></pre></td></tr></table></figure>
+<h2 id="写文章">写文章</h2>
+<h3 id="新建文章">新建文章</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo new &quot;title&quot;</span><br></pre></td></tr></table></figure>
+<h3 id="新建草稿文件">新建草稿文件</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo new draft &quot;title&quot;</span><br></pre></td></tr></table></figure>
+<h3 id="新建界面">新建界面</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo new page &quot;title&quot;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>常用技巧</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>linux常用指令</title>
+    <url>/2022/09/09/linux%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4/</url>
+    <content><![CDATA[<h1 id="linux常用指令">Linux常用指令</h1>
+<h2 id="档案与目录管理">档案与目录管理</h2>
+<h3 id="切换路径">切换路径</h3>
+<h4 id="绝对路径">绝对路径</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 绝对路径，路径前+“/” 表示绝对路径</span><br><span class="line">cd /home/xc  </span><br></pre></td></tr></table></figure>
+<h4 id="相对路径">相对路径</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cd test </span><br></pre></td></tr></table></figure>
+<h4 id="显示当前路径">显示当前路径</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pwd</span><br></pre></td></tr></table></figure>
+<h4 id="清空终端信息">清空终端信息</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">clear</span><br></pre></td></tr></table></figure>
+<h3 id="显示文件列表">显示文件列表</h3>
+<h4 id="当前目录下的文件目录名">当前目录下的文件、目录名</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ls</span><br></pre></td></tr></table></figure>
+<h4 id="文件目录的详细信息">文件、目录的详细信息</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ll</span><br></pre></td></tr></table></figure>
+<h4 id="指定文件名">指定文件名</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 当前目录下含有“test”的目录以及其详细信息</span><br><span class="line">ll test*</span><br></pre></td></tr></table></figure>
+<h3 id="文件目录管理">文件目录管理</h3>
+<h4 id="创建目录">创建目录</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mkdir [list name]	</span><br></pre></td></tr></table></figure>
+<h4 id="删除空目录">删除空目录</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">rmdir [list name]	</span><br></pre></td></tr></table></figure>
+<h4 id="删除文件">删除文件</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 文件名需要和ls中的对应</span><br><span class="line">rm [file name] 	</span><br></pre></td></tr></table></figure>
+<h4 id="删除非空目录">删除非空目录</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 目录可不为空 </span><br><span class="line"># r-表示循环 f-表示force强力</span><br><span class="line">rm -rf [list name]	</span><br></pre></td></tr></table></figure>
+<h4 id="复制目录或文件">复制目录或文件</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 复制文件 </span><br><span class="line"># 相对路径 or 绝对路径</span><br><span class="line">cp -r [origin file path] [destination file path]</span><br><span class="line"></span><br><span class="line"># 复制目录 </span><br><span class="line"># 相对路径 or 绝对路径</span><br><span class="line">cp -r [origin list path] [destination file path]</span><br></pre></td></tr></table></figure>
+<h4 id="移动目录或文件">移动目录或文件</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 移动文件 </span><br><span class="line"># 相对路径 or 绝对路径</span><br><span class="line">mv [origin file path] [destination file path]</span><br><span class="line"></span><br><span class="line"># 移动目录 </span><br><span class="line"># 相对路径 or 绝对路径</span><br><span class="line">mv [origin list path] [destination file path]</span><br></pre></td></tr></table></figure>
+<h2 id="管理文件">管理文件</h2>
+<h3 id="创建文件">创建文件</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 在当前路径下创建一个名为[file name]的文件, 需要后缀</span><br><span class="line">touch [file name] 	</span><br></pre></td></tr></table></figure>
+<h3 id="查看文件">查看文件</h3>
+<h4 id="显示文件内容">显示文件内容</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cat [file name]</span><br></pre></td></tr></table></figure>
+<h4 id="显示文件源码内容">显示文件源码内容</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cat -A [file name]</span><br></pre></td></tr></table></figure>
+<h4 id="按行显示">按行显示</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 一行一行显示文件内容</span><br><span class="line">more [file name]</span><br><span class="line"></span><br><span class="line"># 一行一行显示文件内容（可以翻页，但是没找到关闭的方式..）</span><br><span class="line">less [file name]</span><br></pre></td></tr></table></figure>
+<h4 id="显示部分内容">显示部分内容</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 显示文件头几行，n表示显示的行数</span><br><span class="line">head -n [file name]	</span><br><span class="line"></span><br><span class="line"># 显示文件尾几行，n表示显示的行数</span><br><span class="line">tail -n [file name]	</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>常用技巧</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
       </tags>
   </entry>
   <entry>
@@ -2385,54 +2385,6 @@ dp[j]+dp[j-i]\)</span></p>
       </tags>
   </entry>
   <entry>
-    <title>损失函数</title>
-    <url>/2024/07/31/%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0/</url>
-    <content><![CDATA[<h1 id="损失函数">损失函数</h1>
-<h4 id="section"></h4>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"></span><br><span class="line"><span class="comment"># dim=0 按列进行计算，dim=1 按行进行计算</span></span><br><span class="line"><span class="comment"># softmax ——&gt; log_softmax --&gt; NLLLOSS--&gt; cross_entropy</span></span><br><span class="line"></span><br><span class="line">x = torch.randn(<span class="number">3</span>, <span class="number">5</span>, requires_grad=<span class="literal">True</span>)</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">tensor([[ 1.3962, -0.2568, -0.7142,  1.1941,  0.5695],</span></span><br><span class="line"><span class="string">        [-0.7136, -1.0663,  1.7642,  0.5170, -0.1858],</span></span><br><span class="line"><span class="string">        [ 0.0424, -0.3354, -0.9049,  0.6952,  1.3032]], requires_grad=True)</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line">y = torch.empty(<span class="number">3</span>, dtype=torch.long).random_(<span class="number">5</span>)</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">tensor([4, 3, 0])</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
-<h2 id="softmax">Softmax</h2>
-<p>Softmax是网络输出后第一步操作，其公式可表示为：</p>
-<p><span class="math display">\[
-\frac{e^{v_{y_n}}}{\sum_{m=1}^K e^{v_m}}
-\]</span>
-由于网络的输出有正有负，有大有小，Softmax主要是将输出概率标准化到 <span class="math inline">\([0,1]\)</span></p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 原理： 1、所有值取指数  2、每个值分别除以总数（三个值相加），得到的三个值相加为一，构造类似概率</span></span><br><span class="line">a = torch.exp(x)</span><br><span class="line">a /= torch.unsqueeze(torch.<span class="built_in">sum</span>(a, dim=<span class="number">1</span>),dim=<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">b = torch.softmax(x, dim=<span class="number">1</span>)  <span class="comment"># softmax 得到的值,0 - 1 之间</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;手算结果：<span class="subst">&#123;a&#125;</span>, \nsoftmax结果：<span class="subst">&#123;b&#125;</span>&quot;</span>)  <span class="comment"># 验证 torch.softmax 计算过程</span></span><br><span class="line"></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">手算结果：tensor([[0.3911, 0.3240, 0.0895, 0.1785, 0.0168],</span></span><br><span class="line"><span class="string">        [0.3382, 0.1688, 0.3726, 0.0407, 0.0798],</span></span><br><span class="line"><span class="string">        [0.2213, 0.1558, 0.2684, 0.3061, 0.0484]], grad_fn=&lt;DivBackward0&gt;), </span></span><br><span class="line"><span class="string">softmax结果：tensor([[0.3911, 0.3240, 0.0895, 0.1785, 0.0168],</span></span><br><span class="line"><span class="string">        [0.3382, 0.1688, 0.3726, 0.0407, 0.0798],</span></span><br><span class="line"><span class="string">        [0.2213, 0.1558, 0.2684, 0.3061, 0.0484]], grad_fn=&lt;SoftmaxBackward0&gt;)</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
-<h2 id="log_softmax">Log_Softmax</h2>
-<p>在Softmax之后进行log(以e为底)，其公式可表示为： <span class="math display">\[
-\log \left(\frac{e^{v_{y_n}}}{\sum_{m=1}^K e^{v_m}}\right)
-\]</span></p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 在softmax的基础上对每个元素求log</span></span><br><span class="line">c = torch.log(a)  <span class="comment"># 给每个元素取对数</span></span><br><span class="line">d = torch.log_softmax(x, dim=<span class="number">1</span>)  <span class="comment"># 一定为负值</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;手算结果：<span class="subst">&#123;c&#125;</span>, \nlog_softmax结果：<span class="subst">&#123;d&#125;</span>&quot;</span>)  <span class="comment"># 验证 torch.log_softmax 计算过程</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">手算结果：tensor([[0.3911, 0.3240, 0.0895, 0.1785, 0.0168],</span></span><br><span class="line"><span class="string">        [0.3382, 0.1688, 0.3726, 0.0407, 0.0798],</span></span><br><span class="line"><span class="string">        [0.2213, 0.1558, 0.2684, 0.3061, 0.0484]], grad_fn=&lt;DivBackward0&gt;), </span></span><br><span class="line"><span class="string">softmax结果：tensor([[0.3911, 0.3240, 0.0895, 0.1785, 0.0168],</span></span><br><span class="line"><span class="string">        [0.3382, 0.1688, 0.3726, 0.0407, 0.0798],</span></span><br><span class="line"><span class="string">        [0.2213, 0.1558, 0.2684, 0.3061, 0.0484]], grad_fn=&lt;SoftmaxBackward0&gt;)</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
-<h2 id="nllloss">NLLLoss</h2>
-<p>NLLLoss损失，即对Log_Softmax之后的结果，将样本标签对应位置的数值进行相加，再除以样本量，最后再去负号，因为log之后是负数，损失需要转换为正值。</p>
-<p>对 $[− 1.5425 , − 1.4425 , − 1.3425 , − 1.2425 ] <span class="math inline">\(和\)</span> [ − 1.3863 , − 1.3863 , − 1.3863 , −
-1.3863 ] <span class="math inline">\(标签对应位置\)</span>target = [2,
-3]<span class="math inline">\(上的数值相加除样本数量再取负，即：\)</span>$
--=1.3644 $$</p>
-<p><span class="math display">\[
-\begin{aligned}
-&amp; \operatorname{NLL}(\log (\operatorname{softmax}(\text { input })),
-\text { target })=-\Sigma_{\mathrm{i}=1}^{\mathrm{n}} \text { OneHot
-}(\text { target })_{\mathrm{i}} \times \log
-\left(\operatorname{softmax}(\text { input })_{\mathrm{i}}\right)
-(\text { input } \left.\in \mathbf{R}^{\mathbf{m} \times
-\mathbf{n}}\right)
-\end{aligned}
-\]</span></p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 将y作为index，对应x的数相加，除以样本量，取负</span></span><br><span class="line">e = - torch.<span class="built_in">sum</span>(c[np.arange(<span class="built_in">len</span>(y)), y]) /  <span class="built_in">len</span>(y)</span><br><span class="line"></span><br><span class="line">nll_loss = torch.nn.NLLLoss()</span><br><span class="line">f = nll_loss(c, y)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;手算结果：<span class="subst">&#123;e&#125;</span>, NLLLoss结果<span class="subst">&#123;f&#125;</span>&quot;</span>)  <span class="comment"># 验证 torch.log_softmax 计算过程</span></span><br><span class="line"><span class="comment"># 手算结果：1.8381218910217285, NLLLoss结果1.8381218910217285</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h2 id="crossentropyloss">CrossEntropyLoss</h2>
-<p><span class="math inline">\(CrossEntropy\_Loss = Softmax + Log +
-NLLLoss = Log\_Softmax + NLLLoss\)</span></p>
-<p><span class="math display">\[
--\frac{1}{N} \sum_{n=1}^N \log \left(\frac{e^{v_{y_n}}}{\sum_{m=1}^K
-e^{v_m}}\right)
-\]</span></p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">cross_loss = torch.nn.CrossEntropyLoss()</span><br><span class="line">g = cross_loss(x, y)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;CrossEntropyLoss：<span class="subst">&#123;g&#125;</span>, NLLLoss结果<span class="subst">&#123;f&#125;</span>&quot;</span>)  <span class="comment"># 验证 torch.CrossEntropyLoss 计算过程</span></span><br><span class="line"><span class="comment"># CrossEntropyLoss：1.8381218910217285, NLLLoss结果1.8381218910217285</span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>机器学习</category>
-      </categories>
-  </entry>
-  <entry>
     <title>基础算法</title>
     <url>/2024/07/30/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95/</url>
     <content><![CDATA[<h1 id="基础算法">基础算法</h1>
@@ -2518,6 +2470,54 @@ AcWing题库</a></p>
 ]]></content>
       <categories>
         <category>算法笔记</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>损失函数</title>
+    <url>/2024/07/31/%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0/</url>
+    <content><![CDATA[<h1 id="损失函数">损失函数</h1>
+<h4 id="section"></h4>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"></span><br><span class="line"><span class="comment"># dim=0 按列进行计算，dim=1 按行进行计算</span></span><br><span class="line"><span class="comment"># softmax ——&gt; log_softmax --&gt; NLLLOSS--&gt; cross_entropy</span></span><br><span class="line"></span><br><span class="line">x = torch.randn(<span class="number">3</span>, <span class="number">5</span>, requires_grad=<span class="literal">True</span>)</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">tensor([[ 1.3962, -0.2568, -0.7142,  1.1941,  0.5695],</span></span><br><span class="line"><span class="string">        [-0.7136, -1.0663,  1.7642,  0.5170, -0.1858],</span></span><br><span class="line"><span class="string">        [ 0.0424, -0.3354, -0.9049,  0.6952,  1.3032]], requires_grad=True)</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line">y = torch.empty(<span class="number">3</span>, dtype=torch.long).random_(<span class="number">5</span>)</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">tensor([4, 3, 0])</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+<h2 id="softmax">Softmax</h2>
+<p>Softmax是网络输出后第一步操作，其公式可表示为：</p>
+<p><span class="math display">\[
+\frac{e^{v_{y_n}}}{\sum_{m=1}^K e^{v_m}}
+\]</span>
+由于网络的输出有正有负，有大有小，Softmax主要是将输出概率标准化到 <span class="math inline">\([0,1]\)</span></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 原理： 1、所有值取指数  2、每个值分别除以总数（三个值相加），得到的三个值相加为一，构造类似概率</span></span><br><span class="line">a = torch.exp(x)</span><br><span class="line">a /= torch.unsqueeze(torch.<span class="built_in">sum</span>(a, dim=<span class="number">1</span>),dim=<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">b = torch.softmax(x, dim=<span class="number">1</span>)  <span class="comment"># softmax 得到的值,0 - 1 之间</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;手算结果：<span class="subst">&#123;a&#125;</span>, \nsoftmax结果：<span class="subst">&#123;b&#125;</span>&quot;</span>)  <span class="comment"># 验证 torch.softmax 计算过程</span></span><br><span class="line"></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">手算结果：tensor([[0.3911, 0.3240, 0.0895, 0.1785, 0.0168],</span></span><br><span class="line"><span class="string">        [0.3382, 0.1688, 0.3726, 0.0407, 0.0798],</span></span><br><span class="line"><span class="string">        [0.2213, 0.1558, 0.2684, 0.3061, 0.0484]], grad_fn=&lt;DivBackward0&gt;), </span></span><br><span class="line"><span class="string">softmax结果：tensor([[0.3911, 0.3240, 0.0895, 0.1785, 0.0168],</span></span><br><span class="line"><span class="string">        [0.3382, 0.1688, 0.3726, 0.0407, 0.0798],</span></span><br><span class="line"><span class="string">        [0.2213, 0.1558, 0.2684, 0.3061, 0.0484]], grad_fn=&lt;SoftmaxBackward0&gt;)</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+<h2 id="log_softmax">Log_Softmax</h2>
+<p>在Softmax之后进行log(以e为底)，其公式可表示为： <span class="math display">\[
+\log \left(\frac{e^{v_{y_n}}}{\sum_{m=1}^K e^{v_m}}\right)
+\]</span></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 在softmax的基础上对每个元素求log</span></span><br><span class="line">c = torch.log(a)  <span class="comment"># 给每个元素取对数</span></span><br><span class="line">d = torch.log_softmax(x, dim=<span class="number">1</span>)  <span class="comment"># 一定为负值</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;手算结果：<span class="subst">&#123;c&#125;</span>, \nlog_softmax结果：<span class="subst">&#123;d&#125;</span>&quot;</span>)  <span class="comment"># 验证 torch.log_softmax 计算过程</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">手算结果：tensor([[0.3911, 0.3240, 0.0895, 0.1785, 0.0168],</span></span><br><span class="line"><span class="string">        [0.3382, 0.1688, 0.3726, 0.0407, 0.0798],</span></span><br><span class="line"><span class="string">        [0.2213, 0.1558, 0.2684, 0.3061, 0.0484]], grad_fn=&lt;DivBackward0&gt;), </span></span><br><span class="line"><span class="string">softmax结果：tensor([[0.3911, 0.3240, 0.0895, 0.1785, 0.0168],</span></span><br><span class="line"><span class="string">        [0.3382, 0.1688, 0.3726, 0.0407, 0.0798],</span></span><br><span class="line"><span class="string">        [0.2213, 0.1558, 0.2684, 0.3061, 0.0484]], grad_fn=&lt;SoftmaxBackward0&gt;)</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+<h2 id="nllloss">NLLLoss</h2>
+<p>NLLLoss损失，即对Log_Softmax之后的结果，将样本标签对应位置的数值进行相加，再除以样本量，最后再去负号，因为log之后是负数，损失需要转换为正值。</p>
+<p>对 $[− 1.5425 , − 1.4425 , − 1.3425 , − 1.2425 ] <span class="math inline">\(和\)</span> [ − 1.3863 , − 1.3863 , − 1.3863 , −
+1.3863 ] <span class="math inline">\(标签对应位置\)</span>target = [2,
+3]<span class="math inline">\(上的数值相加除样本数量再取负，即：\)</span>$
+-=1.3644 $$</p>
+<p><span class="math display">\[
+\begin{aligned}
+&amp; \operatorname{NLL}(\log (\operatorname{softmax}(\text { input })),
+\text { target })=-\Sigma_{\mathrm{i}=1}^{\mathrm{n}} \text { OneHot
+}(\text { target })_{\mathrm{i}} \times \log
+\left(\operatorname{softmax}(\text { input })_{\mathrm{i}}\right)
+(\text { input } \left.\in \mathbf{R}^{\mathbf{m} \times
+\mathbf{n}}\right)
+\end{aligned}
+\]</span></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 将y作为index，对应x的数相加，除以样本量，取负</span></span><br><span class="line">e = - torch.<span class="built_in">sum</span>(c[np.arange(<span class="built_in">len</span>(y)), y]) /  <span class="built_in">len</span>(y)</span><br><span class="line"></span><br><span class="line">nll_loss = torch.nn.NLLLoss()</span><br><span class="line">f = nll_loss(c, y)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;手算结果：<span class="subst">&#123;e&#125;</span>, NLLLoss结果<span class="subst">&#123;f&#125;</span>&quot;</span>)  <span class="comment"># 验证 torch.log_softmax 计算过程</span></span><br><span class="line"><span class="comment"># 手算结果：1.8381218910217285, NLLLoss结果1.8381218910217285</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="crossentropyloss">CrossEntropyLoss</h2>
+<p><span class="math inline">\(CrossEntropy\_Loss = Softmax + Log +
+NLLLoss = Log\_Softmax + NLLLoss\)</span></p>
+<p><span class="math display">\[
+-\frac{1}{N} \sum_{n=1}^N \log \left(\frac{e^{v_{y_n}}}{\sum_{m=1}^K
+e^{v_m}}\right)
+\]</span></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">cross_loss = torch.nn.CrossEntropyLoss()</span><br><span class="line">g = cross_loss(x, y)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;CrossEntropyLoss：<span class="subst">&#123;g&#125;</span>, NLLLoss结果<span class="subst">&#123;f&#125;</span>&quot;</span>)  <span class="comment"># 验证 torch.CrossEntropyLoss 计算过程</span></span><br><span class="line"><span class="comment"># CrossEntropyLoss：1.8381218910217285, NLLLoss结果1.8381218910217285</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>机器学习</category>
       </categories>
   </entry>
   <entry>
