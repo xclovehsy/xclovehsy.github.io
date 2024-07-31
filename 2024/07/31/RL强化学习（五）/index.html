@@ -1,0 +1,428 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>RL强化学习（五） | XcloveHsy's Blog</title><meta name="author" content="XuCong"><meta name="copyright" content="XuCong"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="RL强化学习（五） 多智能体强化学习 一个系统中存在多个决策者 面临的困难  环境非平稳变化（马尔科夫特性不再满足），每个智能体所对应的环境包含了其他智能体的策略，其他智能体策略的变化导致环境变化的非平稳性。 局部可观，智能体只能观测到环境的部分状态 集中式学习不可行，需要一个集中式控制中心与智能体之间进行大量的信息交互，神经网络的输入输出维度会随智能体数目指数增大，难以收敛。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RL强化学习（五）">
+<meta property="og:url" content="https://xclovehsy.github.io/2024/07/31/RL%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%BA%94%EF%BC%89/index.html">
+<meta property="og:site_name" content="XcloveHsy&#39;s Blog">
+<meta property="og:description" content="RL强化学习（五） 多智能体强化学习 一个系统中存在多个决策者 面临的困难  环境非平稳变化（马尔科夫特性不再满足），每个智能体所对应的环境包含了其他智能体的策略，其他智能体策略的变化导致环境变化的非平稳性。 局部可观，智能体只能观测到环境的部分状态 集中式学习不可行，需要一个集中式控制中心与智能体之间进行大量的信息交互，神经网络的输入输出维度会随智能体数目指数增大，难以收敛。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/爱是相互迁就的两颗心｜情侣头像_1_逗是甜_来自小红书网页版.jpg">
+<meta property="article:published_time" content="2024-07-31T11:21:06.000Z">
+<meta property="article:modified_time" content="2024-07-31T11:27:21.507Z">
+<meta property="article:author" content="XuCong">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/爱是相互迁就的两颗心｜情侣头像_1_逗是甜_来自小红书网页版.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://xclovehsy.github.io/2024/07/31/RL%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%BA%94%EF%BC%89/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":1,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"简"},
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":230},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'RL强化学习（五）',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-07-31 19:27:21'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/爱是相互迁就的两颗心｜情侣头像_1_逗是甜_来自小红书网页版.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">28</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">28</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 清单</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/img3.wallspic.com-bao_jia-zi_ran_jing_guan-de_xing-de_ping_xian-feng_bo-5560x3712.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="XcloveHsy's Blog"><img class="site-icon" src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/爱是相互迁就的两颗心｜情侣头像_1_逗是甜_来自小红书网页版.jpg"/><span class="site-name">XcloveHsy's Blog</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 清单</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">RL强化学习（五）</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-07-31T11:21:06.000Z" title="发表于 2024-07-31 19:21:06">2024-07-31</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-07-31T11:27:21.507Z" title="更新于 2024-07-31 19:27:21">2024-07-31</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0/">强化学习</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="RL强化学习（五）"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="rl强化学习五">RL强化学习（五）</h1>
+<h2 id="多智能体强化学习">多智能体强化学习</h2>
+<p>一个系统中存在多个决策者</p>
+<p><strong>面临的困难</strong></p>
+<ul>
+<li><p>环境非平稳变化（马尔科夫特性不再满足），每个智能体所对应的环境包含了其他智能体的策略，其他智能体策略的变化导致环境变化的非平稳性。</p></li>
+<li><p>局部可观，智能体只能观测到环境的部分状态</p></li>
+<li><p>集中式学习不可行，需要一个集中式控制中心与智能体之间进行大量的信息交互，神经网络的输入输出维度会随智能体数目指数增大，难以收敛。</p></li>
+</ul>
+<h2 id="基本概念">基本概念</h2>
+<h3 id="agent的关系">Agent的关系</h3>
+<ul>
+<li><p>Fully
+cooperative，两个Agent需要相互配合才能完成任务（工业机器人）</p></li>
+<li><p>Fully
+competitive，一方的收益是另一方的损失（捕食者和猎物）</p></li>
+<li><p>Mixed Cooperative &amp;
+competitive，既有竞争又有合作（足球机器人，队伍内是合作，队伍间是博弈）</p></li>
+<li><p>Self-interested，利己主义，只想最大化自己的利益，动作可能让别人获益or损失，不关心别人的利益（股票的期货交易系统、无人车）</p></li>
+</ul>
+<h3 id="state-action">State &amp; Action</h3>
+<p>There are <span class="math inline">\(n\)</span> agents.</p>
+<p>Let <span class="math inline">\(S\)</span> be the state.</p>
+<p>Let <span class="math inline">\(A^i\)</span> be the <span class="math inline">\(i\)</span>-th agent's action.</p>
+<p>State transition: <span class="math inline">\(p\left(s^{\prime} \mid
+s, a^1, \cdots, a^n\right)=\mathbb{P}\left(S^{\prime}=s^{\prime} \mid
+S=s, A^1=a^1, \cdots, A^n=a^n\right).\)</span></p>
+<p>The next state, <span class="math inline">\(S^{\prime}\)</span>,
+depends on all the agents' actions.</p>
+<p>每个Agent的Action都可能影响Env的下个State，所以每个Agent都可以影响其他Agent</p>
+<h3 id="rewards">Rewards</h3>
+<p>Let <span class="math inline">\(R^i\)</span> be the reward received
+by the <span class="math inline">\(i\)</span>-th agent.</p>
+<p>Fully cooperative: <span class="math inline">\(R^1=R^2=\cdots=R^n\)</span>.</p>
+<p>Fully competitive: <span class="math inline">\(R^1
+\propto-R^2\)</span>.</p>
+<p><span class="math inline">\(R^i\)</span> depends on <span class="math inline">\(A^i\)</span> as well as all the other agents'
+actions <span class="math inline">\(\left\{A^j\right\}_{j \neq
+i}\)</span>.</p>
+<h3 id="returns">Returns</h3>
+<p>Let <span class="math inline">\(R_t^i\)</span> be the reward received
+by the <span class="math inline">\(i\)</span>-th agent at time <span class="math inline">\(t\)</span>. Return (of the <span class="math inline">\(i\)</span>-th agent): <span class="math display">\[
+U_t^i=R_t^i+R_{t+1}^i+R_{t+2}^i+R_{t+3}^i+\cdots
+\]</span></p>
+<p>Discounted return (of the <span class="math inline">\(i\)</span>-th
+agent): <span class="math display">\[
+U_t^i=R_t^i+\gamma \cdot R_{t+1}^i+\gamma^2 \cdot R_{t+2}^i+\gamma^3
+\cdot R_{t+3}^i+\cdots
+\]</span></p>
+<p>Here, <span class="math inline">\(\gamma \in[0,1]\)</span> is the
+discount rate.</p>
+<h3 id="policy-network">Policy Network</h3>
+<p>Each agent has its own policy network: <span class="math inline">\(\pi\left(a^i \mid s ;
+\boldsymbol{\theta}^i\right)\)</span>.</p>
+<p>Policy networks can be exchangeable: <span class="math inline">\(\boldsymbol{\theta}^1=\boldsymbol{\theta}^2=\cdots=\boldsymbol{\theta}^n\)</span>.</p>
+<ul>
+<li>Self-driving cars can have the same policy.</li>
+</ul>
+<p>Policy networks can be nonexchangeable: <span class="math inline">\(\boldsymbol{\theta}^i \neq
+\boldsymbol{\theta}^j\)</span>.</p>
+<ul>
+<li>Soccer players have different roles, e.g., striker, defender,
+goalkeeper.</li>
+</ul>
+<h3 id="state-value-function">State-Value Function</h3>
+<p>State-value of the <span class="math inline">\(i\)</span>-th agent:
+(不仅依赖自己的策略，同时依赖其他所有Agent的策略) <span class="math display">\[
+V^i\left(s_t ; \boldsymbol{\theta}^1, \cdots,
+\boldsymbol{\theta}^n\right)=\mathbb{E}\left[U_t^i \mid S_t=s_t\right] .
+\]</span></p>
+<p>The expectation is taken w.r.t. all the future actions and states
+except <span class="math inline">\(S_t\)</span>.</p>
+<p>Randomness in actions: <span class="math inline">\(A_t^j \sim
+\pi\left(\cdot \mid s_t ; \boldsymbol{\theta}^j\right)\)</span>, for all
+<span class="math inline">\(j=1, \cdots, n\)</span>. (That is why the
+state-value <span class="math inline">\(V^i\)</span> depends on <span class="math inline">\(\boldsymbol{\theta}^1, \cdots,
+\boldsymbol{\theta}^n\)</span>.)</p>
+<h2 id="nash-equilibrium纳什均衡">Nash Equilibrium（纳什均衡）</h2>
+<p>Multi-Agent问题收敛的条件</p>
+<p>当其他所有Agent的政策保持不变时，第 <span class="math inline">\(i\)</span>
+个Agent无法通过改变自己的Policy获得更好的预期收益。</p>
+<p>每个Agent都在对其他Agent的Policy做出最佳反应。</p>
+<p>在这种平衡状态下，大家都没动机去改变自己策略</p>
+<p>如果使用Single-Agent的策略梯度算法直接用于Mulit-Agent问题上</p>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231206092127067.png" alt="image-20231206092127067">
+<figcaption aria-hidden="true">image-20231206092127067</figcaption>
+</figure>
+<p>The <span class="math inline">\(i\)</span>-th agent's policy network:
+<span class="math inline">\(\pi\left(a^i \mid s ;
+\boldsymbol{\theta}^i\right)\)</span>.</p>
+<p>The <span class="math inline">\(i\)</span>-th agent's state-value
+function: <span class="math inline">\(V^i\left(s ;
+\boldsymbol{\theta}^1, \cdots,
+\boldsymbol{\theta}^n\right)\)</span>.</p>
+<p>Objective function: <span class="math inline">\(J^i\left(\boldsymbol{\theta}^1, \cdots,
+\boldsymbol{\theta}^n\right)=\mathbb{E}_S\left[V^i\left(S ;
+\boldsymbol{\theta}^1, \cdots,
+\boldsymbol{\theta}^n\right)\right]\)</span>.</p>
+<p>Learn the policy network's parameter, <span class="math inline">\(\boldsymbol{\theta}^i\)</span>, by <span class="math display">\[
+\max _{\boldsymbol{\theta}^i} J^i\left(\boldsymbol{\theta}^1, \cdots,
+\boldsymbol{\theta}^n\right)
+\]</span></p>
+<ul>
+<li>The <span class="math inline">\(1^{\text {st }}\)</span> agent
+solves: <span class="math inline">\(\quad \max
+_{\theta^1}J^1\left(\boldsymbol{\theta}^1, \boldsymbol{\theta}^2,
+\cdots, \boldsymbol{\theta}^n)\right.\)</span>.</li>
+<li>The <span class="math inline">\(2^{\text {nd }}\)</span> agent
+solves: <span class="math inline">\(\quad \max _{\theta^2}
+J^2\left(\boldsymbol{\theta}^1, \boldsymbol{\theta}^2, \cdots,
+\boldsymbol{\theta}^n\right)\)</span>.</li>
+<li>...</li>
+<li>The <span class="math inline">\(n^{\text {th }}\)</span> agent
+solves: <span class="math inline">\(\quad \max _{\boldsymbol{\theta}^n}
+J^n\left(\boldsymbol{\theta}^1, \boldsymbol{\theta}^2, \cdots,
+\boldsymbol{\theta}^n\right)\)</span>.</li>
+</ul>
+<p>每个Agent没有共同的目标，各自更新自己的<span class="math inline">\(\theta^i\)</span>，一个Agent更新策略，可能导致其他所有Agent的目标函数发生变化，大家的目标函数都在不停的发生变化，导致训练很难收敛</p>
+<p>所以不能将Single-Agent的训练策略应用与Multi-Agent问题</p>
+<h2 id="centralized-vs-decentralized">Centralized Vs Decentralized</h2>
+<h3 id="architectures">Architectures</h3>
+<ul>
+<li><p>Fully
+decentralized，每个Agent都用自己观测到的observation、reward去训练策略，Agent之间不通信</p></li>
+<li><p>Fully
+centralized，所有Agent将信息发给中央控制器，中央控制器负责做decision，Agent负责执行</p></li>
+<li><p>Centralized training with decentralized
+execution，中央控制器在训练阶段收集各Agent信息，帮助训练Agent策略网络，训练结束后，Agent自己利用策略网络做decision，不依赖中央控制器通信</p></li>
+</ul>
+<h3 id="partial-observation">Partial Observation</h3>
+<p>An agent may or may not have full knowledge of the state, <span class="math inline">\(s\)</span>.</p>
+<p>Let <span class="math inline">\(o^i\)</span> be the <span class="math inline">\(i\)</span>-th agent's observation.</p>
+<p>Partial observation: <span class="math inline">\(o^i \neq
+S\)</span>.</p>
+<p>Full observation: <span class="math inline">\(\quad
+o^1=\cdots=o^n=s\)</span>.</p>
+<h3 id="fully-decentralized">Fully Decentralized</h3>
+<p>本质就是Single-Agent reinforce learning</p>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231206094004380.png" alt="image-20231206094004380">
+<figcaption aria-hidden="true">image-20231206094004380</figcaption>
+</figure>
+<p>The <span class="math inline">\(i\)</span>-th agent has a policy
+network (actor): <span class="math inline">\(\pi\left(a^i \mid o^i ;
+\boldsymbol{\theta}^i\right)\)</span>.</p>
+<p>The <span class="math inline">\(i\)</span>-th agent has a value
+network (critic): <span class="math inline">\(q\left(o^i, a^i ;
+\mathbf{w}^i\right)\)</span>.</p>
+<p>Agents do not share observations and actions.</p>
+<p>Train the policy and value networks in the same way as the
+single-agent setting.</p>
+<p>This does not work well.</p>
+<h3 id="fully-centralized">Fully Centralized</h3>
+<p>各Agent中没有策略网络，将观测到的信息传递给中央控制器，控制器负责做决策。
+<span class="math display">\[
+\pi\left(a^i \mid o^1, \cdots, o^n ; \boldsymbol{\theta}^i\right) \text
+{, for all } i=1,2, \cdots, n \text {. }
+\]</span> <img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231206094349263.png" alt="image-20231206094349263"></p>
+<p>Let <span class="math inline">\(\mathbf{a}=\left[a^1, a^2, \cdots,
+a^n\right]\)</span> contain all the agents' actions.</p>
+<p>Let <span class="math inline">\(\mathbf{o}=\left[o^1, o^2, \cdots,
+o^n\right]\)</span> contain all the agents' observations.</p>
+<p>The central controller knows <span class="math inline">\(\mathbf{a},
+\mathbf{o}\)</span>, and all the rewards.</p>
+<p>The controller has <span class="math inline">\(n\)</span> policy
+networks and <span class="math inline">\(n\)</span> value networks:</p>
+<ul>
+<li>Policy network (actor) for the <span class="math inline">\(i\)</span>-th agent: <span class="math inline">\(\pi\left(a^i \mid o ;
+\boldsymbol{\theta}^i\right)\)</span>.</li>
+<li>Value network (critic) for the <span class="math inline">\(i\)</span>-th agent: <span class="math inline">\(q\left(o, \mathbf{a} ;
+\mathbf{w}^i\right)\)</span>.</li>
+</ul>
+<p><strong>Centralized Training:</strong> Training is performed by the
+controller.</p>
+<ul>
+<li>The controller knows all the observations, actions, and
+rewards.</li>
+<li>Train <span class="math inline">\(\pi\left(a^i \mid 0 ;
+\boldsymbol{\theta}^i\right)\)</span> using policy gradient.</li>
+<li>Train <span class="math inline">\(q\left(\mathbf{o}, \mathbf{a} ;
+\mathbf{w}^i\right)\)</span> using TD algorithm.</li>
+</ul>
+<p><strong>Centralized Execution:</strong> Decisions are made by the
+controller.</p>
+<ul>
+<li>For all <span class="math inline">\(i\)</span>, the <span class="math inline">\(i\)</span>-th agent sends its observation, <span class="math inline">\(o^i\)</span>, to the controller.</li>
+<li>The controller knows <span class="math inline">\(\mathbf{o}=\left[o^1, o^2, \cdots,
+o^n\right]\)</span>.</li>
+<li>For all <span class="math inline">\(i\)</span>, the controller
+samples action by <span class="math inline">\(a^i \sim \pi\left(\cdot
+\mid \mathbf{o} ; \boldsymbol{\theta}^i\right)\)</span> and sends <span class="math inline">\(a^i\)</span> to the <span class="math inline">\(i\)</span>-th agent.</li>
+</ul>
+<p>中央控制器知道全局的信息，可以帮所有Agent做出好的决策</p>
+<p>但执行速度较慢，Agent都没有决策权，需要等中央来做决策（发送、同步信息都需要花时间，等最慢的Agent）</p>
+<h3 id="centralized-training-with-decentralized-execution">Centralized
+Training with Decentralized Execution</h3>
+<p>Each agent has its own policy network (actor): <span class="math inline">\(\pi\left(a^i \mid o^i ;
+\boldsymbol{\theta}^i\right)\)</span>.</p>
+<p>The central controller has <span class="math inline">\(n\)</span>
+value networks (critics): <span class="math inline">\(q\left(0,
+\mathbf{a} ; \mathbf{w}^i\right)\)</span>.</p>
+<p><strong>Centralized Training:</strong> During training, the central
+controller knows all the agents' observations, actions, and rewards.</p>
+<p><strong>Decentralized Execution:</strong> During execution, the
+central controller and its value networks are not used.</p>
+<h4 id="训练阶段">训练阶段</h4>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231206095643649.png" alt="image-20231206095643649">
+<figcaption aria-hidden="true">image-20231206095643649</figcaption>
+</figure>
+<p>The central controller trains the critics, <span class="math inline">\(q\left(\mathbf{o}, \mathbf{a} ;
+\mathbf{w}^i\right)\)</span>, for all <span class="math inline">\(i\)</span>.</p>
+<p>To update <span class="math inline">\(\mathbf{w}^i\)</span>,
+<strong>TD algorithm</strong> takes as inputs:</p>
+<ul>
+<li>All the actions: <span class="math inline">\(\mathrm{a}=\left[a^1,
+a^2, \cdots, a^n\right]\)</span>.</li>
+<li>All the observations: <span class="math inline">\(\mathbf{o}=\left[o^1, o^2, \cdots,
+o^n\right]\)</span>.</li>
+<li>The <span class="math inline">\(i\)</span>-th reward: <span class="math inline">\(r^i\)</span>.</li>
+</ul>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231206095819592.png" alt="image-20231206095819592">
+<figcaption aria-hidden="true">image-20231206095819592</figcaption>
+</figure>
+<p>Each agent locally trains the actor, <span class="math inline">\(\pi\left(a^i \mid o^i ;
+\boldsymbol{\theta}^i\right)\)</span>, using <strong>policy
+gradient.</strong></p>
+<p>To update <span class="math inline">\(\boldsymbol{\theta}^i\)</span>,
+the policy gradient algorithm takes as input <span class="math inline">\(\left(a^i, o^i, a^i\right)\)</span>,</p>
+<h4 id="执行阶段">执行阶段</h4>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231206100104303.png" alt="image-20231206100104303">
+<figcaption aria-hidden="true">image-20231206100104303</figcaption>
+</figure>
+<p>每个Agent独立接受observation，依据自己的策略网络做决策，Agent之间不通信</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://xclovehsy.github.io">XuCong</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://xclovehsy.github.io/2024/07/31/RL%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%BA%94%EF%BC%89/">https://xclovehsy.github.io/2024/07/31/RL%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%BA%94%EF%BC%89/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://xclovehsy.github.io" target="_blank">XcloveHsy's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/爱是相互迁就的两颗心｜情侣头像_1_逗是甜_来自小红书网页版.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2024/07/31/%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0/" title="损失函数"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">损失函数</div></div></a></div><div class="next-post pull-right"><a href="/2024/07/31/RL%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%EF%BC%88%E5%9B%9B%EF%BC%89/" title="RL强化学习（四）"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">RL强化学习（四）</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/爱是相互迁就的两颗心｜情侣头像_1_逗是甜_来自小红书网页版.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">XuCong</div><div class="author-info__description">Nothing is impossible</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">28</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">28</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/xclovehsy" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:xclovehsy@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#rl%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%E4%BA%94"><span class="toc-number">1.</span> <span class="toc-text">RL强化学习（五）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E6%99%BA%E8%83%BD%E4%BD%93%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0"><span class="toc-number">1.1.</span> <span class="toc-text">多智能体强化学习</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-number">1.2.</span> <span class="toc-text">基本概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#agent%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">1.2.1.</span> <span class="toc-text">Agent的关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#state-action"><span class="toc-number">1.2.2.</span> <span class="toc-text">State &amp; Action</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#rewards"><span class="toc-number">1.2.3.</span> <span class="toc-text">Rewards</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#returns"><span class="toc-number">1.2.4.</span> <span class="toc-text">Returns</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#policy-network"><span class="toc-number">1.2.5.</span> <span class="toc-text">Policy Network</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#state-value-function"><span class="toc-number">1.2.6.</span> <span class="toc-text">State-Value Function</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#nash-equilibrium%E7%BA%B3%E4%BB%80%E5%9D%87%E8%A1%A1"><span class="toc-number">1.3.</span> <span class="toc-text">Nash Equilibrium（纳什均衡）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#centralized-vs-decentralized"><span class="toc-number">1.4.</span> <span class="toc-text">Centralized Vs Decentralized</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#architectures"><span class="toc-number">1.4.1.</span> <span class="toc-text">Architectures</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#partial-observation"><span class="toc-number">1.4.2.</span> <span class="toc-text">Partial Observation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#fully-decentralized"><span class="toc-number">1.4.3.</span> <span class="toc-text">Fully Decentralized</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#fully-centralized"><span class="toc-number">1.4.4.</span> <span class="toc-text">Fully Centralized</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#centralized-training-with-decentralized-execution"><span class="toc-number">1.4.5.</span> <span class="toc-text">Centralized
+Training with Decentralized Execution</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83%E9%98%B6%E6%AE%B5"><span class="toc-number">1.4.5.1.</span> <span class="toc-text">训练阶段</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%89%A7%E8%A1%8C%E9%98%B6%E6%AE%B5"><span class="toc-number">1.4.5.2.</span> <span class="toc-text">执行阶段</span></a></li></ol></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/07/31/%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0/" title="损失函数">损失函数</a><time datetime="2024-07-31T11:28:37.000Z" title="发表于 2024-07-31 19:28:37">2024-07-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/07/31/RL%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%BA%94%EF%BC%89/" title="RL强化学习（五）">RL强化学习（五）</a><time datetime="2024-07-31T11:21:06.000Z" title="发表于 2024-07-31 19:21:06">2024-07-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/07/31/RL%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%EF%BC%88%E5%9B%9B%EF%BC%89/" title="RL强化学习（四）">RL强化学习（四）</a><time datetime="2024-07-31T10:05:48.000Z" title="发表于 2024-07-31 18:05:48">2024-07-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/07/31/RL%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%89%EF%BC%89/" title="RL强化学习（三）">RL强化学习（三）</a><time datetime="2024-07-31T10:05:43.000Z" title="发表于 2024-07-31 18:05:43">2024-07-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/07/31/RL%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%BA%8C%EF%BC%89/" title="RL强化学习（二）">RL强化学习（二）</a><time datetime="2024-07-31T10:05:03.000Z" title="发表于 2024-07-31 18:05:03">2024-07-31</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By XuCong</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">简</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="/js/tw_cn.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.1
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, '']
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.min.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typesetPromise()
+}</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=4.13.0"></script></div></div></body></html>
