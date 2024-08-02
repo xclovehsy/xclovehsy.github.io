@@ -41,7 +41,8 @@ Q[i])\)</span></p>
 </ul>
 ]]></content>
       <categories>
-        <category>刷题</category>
+        <category>算法</category>
+        <category>回溯</category>
       </categories>
       <tags>
         <tag>回溯</tag>
@@ -49,9 +50,150 @@ Q[i])\)</span></p>
       </tags>
   </entry>
   <entry>
-    <title>RL强化学习（三）</title>
+    <title>【RL】基本概念</title>
+    <url>/2024/07/31/RL%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89/</url>
+    <content><![CDATA[<h1 id="rl基本概念">【RL】基本概念</h1>
+<h2 id="概率统计">概率统计</h2>
+<p><strong>随机变量：</strong>一个未知的量，它的值取决于一个随机事件的结果。</p>
+<p><strong>概率密度函数：</strong>随机变量在某个确定的取值点附近的可能性（连续概率分布
+&amp; 离散概率分布）</p>
+<p><strong>期望：</strong>连续分布（p(x)和f(x)的乘积做定积分） &amp;
+离散分布（对p(x)和f(x)的乘积进行连加）</p>
+<p>随机抽样： from numpy.random import choice / sample =
+choice(['a','b','c'], size=100, p=[0.2,0,5,0,3])</p>
+<h2 id="简介">简介</h2>
+<h3 id="基本概念">基本概念</h3>
+<ul>
+<li><p>监督学习：
+用于处理<strong>分类与回归问题</strong>，这类问题的任务是对输入X与输入Y之间的映射关系进行拟合，从而对不同X对应的Y进行预测</p></li>
+<li><p>强化学习：用于求解<strong>序列决策问题</strong>，这一类问题的任务是求解一个策略用于指导机器在不同状态下选择最佳动作。</p></li>
+</ul>
+<p>核心思想：强化学习的做法是让机器自行对动作进行探索，然后根据环境的反馈，不断地对策略进行调整，最终目标是使得环境收益尽可能地大。</p>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231205150300996.png" alt="image-20231205150300996">
+<figcaption aria-hidden="true">image-20231205150300996</figcaption>
+</figure>
+<h3 id="state-action">State &amp; Action</h3>
+<blockquote>
+<p>马尔可夫决策过程</p>
+</blockquote>
+<p>马尔可夫决策：<span class="math inline">\(\left(S_t, A_t, R_t,
+P_t\right)\)</span></p>
+<ul>
+<li><p><span class="math inline">\(S_t:\)</span> 环境状态</p></li>
+<li><p><span class="math inline">\(A_t\)</span> : 智能体的动作</p></li>
+<li><p><span class="math inline">\(Policy\ \pi:\)</span>
+状态到动作之间的映射</p></li>
+<li><p><span class="math inline">\(\boldsymbol{R}_t\)</span> : 奖励函数,
+取决于当前状态与动作</p></li>
+<li><p><span class="math inline">\(P_t=p\left(S_{t+1}=s^{\prime} \mid
+S_t=s, A_t=a\right)\)</span> : 状态转移概率</p></li>
+<li><p>学习与决策者被称为<strong>智能体</strong> （agent）</p></li>
+<li><p>与智能体交互的部分则称为<strong>环境</strong> （state）</p></li>
+</ul>
+<p><strong>环境下一时刻的状态与奖励均只取决于当前时刻的状态与智能体的动作</strong>（action）</p>
+<h3 id="policy-pi">Policy <span class="math inline">\(\pi\)</span></h3>
+<p>本质是一个概率密度函数，根据观测到的状态来进行决策，来控制agent运动。
+<span class="math display">\[
+\pi(a \mid s)=P(A=a \mid S=s)
+\]</span></p>
+<h3 id="state-transition">State Transition</h3>
+<p>状态转移可以使用p函数表示，条件概率密度函数,意思是如果观测到当前的状态s以及动作a，p函数输出s’的概率</p>
+<p><span class="math display">\[
+p\left(s^{\prime} \mid s, a\right)=P\left(S^{\prime}=s^{\prime} \mid
+S=s, A=a\right)
+\]</span></p>
+<h3 id="rewardr_t-returnu_t">Reward（<span class="math inline">\(R_t\)</span>） &amp; Return（<span class="math inline">\(U_t\)</span>）</h3>
+<blockquote>
+<p>Reward（奖励）</p>
+</blockquote>
+<p><span class="math display">\[
+R_t=R\left(s_t, a_t\right) \quad
+\]</span></p>
+<p><strong>短期利益，</strong>在某状态下采取某动作的好坏，在当前环境中获得的<strong>短期利益</strong>，只考虑动作对当前状态的影响</p>
+<blockquote>
+<p>Return（收益）Discounted Return</p>
+</blockquote>
+<p><span class="math display">\[
+\quad U_t = R_{t+1}+\gamma R_{t+2}+\gamma^2
+R_{t+3}+\cdots=\sum_{k=0}^{\infty} \gamma^k R_{t+k+1} \quad
+\]</span></p>
+<p><strong>长远利益，</strong>t时刻的return叫做 <span class="math inline">\(U_t\)</span> or <span class="math inline">\(G_t\)</span>。
+指将t时刻到未来所有折扣奖励之和（<strong><span class="math inline">\(\gamma\)</span>
+折扣因子</strong>，超参数，并且越往后，衰减越大），<strong>当前的奖励比未来奖励影响大</strong>。</p>
+<p>某一时刻<span class="math inline">\(t\)</span>，对于未来<span class="math inline">\(R_i(i&gt;t)\)</span>，依赖于所有<span class="math inline">\(S_i\)</span>以及<span class="math inline">\(A_i\)</span>，由于Action、State的转移是随机的，因此
+<span class="math inline">\(U_t\)</span> 是一个随机变量</p>
+<h3 id="action-value-functionq_pi">Action-Value Function（<span class="math inline">\(Q_\pi\)</span>）</h3>
+<blockquote>
+<p>动作-状态价值函数 <span class="math inline">\(Q_\pi(s_t,a_t)\)</span></p>
+</blockquote>
+<p><strong>表示在给定状态-动作对的条件下未来依据某策略做决策所能获得的平均收益</strong></p>
+<p>Discounted Return: <span class="math inline">\(U_t=R_t+\gamma
+R_{t+1}+\gamma^2 R_{t+2}+\gamma^3 R_{t+3}+\cdots\)</span></p>
+<p>定义<span class="math inline">\(Policy\ \pi\)</span>的 Action-value
+function： <span class="math display">\[
+Q_\pi\left(s_t, a_t\right)={\mathbb{E}}\left[U_t \mid S_t=s_t,
+A_t=a_t\right] .
+\]</span></p>
+<p>由于 <span class="math inline">\(U_t\)</span> 依赖于 <span class="math inline">\(A_t, A_{t+1}, A_{t+2}, \cdots\)</span> 以及 <span class="math inline">\(S_t, S_{t+1}, S_{t+2},
+\cdots\)</span>，而Action和State的转移是随机的。</p>
+<p>因此<span class="math inline">\(U_t\)</span>是一个随机变量，它依赖所有的动作和状态，在t时刻并不知道<span class="math inline">\(U_t\)</span>是什么，因此求期望<span class="math inline">\(\mathbb{E}\)</span>积掉随机性。</p>
+<p>利用期望<span class="math inline">\(\mathbb{E}\)</span>消除<span class="math inline">\(A_i,S_i(i&gt;t)\)</span>，留下<span class="math inline">\(A_t,S_t\)</span></p>
+<blockquote>
+<p>最优动作价值函数（Optimal Action-Value Function）<span class="math inline">\(Q^\star(s_t,a_t)\)</span></p>
+</blockquote>
+<p><strong>定义最佳策略下的动作价值函数为最优价值函数</strong> <span class="math display">\[
+Q^*\left(s_t, a_t\right)=\max _\pi Q_\pi\left(s_t, a_t\right) .
+\]</span> <strong>核心：</strong>求解最优策略也就等价于求解最优Q值。</p>
+<p><strong>学习目标</strong>：学习到一个最优策略 <span class="math inline">\(\pi^*\)</span>,
+使智能体在任意状态下的价值最大最优动作-状态价值函数（最优 <span class="math inline">\(\mathrm{Q}\)</span> 值）</p>
+<h3 id="state-value-function-v_pi">State-Value Function (<span class="math inline">\(V_\pi\)</span>)</h3>
+<blockquote>
+<p>状态价值函数 <span class="math inline">\(V_\pi(s_t)\)</span></p>
+</blockquote>
+<p><span class="math inline">\(V_\pi\)</span>是动作价值函数<span class="math inline">\(Q_\pi\)</span>的期望。</p>
+<p><span class="math inline">\(Q_\pi(s_t,a_t)\)</span>和<span class="math inline">\(Policy\ \pi,\ s_t,\ a_t\)</span>有关，将动作<span class="math inline">\(a_t\)</span>作为随机变量，然后期望<span class="math inline">\(\mathbb{E}\)</span>把<span class="math inline">\(A_t\)</span>消掉，求期望得到的<span class="math inline">\(V_\pi\)</span>只与<span class="math inline">\(Policy\ \pi,\ s_t\)</span>有关。 <span class="math display">\[
+V_\pi\left(s_t\right)=\mathrm{E}_A\left[Q_\pi\left(s_t, A\right)\right]
+\]</span> <strong>作用</strong>：</p>
+<ol type="1">
+<li><p>对于给定的 <span class="math inline">\(\pi\)</span> ，<span class="math inline">\(V_\pi\)</span> 评价当前的<span class="math inline">\(s_t\)</span>好不好</p></li>
+<li><p>评估 <span class="math inline">\(Policy\ \pi\)</span>
+的好坏</p></li>
+</ol>
+<h3 id="随机性">随机性</h3>
+<blockquote>
+<p>动作随机</p>
+</blockquote>
+<p>动作是根据<span class="math inline">\(Policy\
+\pi\)</span>随机抽样得到的，利用<span class="math inline">\(Policy\
+\pi\)</span>来控制Agent.</p>
+<p>给定当前状态 S，Agent的动作A是按照<span class="math inline">\(Policy\
+\pi\)</span>输出的概率来随机抽样 <span class="math display">\[
+\begin{aligned}
+&amp; \mathbb{P}[A=a \mid S=s]=\pi(a \mid s)
+\end{aligned}
+\]</span></p>
+<blockquote>
+<p>状态转移随机</p>
+</blockquote>
+<p>Environment用状态转移函数p算出概率，然后用随机抽样得到下一个状态S’
+<span class="math display">\[
+\mathbb{P}\left[S^{\prime}=s^{\prime} \mid S=s,
+A=a\right]=p\left(s^{\prime} \mid s, a\right)
+\]</span></p>
+]]></content>
+      <categories>
+        <category>机器学习</category>
+        <category>强化学习</category>
+      </categories>
+      <tags>
+        <tag>概率统计</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>【RL】Policy-Based Learning</title>
     <url>/2024/07/31/RL%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%89%EF%BC%89/</url>
-    <content><![CDATA[<h1 id="rl强化学习三">RL强化学习（三）</h1>
+    <content><![CDATA[<h1 id="rlpolicy-based-learning">【RL】Policy-Based Learning</h1>
 <h2 id="基于策略学习">基于策略学习</h2>
 <p><strong>思想</strong>：直接对最优策略进行估计。</p>
 <ol type="1">
@@ -308,6 +450,7 @@ v\left(s_t ; \mathbf{w}\right)}{\partial \mathbf{w}}\)</span></li>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Net</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    定义三层网络结构</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, n_feature, n_hidden, n_output</span>):</span></span><br><span class="line">        <span class="built_in">super</span>(Net, self).__init__()</span><br><span class="line">        self.l1 = nn.Linear(n_feature, n_hidden)</span><br><span class="line">        self.l2 = nn.Linear(n_hidden, n_output)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, x</span>):</span></span><br><span class="line">        x = self.l1(x)</span><br><span class="line">        x = torch.tanh(x)</span><br><span class="line">        x = self.l2(x)</span><br><span class="line">        <span class="keyword">return</span> x</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PolicyGradient</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, n_actions, n_features, n_hidden=<span class="number">10</span>, learning_rate=<span class="number">0.01</span>, reward_decay=<span class="number">0.95</span>, seed=<span class="literal">None</span></span>):</span></span><br><span class="line">        self.n_actions = n_actions</span><br><span class="line">        self.n_features = n_features</span><br><span class="line">        self.n_hidden = n_hidden</span><br><span class="line">        self.lr = learning_rate</span><br><span class="line">        self.gamma = reward_decay</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 存储每个episode的state、action、reward</span></span><br><span class="line">        self.ep_obs, self.ep_as, self.ep_rs = [], [], []</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> seed <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            torch.manual_seed(seed)</span><br><span class="line">            np.random.seed(seed)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 建立网络</span></span><br><span class="line">        self._build_net()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_build_net</span>(<span class="params">self</span>):</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        建立策略网络、优化器</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        self.policy_net = Net(self.n_features, self.n_hidden, self.n_actions)</span><br><span class="line">        self.optimizer = torch.optim.RMSprop(self.policy_net.parameters(), lr=self.lr)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">choose_action</span>(<span class="params">self, observation</span>):</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        利用policy_net计算动作概率分布，依概率选择action</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        x = torch.FloatTensor(observation[np.newaxis, :])</span><br><span class="line">        prob = torch.softmax(self.policy_net(x), dim=<span class="number">1</span>).data.numpy()[<span class="number">0</span>]</span><br><span class="line">        <span class="comment"># print(prob)</span></span><br><span class="line">        <span class="keyword">return</span> np.random.choice(<span class="built_in">range</span>(self.n_actions), p=prob)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">store_transition</span>(<span class="params">self, state, action, reward</span>):</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        保存一个episode中的s,a,r</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        self.ep_obs.append(state)</span><br><span class="line">        self.ep_as.append(action)</span><br><span class="line">        self.ep_rs.append(reward)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">learn</span>(<span class="params">self</span>):</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        一轮结束迭代后更新网络参数</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        <span class="comment"># compute the discounted return ut for all t</span></span><br><span class="line">        ep_ut = torch.tensor(self._discount_and_norm_rewards())</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 计算每个state的action概率</span></span><br><span class="line">        all_prob = self.policy_net(torch.FloatTensor(np.vstack(self.ep_obs)))</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 各state选择的action</span></span><br><span class="line">        all_acts = torch.tensor(self.ep_as)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># cross_entropy combines nn.LogSoftmax() and nn.NLLLoss() in one single class</span></span><br><span class="line">        neg_log_prob = torch.nn.functional.cross_entropy(all_prob, all_acts, reduction=<span class="string">&#x27;none&#x27;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 取均值</span></span><br><span class="line">        loss = torch.mean(neg_log_prob * ep_ut)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 反向传播更新参数</span></span><br><span class="line">        self.optimizer.zero_grad()</span><br><span class="line">        loss.backward()</span><br><span class="line">        self.optimizer.step()</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 清空记录</span></span><br><span class="line">        self.ep_rs, self.ep_as, self.ep_obs = [], [], []</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> ep_ut</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_discount_and_norm_rewards</span>(<span class="params">self</span>):</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        compute the discounted return ut for all t</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        ep_ut = np.zeros_like(self.ep_rs)</span><br><span class="line">        discount_reward = <span class="number">0</span></span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">reversed</span>(<span class="built_in">range</span>(<span class="built_in">len</span>(self.ep_rs))):</span><br><span class="line">            discount_reward = self.ep_rs[i] + discount_reward * self.gamma</span><br><span class="line">            ep_ut[i] = discount_reward</span><br><span class="line"></span><br><span class="line">        ep_ut -= np.mean(ep_ut)</span><br><span class="line">        ep_ut /= np.std(ep_ut)</span><br><span class="line">        <span class="keyword">return</span> ep_ut</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span>(<span class="params">argv</span>):</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">with</span> gym.make(<span class="string">&quot;llvm-ic-v0&quot;</span>, benchmark=benchmark) <span class="keyword">as</span> env:</span><br><span class="line">        </span><br><span class="line">        RL = PolicyGradient(...)</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">for</span> episode <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, FLAGS.episodes + <span class="number">1</span>):</span><br><span class="line">            <span class="comment"># 初始化环境</span></span><br><span class="line">            observation = env.reset()</span><br><span class="line"></span><br><span class="line">            <span class="keyword">for</span> step_episode <span class="keyword">in</span> <span class="built_in">range</span>(FLAGS.episode_length):</span><br><span class="line">                action = <span class="built_in">int</span>(RL.choose_action(observation))</span><br><span class="line"></span><br><span class="line">                observation_, reward, done, info = env.step(action)</span><br><span class="line">                RL.store_transition(observation, action, reward)</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> done <span class="keyword">or</span> (step_episode == FLAGS.episode_length - <span class="number">1</span>):</span><br><span class="line">                    RL.learn()</span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">                observation = observation_</span><br><span class="line">        </span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
+        <category>机器学习</category>
         <category>强化学习</category>
       </categories>
       <tags>
@@ -315,149 +458,9 @@ v\left(s_t ; \mathbf{w}\right)}{\partial \mathbf{w}}\)</span></li>
       </tags>
   </entry>
   <entry>
-    <title>RL强化学习（一）</title>
-    <url>/2024/07/31/RL%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89/</url>
-    <content><![CDATA[<h1 id="rl强化学习一">RL强化学习（一）</h1>
-<h2 id="概率统计">概率统计</h2>
-<p><strong>随机变量：</strong>一个未知的量，它的值取决于一个随机事件的结果。</p>
-<p><strong>概率密度函数：</strong>随机变量在某个确定的取值点附近的可能性（连续概率分布
-&amp; 离散概率分布）</p>
-<p><strong>期望：</strong>连续分布（p(x)和f(x)的乘积做定积分） &amp;
-离散分布（对p(x)和f(x)的乘积进行连加）</p>
-<p>随机抽样： from numpy.random import choice / sample =
-choice(['a','b','c'], size=100, p=[0.2,0,5,0,3])</p>
-<h2 id="简介">简介</h2>
-<h3 id="基本概念">基本概念</h3>
-<ul>
-<li><p>监督学习：
-用于处理<strong>分类与回归问题</strong>，这类问题的任务是对输入X与输入Y之间的映射关系进行拟合，从而对不同X对应的Y进行预测</p></li>
-<li><p>强化学习：用于求解<strong>序列决策问题</strong>，这一类问题的任务是求解一个策略用于指导机器在不同状态下选择最佳动作。</p></li>
-</ul>
-<p>核心思想：强化学习的做法是让机器自行对动作进行探索，然后根据环境的反馈，不断地对策略进行调整，最终目标是使得环境收益尽可能地大。</p>
-<figure>
-<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231205150300996.png" alt="image-20231205150300996">
-<figcaption aria-hidden="true">image-20231205150300996</figcaption>
-</figure>
-<h3 id="state-action">State &amp; Action</h3>
-<blockquote>
-<p>马尔可夫决策过程</p>
-</blockquote>
-<p>马尔可夫决策：<span class="math inline">\(\left(S_t, A_t, R_t,
-P_t\right)\)</span></p>
-<ul>
-<li><p><span class="math inline">\(S_t:\)</span> 环境状态</p></li>
-<li><p><span class="math inline">\(A_t\)</span> : 智能体的动作</p></li>
-<li><p><span class="math inline">\(Policy\ \pi:\)</span>
-状态到动作之间的映射</p></li>
-<li><p><span class="math inline">\(\boldsymbol{R}_t\)</span> : 奖励函数,
-取决于当前状态与动作</p></li>
-<li><p><span class="math inline">\(P_t=p\left(S_{t+1}=s^{\prime} \mid
-S_t=s, A_t=a\right)\)</span> : 状态转移概率</p></li>
-<li><p>学习与决策者被称为<strong>智能体</strong> （agent）</p></li>
-<li><p>与智能体交互的部分则称为<strong>环境</strong> （state）</p></li>
-</ul>
-<p><strong>环境下一时刻的状态与奖励均只取决于当前时刻的状态与智能体的动作</strong>（action）</p>
-<h3 id="policy-pi">Policy <span class="math inline">\(\pi\)</span></h3>
-<p>本质是一个概率密度函数，根据观测到的状态来进行决策，来控制agent运动。
-<span class="math display">\[
-\pi(a \mid s)=P(A=a \mid S=s)
-\]</span></p>
-<h3 id="state-transition">State Transition</h3>
-<p>状态转移可以使用p函数表示，条件概率密度函数,意思是如果观测到当前的状态s以及动作a，p函数输出s’的概率</p>
-<p><span class="math display">\[
-p\left(s^{\prime} \mid s, a\right)=P\left(S^{\prime}=s^{\prime} \mid
-S=s, A=a\right)
-\]</span></p>
-<h3 id="rewardr_t-returnu_t">Reward（<span class="math inline">\(R_t\)</span>） &amp; Return（<span class="math inline">\(U_t\)</span>）</h3>
-<blockquote>
-<p>Reward（奖励）</p>
-</blockquote>
-<p><span class="math display">\[
-R_t=R\left(s_t, a_t\right) \quad
-\]</span></p>
-<p><strong>短期利益，</strong>在某状态下采取某动作的好坏，在当前环境中获得的<strong>短期利益</strong>，只考虑动作对当前状态的影响</p>
-<blockquote>
-<p>Return（收益）Discounted Return</p>
-</blockquote>
-<p><span class="math display">\[
-\quad U_t = R_{t+1}+\gamma R_{t+2}+\gamma^2
-R_{t+3}+\cdots=\sum_{k=0}^{\infty} \gamma^k R_{t+k+1} \quad
-\]</span></p>
-<p><strong>长远利益，</strong>t时刻的return叫做 <span class="math inline">\(U_t\)</span> or <span class="math inline">\(G_t\)</span>。
-指将t时刻到未来所有折扣奖励之和（<strong><span class="math inline">\(\gamma\)</span>
-折扣因子</strong>，超参数，并且越往后，衰减越大），<strong>当前的奖励比未来奖励影响大</strong>。</p>
-<p>某一时刻<span class="math inline">\(t\)</span>，对于未来<span class="math inline">\(R_i(i&gt;t)\)</span>，依赖于所有<span class="math inline">\(S_i\)</span>以及<span class="math inline">\(A_i\)</span>，由于Action、State的转移是随机的，因此
-<span class="math inline">\(U_t\)</span> 是一个随机变量</p>
-<h3 id="action-value-functionq_pi">Action-Value Function（<span class="math inline">\(Q_\pi\)</span>）</h3>
-<blockquote>
-<p>动作-状态价值函数 <span class="math inline">\(Q_\pi(s_t,a_t)\)</span></p>
-</blockquote>
-<p><strong>表示在给定状态-动作对的条件下未来依据某策略做决策所能获得的平均收益</strong></p>
-<p>Discounted Return: <span class="math inline">\(U_t=R_t+\gamma
-R_{t+1}+\gamma^2 R_{t+2}+\gamma^3 R_{t+3}+\cdots\)</span></p>
-<p>定义<span class="math inline">\(Policy\ \pi\)</span>的 Action-value
-function： <span class="math display">\[
-Q_\pi\left(s_t, a_t\right)={\mathbb{E}}\left[U_t \mid S_t=s_t,
-A_t=a_t\right] .
-\]</span></p>
-<p>由于 <span class="math inline">\(U_t\)</span> 依赖于 <span class="math inline">\(A_t, A_{t+1}, A_{t+2}, \cdots\)</span> 以及 <span class="math inline">\(S_t, S_{t+1}, S_{t+2},
-\cdots\)</span>，而Action和State的转移是随机的。</p>
-<p>因此<span class="math inline">\(U_t\)</span>是一个随机变量，它依赖所有的动作和状态，在t时刻并不知道<span class="math inline">\(U_t\)</span>是什么，因此求期望<span class="math inline">\(\mathbb{E}\)</span>积掉随机性。</p>
-<p>利用期望<span class="math inline">\(\mathbb{E}\)</span>消除<span class="math inline">\(A_i,S_i(i&gt;t)\)</span>，留下<span class="math inline">\(A_t,S_t\)</span></p>
-<blockquote>
-<p>最优动作价值函数（Optimal Action-Value Function）<span class="math inline">\(Q^\star(s_t,a_t)\)</span></p>
-</blockquote>
-<p><strong>定义最佳策略下的动作价值函数为最优价值函数</strong> <span class="math display">\[
-Q^*\left(s_t, a_t\right)=\max _\pi Q_\pi\left(s_t, a_t\right) .
-\]</span> <strong>核心：</strong>求解最优策略也就等价于求解最优Q值。</p>
-<p><strong>学习目标</strong>：学习到一个最优策略 <span class="math inline">\(\pi^*\)</span>,
-使智能体在任意状态下的价值最大最优动作-状态价值函数（最优 <span class="math inline">\(\mathrm{Q}\)</span> 值）</p>
-<h3 id="state-value-function-v_pi">State-Value Function (<span class="math inline">\(V_\pi\)</span>)</h3>
-<blockquote>
-<p>状态价值函数 <span class="math inline">\(V_\pi(s_t)\)</span></p>
-</blockquote>
-<p><span class="math inline">\(V_\pi\)</span>是动作价值函数<span class="math inline">\(Q_\pi\)</span>的期望。</p>
-<p><span class="math inline">\(Q_\pi(s_t,a_t)\)</span>和<span class="math inline">\(Policy\ \pi,\ s_t,\ a_t\)</span>有关，将动作<span class="math inline">\(a_t\)</span>作为随机变量，然后期望<span class="math inline">\(\mathbb{E}\)</span>把<span class="math inline">\(A_t\)</span>消掉，求期望得到的<span class="math inline">\(V_\pi\)</span>只与<span class="math inline">\(Policy\ \pi,\ s_t\)</span>有关。 <span class="math display">\[
-V_\pi\left(s_t\right)=\mathrm{E}_A\left[Q_\pi\left(s_t, A\right)\right]
-\]</span> <strong>作用</strong>：</p>
-<ol type="1">
-<li><p>对于给定的 <span class="math inline">\(\pi\)</span> ，<span class="math inline">\(V_\pi\)</span> 评价当前的<span class="math inline">\(s_t\)</span>好不好</p></li>
-<li><p>评估 <span class="math inline">\(Policy\ \pi\)</span>
-的好坏</p></li>
-</ol>
-<h3 id="随机性">随机性</h3>
-<blockquote>
-<p>动作随机</p>
-</blockquote>
-<p>动作是根据<span class="math inline">\(Policy\
-\pi\)</span>随机抽样得到的，利用<span class="math inline">\(Policy\
-\pi\)</span>来控制Agent.</p>
-<p>给定当前状态 S，Agent的动作A是按照<span class="math inline">\(Policy\
-\pi\)</span>输出的概率来随机抽样 <span class="math display">\[
-\begin{aligned}
-&amp; \mathbb{P}[A=a \mid S=s]=\pi(a \mid s)
-\end{aligned}
-\]</span></p>
-<blockquote>
-<p>状态转移随机</p>
-</blockquote>
-<p>Environment用状态转移函数p算出概率，然后用随机抽样得到下一个状态S’
-<span class="math display">\[
-\mathbb{P}\left[S^{\prime}=s^{\prime} \mid S=s,
-A=a\right]=p\left(s^{\prime} \mid s, a\right)
-\]</span></p>
-]]></content>
-      <categories>
-        <category>强化学习</category>
-      </categories>
-      <tags>
-        <tag>概率统计</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>RL强化学习（二）</title>
+    <title>【RL】Value-Based Learning</title>
     <url>/2024/07/31/RL%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%BA%8C%EF%BC%89/</url>
-    <content><![CDATA[<h1 id="rl强化学习二">RL强化学习（二）</h1>
+    <content><![CDATA[<h1 id="rlvalue-based-learning">【RL】Value-Based Learning</h1>
 <h2 id="基于价值学习">基于价值学习</h2>
 <h3 id="discounted-return">Discounted Return</h3>
 <p><span class="math display">\[
@@ -898,18 +901,17 @@ Q(s, a ; \mathbf{w})=V(s ; \mathbf{w}^V)+A(s, a ;
 \]</span></p>
 ]]></content>
       <categories>
+        <category>机器学习</category>
         <category>强化学习</category>
       </categories>
       <tags>
         <tag>价值学习</tag>
-        <tag>TD error</tag>
       </tags>
   </entry>
   <entry>
-    <title>RL强化学习（五）</title>
+    <title>【RL】Multi-Agent Learning</title>
     <url>/2024/07/31/RL%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%BA%94%EF%BC%89/</url>
-    <content><![CDATA[<h1 id="rl强化学习五">RL强化学习（五）</h1>
-<h2 id="多智能体强化学习">多智能体强化学习</h2>
+    <content><![CDATA[<h1 id="rlmulti-agent-learning">【RL】Multi-Agent Learning</h1>
 <p>一个系统中存在多个决策者</p>
 <p><strong>面临的困难</strong></p>
 <ul>
@@ -1147,58 +1149,14 @@ the policy gradient algorithm takes as input <span class="math inline">\(\left(a
 <p>每个Agent独立接受observation，依据自己的策略网络做决策，Agent之间不通信</p>
 ]]></content>
       <categories>
+        <category>机器学习</category>
         <category>强化学习</category>
       </categories>
   </entry>
   <entry>
-    <title>STL技巧</title>
-    <url>/2024/07/30/STL/</url>
-    <content><![CDATA[<h1 id="stl技巧">STL技巧</h1>
-<h2 id="vector数组">vector数组</h2>
-<p>变长数组，倍增的思想</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()  返回元素个数</span><br><span class="line"><span class="built_in">empty</span>()  返回是否为空</span><br><span class="line"><span class="built_in">clear</span>()  清空</span><br><span class="line"><span class="built_in">front</span>()/<span class="built_in">back</span>()</span><br><span class="line"><span class="built_in">push_back</span>()/<span class="built_in">pop_back</span>()</span><br><span class="line"><span class="built_in">begin</span>()/<span class="built_in">end</span>()</span><br><span class="line">[]</span><br><span class="line">\\ 支持比较运算，按字典序</span><br></pre></td></tr></table></figure>
-<h2 id="pairint-int二元组">pair&lt;int, int&gt;二元组</h2>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">first, 第一个元素</span><br><span class="line">second, 第二个元素</span><br><span class="line">支持比较运算，以first为第一关键字，以second为第二关键字（字典序）</span><br></pre></td></tr></table></figure>
-<h2 id="string字符串">string字符串</h2>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()/<span class="built_in">length</span>()  返回字符串长度</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">clear</span>()</span><br><span class="line"><span class="built_in">substr</span>(起始下标，(子串长度))  返回子串</span><br><span class="line"><span class="built_in">c_str</span>()  返回字符串所在字符数组的起始地址</span><br></pre></td></tr></table></figure>
-<h2 id="queue队列">queue队列</h2>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">push</span>()  向队尾插入一个元素</span><br><span class="line"><span class="built_in">front</span>()  返回队头元素</span><br><span class="line"><span class="built_in">back</span>()  返回队尾元素</span><br><span class="line"><span class="built_in">pop</span>()  弹出队头元素</span><br></pre></td></tr></table></figure>
-<h2 id="priority_queue优先队列">priority_queue优先队列</h2>
-<p>默认是大根堆 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">push</span>()  \\ 插入一个元素</span><br><span class="line"><span class="built_in">top</span>()  返回堆顶元素</span><br><span class="line"><span class="built_in">pop</span>()  弹出堆顶元素</span><br><span class="line">定义成小根堆的方式：priority_queue&lt;<span class="keyword">int</span>, vector&lt;<span class="keyword">int</span>&gt;, greater&lt;<span class="keyword">int</span>&gt;&gt; q;</span><br></pre></td></tr></table></figure></p>
-<h2 id="stack栈">stack栈</h2>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">push</span>()  向栈顶插入一个元素</span><br><span class="line"><span class="built_in">top</span>()  返回栈顶元素</span><br><span class="line"><span class="built_in">pop</span>()  弹出栈顶元素</span><br></pre></td></tr></table></figure>
-<h2 id="deque双端队列">deque双端队列</h2>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">clear</span>()</span><br><span class="line"><span class="built_in">front</span>()/<span class="built_in">back</span>()</span><br><span class="line"><span class="built_in">push_back</span>()/<span class="built_in">pop_back</span>()</span><br><span class="line"><span class="built_in">push_front</span>()/<span class="built_in">pop_front</span>()</span><br><span class="line"><span class="built_in">begin</span>()/<span class="built_in">end</span>()</span><br><span class="line">[]</span><br></pre></td></tr></table></figure>
-<h2 id="set集合map字典">set集合&amp;map字典</h2>
-<p>基于平衡二叉树（红黑树），动态维护有序序列 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">clear</span>()</span><br><span class="line"><span class="built_in">begin</span>()/<span class="built_in">end</span>()</span><br><span class="line">++, -- 返回前驱和后继，时间复杂度 <span class="built_in">O</span>(logn)</span><br></pre></td></tr></table></figure></p>
-<h3 id="setmultiset">set&amp;multiset</h3>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">insert</span>()  插入一个数</span><br><span class="line"><span class="built_in">find</span>()  查找一个数</span><br><span class="line"><span class="built_in">count</span>()  返回某一个数的个数</span><br><span class="line"><span class="built_in">erase</span>()</span><br><span class="line">    (<span class="number">1</span>) 输入是一个数x，删除所有<span class="function">x   <span class="title">O</span><span class="params">(k + logn)</span></span></span><br><span class="line"><span class="function">    <span class="params">(<span class="number">2</span>)</span> 输入一个迭代器，删除这个迭代器</span></span><br><span class="line"><span class="function"><span class="title">lower_bound</span><span class="params">()</span>/<span class="title">upper_bound</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    <span class="title">lower_bound</span><span class="params">(x)</span>  返回大于等于x的最小的数的迭代器</span></span><br><span class="line"><span class="function">    <span class="title">upper_bound</span><span class="params">(x)</span>  返回大于x的最小的数的迭代器</span></span><br></pre></td></tr></table></figure>
-<h3 id="mapmultimap">map&amp;multimap</h3>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">insert</span>()  插入的数是一个<span class="function">pair</span></span><br><span class="line"><span class="function"><span class="title">erase</span><span class="params">()</span>  输入的参数是pair或者迭代器</span></span><br><span class="line"><span class="function"><span class="title">find</span><span class="params">()</span></span></span><br><span class="line"><span class="function">[]  注意multimap不支持此操作。 时间复杂度是 <span class="title">O</span><span class="params">(logn)</span></span></span><br><span class="line"><span class="function"><span class="title">lower_bound</span><span class="params">()</span>/<span class="title">upper_bound</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure>
-<h2 id="unordered哈希表">unordered哈希表</h2>
-<ul>
-<li><p>unordered_set</p></li>
-<li><p>unordered_map</p></li>
-<li><p>unordered_multiset</p></li>
-<li><p>unordered_multimap</p></li>
-</ul>
-<p>和上面类似，增删改查的时间复杂度是 O(1) 不支持
-lower_bound()/upper_bound()， 迭代器的++，--</p>
-<h2 id="bitset圧位">bitset圧位</h2>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">bitset&lt;10000&gt; s;</span><br><span class="line">~, &amp;, |, ^</span><br><span class="line">&gt;&gt;, &lt;&lt;</span><br><span class="line">==, !=</span><br><span class="line">[]</span><br><span class="line"></span><br><span class="line"><span class="built_in">count</span>()  返回有多少个<span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">any</span>()  判断是否至少有一个<span class="number">1</span></span><br><span class="line"><span class="built_in">none</span>()  判断是否全为<span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span>()  把所有位置成<span class="number">1</span></span><br><span class="line"><span class="built_in">set</span>(k, v)  将第k位变成v</span><br><span class="line"><span class="built_in">reset</span>()  把所有位变成<span class="number">0</span></span><br><span class="line"><span class="built_in">flip</span>()  等价于~</span><br><span class="line"><span class="built_in">flip</span>(k) 把第k位取反</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>算法笔记</category>
-      </categories>
-      <tags>
-        <tag>c++</tag>
-        <tag>STL</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>RL强化学习（四）</title>
+    <title>【RL】Actor&amp;Critic</title>
     <url>/2024/07/31/RL%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%EF%BC%88%E5%9B%9B%EF%BC%89/</url>
-    <content><![CDATA[<h1 id="rl强化学习四">RL强化学习（四）</h1>
+    <content><![CDATA[<h1 id="rlactorcritic">【RL】Actor&amp;Critic</h1>
 <h2 id="结合价值与策略学习">结合价值与策略学习</h2>
 <p>同时对最优Q值以及最优策略进行学习，最终策略网络的输出即为最优动作。</p>
 <ul>
@@ -1505,10 +1463,61 @@ Proximal Policy Optimization（DPPO）</h2>
 <p>相当于多线程并行版的 PPO。</p>
 ]]></content>
       <categories>
+        <category>机器学习</category>
         <category>强化学习</category>
       </categories>
       <tags>
         <tag>actor&amp;critic</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>STL技巧</title>
+    <url>/2024/07/30/STL/</url>
+    <content><![CDATA[<h1 id="stl技巧">STL技巧</h1>
+<h2 id="vector数组">vector数组</h2>
+<p>变长数组，倍增的思想</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()  返回元素个数</span><br><span class="line"><span class="built_in">empty</span>()  返回是否为空</span><br><span class="line"><span class="built_in">clear</span>()  清空</span><br><span class="line"><span class="built_in">front</span>()/<span class="built_in">back</span>()</span><br><span class="line"><span class="built_in">push_back</span>()/<span class="built_in">pop_back</span>()</span><br><span class="line"><span class="built_in">begin</span>()/<span class="built_in">end</span>()</span><br><span class="line">[]</span><br><span class="line">\\ 支持比较运算，按字典序</span><br></pre></td></tr></table></figure>
+<h2 id="pairint-int二元组">pair&lt;int, int&gt;二元组</h2>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">first, 第一个元素</span><br><span class="line">second, 第二个元素</span><br><span class="line">支持比较运算，以first为第一关键字，以second为第二关键字（字典序）</span><br></pre></td></tr></table></figure>
+<h2 id="string字符串">string字符串</h2>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()/<span class="built_in">length</span>()  返回字符串长度</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">clear</span>()</span><br><span class="line"><span class="built_in">substr</span>(起始下标，(子串长度))  返回子串</span><br><span class="line"><span class="built_in">c_str</span>()  返回字符串所在字符数组的起始地址</span><br></pre></td></tr></table></figure>
+<h2 id="queue队列">queue队列</h2>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">push</span>()  向队尾插入一个元素</span><br><span class="line"><span class="built_in">front</span>()  返回队头元素</span><br><span class="line"><span class="built_in">back</span>()  返回队尾元素</span><br><span class="line"><span class="built_in">pop</span>()  弹出队头元素</span><br></pre></td></tr></table></figure>
+<h2 id="priority_queue优先队列">priority_queue优先队列</h2>
+<p>默认是大根堆 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">push</span>()  \\ 插入一个元素</span><br><span class="line"><span class="built_in">top</span>()  返回堆顶元素</span><br><span class="line"><span class="built_in">pop</span>()  弹出堆顶元素</span><br><span class="line">定义成小根堆的方式：priority_queue&lt;<span class="keyword">int</span>, vector&lt;<span class="keyword">int</span>&gt;, greater&lt;<span class="keyword">int</span>&gt;&gt; q;</span><br></pre></td></tr></table></figure></p>
+<h2 id="stack栈">stack栈</h2>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">push</span>()  向栈顶插入一个元素</span><br><span class="line"><span class="built_in">top</span>()  返回栈顶元素</span><br><span class="line"><span class="built_in">pop</span>()  弹出栈顶元素</span><br></pre></td></tr></table></figure>
+<h2 id="deque双端队列">deque双端队列</h2>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">clear</span>()</span><br><span class="line"><span class="built_in">front</span>()/<span class="built_in">back</span>()</span><br><span class="line"><span class="built_in">push_back</span>()/<span class="built_in">pop_back</span>()</span><br><span class="line"><span class="built_in">push_front</span>()/<span class="built_in">pop_front</span>()</span><br><span class="line"><span class="built_in">begin</span>()/<span class="built_in">end</span>()</span><br><span class="line">[]</span><br></pre></td></tr></table></figure>
+<h2 id="set集合map字典">set集合&amp;map字典</h2>
+<p>基于平衡二叉树（红黑树），动态维护有序序列 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">clear</span>()</span><br><span class="line"><span class="built_in">begin</span>()/<span class="built_in">end</span>()</span><br><span class="line">++, -- 返回前驱和后继，时间复杂度 <span class="built_in">O</span>(logn)</span><br></pre></td></tr></table></figure></p>
+<h3 id="setmultiset">set&amp;multiset</h3>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">insert</span>()  插入一个数</span><br><span class="line"><span class="built_in">find</span>()  查找一个数</span><br><span class="line"><span class="built_in">count</span>()  返回某一个数的个数</span><br><span class="line"><span class="built_in">erase</span>()</span><br><span class="line">    (<span class="number">1</span>) 输入是一个数x，删除所有<span class="function">x   <span class="title">O</span><span class="params">(k + logn)</span></span></span><br><span class="line"><span class="function">    <span class="params">(<span class="number">2</span>)</span> 输入一个迭代器，删除这个迭代器</span></span><br><span class="line"><span class="function"><span class="title">lower_bound</span><span class="params">()</span>/<span class="title">upper_bound</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    <span class="title">lower_bound</span><span class="params">(x)</span>  返回大于等于x的最小的数的迭代器</span></span><br><span class="line"><span class="function">    <span class="title">upper_bound</span><span class="params">(x)</span>  返回大于x的最小的数的迭代器</span></span><br></pre></td></tr></table></figure>
+<h3 id="mapmultimap">map&amp;multimap</h3>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">insert</span>()  插入的数是一个<span class="function">pair</span></span><br><span class="line"><span class="function"><span class="title">erase</span><span class="params">()</span>  输入的参数是pair或者迭代器</span></span><br><span class="line"><span class="function"><span class="title">find</span><span class="params">()</span></span></span><br><span class="line"><span class="function">[]  注意multimap不支持此操作。 时间复杂度是 <span class="title">O</span><span class="params">(logn)</span></span></span><br><span class="line"><span class="function"><span class="title">lower_bound</span><span class="params">()</span>/<span class="title">upper_bound</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure>
+<h2 id="unordered哈希表">unordered哈希表</h2>
+<ul>
+<li><p>unordered_set</p></li>
+<li><p>unordered_map</p></li>
+<li><p>unordered_multiset</p></li>
+<li><p>unordered_multimap</p></li>
+</ul>
+<p>和上面类似，增删改查的时间复杂度是 O(1) 不支持
+lower_bound()/upper_bound()， 迭代器的++，--</p>
+<h2 id="bitset圧位">bitset圧位</h2>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">bitset&lt;10000&gt; s;</span><br><span class="line">~, &amp;, |, ^</span><br><span class="line">&gt;&gt;, &lt;&lt;</span><br><span class="line">==, !=</span><br><span class="line">[]</span><br><span class="line"></span><br><span class="line"><span class="built_in">count</span>()  返回有多少个<span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">any</span>()  判断是否至少有一个<span class="number">1</span></span><br><span class="line"><span class="built_in">none</span>()  判断是否全为<span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span>()  把所有位置成<span class="number">1</span></span><br><span class="line"><span class="built_in">set</span>(k, v)  将第k位变成v</span><br><span class="line"><span class="built_in">reset</span>()  把所有位变成<span class="number">0</span></span><br><span class="line"><span class="built_in">flip</span>()  等价于~</span><br><span class="line"><span class="built_in">flip</span>(k) 把第k位取反</span><br></pre></td></tr></table></figure>
+<h2 id="stringint转换">string&amp;int转换</h2>
+<h3 id="string2int">string2int</h3>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"></span><br><span class="line">string num = <span class="string">&quot;123&quot;</span>;</span><br><span class="line"><span class="keyword">int</span> x = <span class="built_in">atoi</span>(num.<span class="built_in">c_str</span>());</span><br></pre></td></tr></table></figure>
+<h3 id="int2string">int2string</h3>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> x = <span class="number">123</span>;</span><br><span class="line">string num = <span class="built_in">to_string</span>(x);</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>c++</tag>
+        <tag>STL</tag>
       </tags>
   </entry>
   <entry>
@@ -1666,7 +1675,7 @@ s;~, &amp;, |, ^&gt;&gt;, &lt;&lt;==, !=[]​count()  返回有多少个1​any
 </blockquote>
 ]]></content>
       <categories>
-        <category>Project</category>
+        <category>CQU</category>
       </categories>
       <tags>
         <tag>python</tag>
@@ -1674,9 +1683,78 @@ s;~, &amp;, |, ^&gt;&gt;, &lt;&lt;==, !=[]​count()  返回有多少个1​any
       </tags>
   </entry>
   <entry>
-    <title>hexo博客搭建</title>
+    <title>Git指令</title>
+    <url>/2022/09/09/git%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/</url>
+    <content><![CDATA[<h1 id="git指令">Git指令</h1>
+<h2 id="仓库管理">仓库管理</h2>
+<h3 id="初始化仓库">初始化仓库</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git init</span><br></pre></td></tr></table></figure>
+<h3 id="添加删除文件">添加/删除文件</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git add/rm [filename]</span><br><span class="line">git add . # 添加所有文件</span><br></pre></td></tr></table></figure>
+<h3 id="提交代码到本地仓库">提交代码到本地仓库</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git commit -m &#x27;commit file</span><br></pre></td></tr></table></figure>
+<h3 id="查看仓库状态">查看仓库状态</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git status</span><br></pre></td></tr></table></figure>
+<h3 id="添加远程仓库url">添加远程仓库url</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git remote add origin [repository url]</span><br></pre></td></tr></table></figure>
+<h3 id="同步本地仓库代码">同步本地仓库代码</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git pull origin master</span><br></pre></td></tr></table></figure>
+<h3 id="上传代码到远程仓库">上传代码到远程仓库</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 第一次提交</span><br><span class="line"># 将本地的master分支和远程仓库origin的master分支关联</span><br><span class="line">git push -u origin master   </span><br><span class="line"></span><br><span class="line"># 经常使用</span><br><span class="line">git push origin master</span><br><span class="line"></span><br><span class="line"># 强行提交，谨慎使用 </span><br><span class="line"># f表示force</span><br><span class="line">git push origin master -f </span><br></pre></td></tr></table></figure>
+<h2 id="分支管理">分支管理</h2>
+<h3 id="本地操作">本地操作</h3>
+<h4 id="查看分支">查看分支</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git branch</span><br><span class="line"></span><br><span class="line"># 查看所用分支，以及其关联的远程分支</span><br><span class="line">git branch -a</span><br></pre></td></tr></table></figure>
+<h4 id="创建分支">创建分支</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git branch [branch name]</span><br></pre></td></tr></table></figure>
+<h4 id="切换分支">切换分支</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git checkout [branch name]</span><br></pre></td></tr></table></figure>
+<h4 id="分支快速创建和切换">分支快速创建和切换</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git checkout -b [branch name]</span><br></pre></td></tr></table></figure>
+<h4 id="分支合并">分支合并</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 首先需要切换到合并的主分支上去</span><br><span class="line">git merge [branch name]</span><br></pre></td></tr></table></figure>
+<p><strong>遇到冲突时的分支合并</strong>
+如果在两个不同的分支中，对同一个文件进行了不同的修改，Git
+就没法干净的合并它们。
+此时，我们需要打开这些包含冲突的文件然后手动解决冲突。</p>
+<h4 id="删除分支">删除分支</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git branch -d [branch name]</span><br></pre></td></tr></table></figure>
+<h3 id="远程操作">远程操作</h3>
+<h4 id="查看远程仓库分支">查看远程仓库分支</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git remote show [repository name]</span><br></pre></td></tr></table></figure>
+<h4 id="本地分支推送到远程仓库分支">本地分支推送到远程仓库分支</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># -u 表示把本地分支和远程分支进行关联，只在第一次推送的时候需要带 -u 参数</span><br><span class="line">git push -u 远程仓库的别名 本地分支名称: 远程分支名称</span><br><span class="line"></span><br><span class="line"># 案例</span><br><span class="line">git push -u origin payment:pay</span><br><span class="line"></span><br><span class="line"># 如果希望远程分支的名称和本地分支名称保持一直，可以对命令进行简化：</span><br><span class="line">git push -u origin payment</span><br></pre></td></tr></table></figure>
+<h4 id="跟踪分支">跟踪分支</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 从远程仓库中，把对应的远程分支下载到本地仓库，名字保持一致</span><br><span class="line">git checkout 远程分支的名称</span><br><span class="line"></span><br><span class="line"># 从远程仓库中，把对应的远程分支下载到本地仓库，并把下载的本地分支进行重命名</span><br><span class="line">git checkout -b 本地分支名称 远程仓库名称/远程分支名称</span><br><span class="line"></span><br><span class="line"># 案例  把远程仓库origin里面的pay分支下载并重命名为payment分支</span><br><span class="line">git checkout -b payment origin/pay</span><br></pre></td></tr></table></figure>
+<h4 id="拉取远程分支最新代码">拉取远程分支最新代码</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git pull</span><br></pre></td></tr></table></figure>
+<h4 id="删除远程分支">删除远程分支</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git push origin --delete [branch name]</span><br></pre></td></tr></table></figure>
+<h2 id="代理设置">代理设置</h2>
+<p>在执行<code>git clone</code>时，该方法只适用于http方式，不适用于ssh方式。</p>
+<p>ssh方式推荐使用proxychains(linux)。</p>
+<h3 id="socks代理">socks代理</h3>
+<p>在<code>参数设置</code>-<code>Core:基础设置</code>中可以查看本地<code>socks</code>端口号，一般为1080。</p>
+<p>在命令行中使用以下命令设置git代理：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git config --global http.proxy socks5://127.0.0.1:10808</span><br><span class="line">git config --global https.proxy socks5://127.0.0.1:10808</span><br></pre></td></tr></table></figure>
+<h3 id="http代理">http代理</h3>
+<p>把v2rayN设为全局模式，打开win10的设置中代理，可以看到<code>socks</code>端口号。</p>
+<p>在命令行中使用以下命令设置git代理</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git config --global http.proxy http://127.0.0.1:10809</span><br><span class="line">git config --global https.proxy https://127.0.0.1:10809</span><br></pre></td></tr></table></figure>
+<h3 id="取消代理">取消代理</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git config --global --unset http.proxy</span><br><span class="line">git config --global --unset https.proxy</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>常用技巧</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hexo博客搭建</title>
     <url>/2022/09/08/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/</url>
-    <content><![CDATA[<h1 id="hexo博客搭建">hexo博客搭建</h1>
+    <content><![CDATA[<h1 id="hexo博客搭建">Hexo博客搭建</h1>
 <h2 id="推送博客文件">推送博客文件</h2>
 <h3 id="清空之前的文件">清空之前的文件</h3>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br></pre></td></tr></table></figure>
@@ -1705,7 +1783,7 @@ s;~, &amp;, |, ^&gt;&gt;, &lt;&lt;==, !=[]​count()  返回有多少个1​any
       </tags>
   </entry>
   <entry>
-    <title>linux常用指令</title>
+    <title>Linux常用指令</title>
     <url>/2022/09/09/linux%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4/</url>
     <content><![CDATA[<h1 id="linux常用指令">Linux常用指令</h1>
 <h2 id="档案与目录管理">档案与目录管理</h2>
@@ -1797,80 +1875,12 @@ line 2 tells the brand of the second cow; and so on.</p>
 </blockquote>
 ]]></content>
       <categories>
-        <category>刷题</category>
+        <category>算法</category>
+        <category>数据结构</category>
       </categories>
       <tags>
         <tag>c++</tag>
         <tag>线段树</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>git指令</title>
-    <url>/2022/09/09/git%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/</url>
-    <content><![CDATA[<h1 id="git指令">git指令</h1>
-<h2 id="仓库管理">仓库管理</h2>
-<h3 id="初始化仓库">初始化仓库</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git init</span><br></pre></td></tr></table></figure>
-<h3 id="添加删除文件">添加/删除文件</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git add/rm [filename]</span><br><span class="line">git add . # 添加所有文件</span><br></pre></td></tr></table></figure>
-<h3 id="提交代码到本地仓库">提交代码到本地仓库</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git commit -m &#x27;commit file</span><br></pre></td></tr></table></figure>
-<h3 id="查看仓库状态">查看仓库状态</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git status</span><br></pre></td></tr></table></figure>
-<h3 id="添加远程仓库url">添加远程仓库url</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git remote add origin [repository url]</span><br></pre></td></tr></table></figure>
-<h3 id="同步本地仓库代码">同步本地仓库代码</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git pull origin master</span><br></pre></td></tr></table></figure>
-<h3 id="上传代码到远程仓库">上传代码到远程仓库</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 第一次提交</span><br><span class="line"># 将本地的master分支和远程仓库origin的master分支关联</span><br><span class="line">git push -u origin master   </span><br><span class="line"></span><br><span class="line"># 经常使用</span><br><span class="line">git push origin master</span><br><span class="line"></span><br><span class="line"># 强行提交，谨慎使用 </span><br><span class="line"># f表示force</span><br><span class="line">git push origin master -f </span><br></pre></td></tr></table></figure>
-<h2 id="分支管理">分支管理</h2>
-<h3 id="本地操作">本地操作</h3>
-<h4 id="查看分支">查看分支</h4>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git branch</span><br><span class="line"></span><br><span class="line"># 查看所用分支，以及其关联的远程分支</span><br><span class="line">git branch -a</span><br></pre></td></tr></table></figure>
-<h4 id="创建分支">创建分支</h4>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git branch [branch name]</span><br></pre></td></tr></table></figure>
-<h4 id="切换分支">切换分支</h4>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git checkout [branch name]</span><br></pre></td></tr></table></figure>
-<h4 id="分支快速创建和切换">分支快速创建和切换</h4>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git checkout -b [branch name]</span><br></pre></td></tr></table></figure>
-<h4 id="分支合并">分支合并</h4>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 首先需要切换到合并的主分支上去</span><br><span class="line">git merge [branch name]</span><br></pre></td></tr></table></figure>
-<p><strong>遇到冲突时的分支合并</strong>
-如果在两个不同的分支中，对同一个文件进行了不同的修改，Git
-就没法干净的合并它们。
-此时，我们需要打开这些包含冲突的文件然后手动解决冲突。</p>
-<h4 id="删除分支">删除分支</h4>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git branch -d [branch name]</span><br></pre></td></tr></table></figure>
-<h3 id="远程操作">远程操作</h3>
-<h4 id="查看远程仓库分支">查看远程仓库分支</h4>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git remote show [repository name]</span><br></pre></td></tr></table></figure>
-<h4 id="本地分支推送到远程仓库分支">本地分支推送到远程仓库分支</h4>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># -u 表示把本地分支和远程分支进行关联，只在第一次推送的时候需要带 -u 参数</span><br><span class="line">git push -u 远程仓库的别名 本地分支名称: 远程分支名称</span><br><span class="line"></span><br><span class="line"># 案例</span><br><span class="line">git push -u origin payment:pay</span><br><span class="line"></span><br><span class="line"># 如果希望远程分支的名称和本地分支名称保持一直，可以对命令进行简化：</span><br><span class="line">git push -u origin payment</span><br></pre></td></tr></table></figure>
-<h4 id="跟踪分支">跟踪分支</h4>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 从远程仓库中，把对应的远程分支下载到本地仓库，名字保持一致</span><br><span class="line">git checkout 远程分支的名称</span><br><span class="line"></span><br><span class="line"># 从远程仓库中，把对应的远程分支下载到本地仓库，并把下载的本地分支进行重命名</span><br><span class="line">git checkout -b 本地分支名称 远程仓库名称/远程分支名称</span><br><span class="line"></span><br><span class="line"># 案例  把远程仓库origin里面的pay分支下载并重命名为payment分支</span><br><span class="line">git checkout -b payment origin/pay</span><br></pre></td></tr></table></figure>
-<h4 id="拉取远程分支最新代码">拉取远程分支最新代码</h4>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git pull</span><br></pre></td></tr></table></figure>
-<h4 id="删除远程分支">删除远程分支</h4>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git push origin --delete [branch name]</span><br></pre></td></tr></table></figure>
-<h2 id="代理设置">代理设置</h2>
-<p>在执行<code>git clone</code>时，该方法只适用于http方式，不适用于ssh方式。</p>
-<p>ssh方式推荐使用proxychains(linux)。</p>
-<h3 id="socks代理">socks代理</h3>
-<p>在<code>参数设置</code>-<code>Core:基础设置</code>中可以查看本地<code>socks</code>端口号，一般为1080。</p>
-<p>在命令行中使用以下命令设置git代理：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git config --global http.proxy socks5://127.0.0.1:10808</span><br><span class="line">git config --global https.proxy socks5://127.0.0.1:10808</span><br></pre></td></tr></table></figure>
-<h3 id="http代理">http代理</h3>
-<p>把v2rayN设为全局模式，打开win10的设置中代理，可以看到<code>socks</code>端口号。</p>
-<p>在命令行中使用以下命令设置git代理</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git config --global http.proxy http://127.0.0.1:10809</span><br><span class="line">git config --global https.proxy https://127.0.0.1:10809</span><br></pre></td></tr></table></figure>
-<h3 id="取消代理">取消代理</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git config --global --unset http.proxy</span><br><span class="line">git config --global --unset https.proxy</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>常用技巧</category>
-      </categories>
-      <tags>
-        <tag>git</tag>
       </tags>
   </entry>
   <entry>
@@ -1911,12 +1921,236 @@ with Integers (poj.org)</a></p>
 </blockquote>
 ]]></content>
       <categories>
-        <category>刷题</category>
+        <category>算法</category>
+        <category>数据结构</category>
       </categories>
       <tags>
         <tag>线段树</tag>
         <tag>区间求和</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>【Transformer】模型总结</title>
+    <url>/2024/08/02/transformer/</url>
+    <content><![CDATA[<h1 id="transformer模型总结">【Transformer】模型总结</h1>
+<h2 id="模型架构">模型架构</h2>
+<p>采用<strong>encoder-decoder的架构</strong></p>
+<p>encoder将输入<span class="math inline">\((x_1,,x_n)\)</span>映射到连续的中间表达<span class="math inline">\((z_1,,z_n)\)</span></p>
+<p>decoder再采用<strong>自回归</strong>的方式输出序列<span class="math inline">\((y_1,,y_n)\)</span></p>
+<p>（将前一个生成的符号添加到输入，接着生成下一个（类似RNN））</p>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240724172359971.png" alt="image-20240724172359971">
+<figcaption aria-hidden="true">image-20240724172359971</figcaption>
+</figure>
+<h2 id="注意力机制">注意力机制</h2>
+<p>Query Key-Value</p>
+<p>通过计算Q与每个Key之间的<strong>关联度</strong>得到一个权重，通过softmax得到每个Key对应Value的权重，计算Value的<strong>加权和</strong>作为Query的输出</p>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240724155036667.png" alt="image-20240724155036667">
+<figcaption aria-hidden="true">image-20240724155036667</figcaption>
+</figure>
+<h3 id="带掩码的softmax">带掩码的Softmax</h3>
+<p>在Decoder中并非所有的值都应该被纳入到注意力汇聚中。推理t时刻，需要屏蔽到t时刻以后的输入，即将
+<span class="math inline">\(k_t, k_{t+1}, ,,k_n\)</span>
+换成非常小的数（例如<span class="math inline">\(1e^{-11}\)</span>），
+经过softmax后得到值就是0（或者一些padding的无效字符）。</p>
+<p>为了仅将有意义的词元作为值来获取注意力汇聚，
+可以指定一个有效序列长度（即词元的个数），
+以便在计算softmax时过滤掉超出指定范围的位置。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">masked_softmax</span>(<span class="params">X, valid_lens</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;通过在最后一个轴上掩蔽元素来执行softmax操作&quot;&quot;&quot;</span></span><br><span class="line">    <span class="comment"># X:3D张量，valid_lens:1D或2D张量</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> valid_lens <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        <span class="keyword">return</span> nn.functional.softmax(X, dim=-<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        shape = X.shape</span><br><span class="line">        <span class="keyword">if</span> valid_lens.dim() == <span class="number">1</span>:</span><br><span class="line">            valid_lens = torch.repeat_interleave(valid_lens, shape[<span class="number">1</span>])</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            valid_lens = valid_lens.reshape(-<span class="number">1</span>)</span><br><span class="line">            </span><br><span class="line">        <span class="comment"># 最后一轴上被掩蔽的元素使用一个非常大的负值替换，从而其softmax输出为0</span></span><br><span class="line">        X = d2l.sequence_mask(X.reshape(-<span class="number">1</span>, shape[-<span class="number">1</span>]), valid_lens,</span><br><span class="line">                              value=-<span class="number">1e6</span>)</span><br><span class="line">        <span class="keyword">return</span> nn.functional.softmax(X.reshape(shape), dim=-<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="缩放点积注意力">缩放点积注意力</h3>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240724155820490.png" alt="image-20240724155820490">
+<figcaption aria-hidden="true">image-20240724155820490</figcaption>
+</figure>
+<p>transformer中采用Scaled Dot-Product Attention的方式计算注意力函数</p>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240724152933911.png" alt="image-20240724152933911">
+<figcaption aria-hidden="true">image-20240724152933911</figcaption>
+</figure>
+<p>其中Key、Value的维度是<span class="math inline">\(d_k,d_v\)</span>，
+并要求Query和Key具有相同的维度<span class="math inline">\(d_k\)</span></p>
+<p>将Query与所有的Key做<strong>内积</strong>，再除以<span class="math inline">\(\sqrt{d_k}\)</span></p>
+<p>（内积相当于计算余弦值，越大表示相似度越高，如果两个向量正交余弦值=0，表示不相关）</p>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240724155617867.png" alt="image-20240724155617867">
+<figcaption aria-hidden="true">image-20240724155617867</figcaption>
+</figure>
+<p>假设查询和键的所有元素都是独立的随机变量，
+并且都满足零均值和单位方差， 那么两个向量的点积的均值为0，方差为𝑑。</p>
+<p>为确保无论向量长度如何， 点积的方差在不考虑向量长度的情况下仍然是1，
+再将点积除以𝑑（即“缩放”）</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DotProductAttention</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;缩放点积注意力&quot;&quot;&quot;</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, dropout, **kwargs</span>):</span></span><br><span class="line">        <span class="built_in">super</span>(DotProductAttention, self).__init__(**kwargs)</span><br><span class="line">        self.dropout = nn.Dropout(dropout)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, queries, keys, values, valid_lens=<span class="literal">None</span></span>):</span></span><br><span class="line">        <span class="comment"># queries的形状：(batch_size，查询的个数，d)</span></span><br><span class="line">        <span class="comment"># keys的形状：(batch_size，“键－值”对的个数，d)</span></span><br><span class="line">        <span class="comment"># values的形状：(batch_size，“键－值”对的个数，值的维度)</span></span><br><span class="line">        <span class="comment"># valid_lens的形状:(batch_size，)或者(batch_size，查询的个数)</span></span><br><span class="line">        </span><br><span class="line">        d = queries.shape[-<span class="number">1</span>]</span><br><span class="line">        <span class="comment"># 设置transpose_b=True为了交换keys的最后两个维度(计算转置)</span></span><br><span class="line">        scores = torch.bmm(queries, keys.transpose(<span class="number">1</span>,<span class="number">2</span>)) / math.sqrt(d)</span><br><span class="line">        self.attention_weights = masked_softmax(scores, valid_lens)</span><br><span class="line">        <span class="keyword">return</span> torch.bmm(self.dropout(self.attention_weights), values)</span><br></pre></td></tr></table></figure>
+<h3 id="多头注意力">多头注意力</h3>
+<p>当给定相同的查询、键和值时，希望模型可以基于相同的注意力机制学习到不同的行为，
+然后将不同的行为作为知识组合起来， 捕获序列内各种关系 。</p>
+<p>为此，与其只使用单独一个注意力汇聚，
+我们可以用独立学习得到的ℎ组不同的 <em>线性投影</em>（linear
+projections）来变换查询、键和值。
+然后，这ℎ组变换后的查询、键和值将并行地送到注意力汇聚中。
+（类似CNN中多个输出通道）</p>
+<p>最后将这ℎ个注意力汇聚的输出拼接在一起，
+并且通过另一个可以学习的线性投影进行变换， 以产生最终输出。</p>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240724164641275.png" alt="image-20240724164641275">
+<figcaption aria-hidden="true">image-20240724164641275</figcaption>
+</figure>
+<p>计算方法（<span class="math inline">\(d_{model}=512\)</span>​），h=8个头，每次将其投影到低维64维的空间计算注意力函数</p>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240724161309436.png" alt="image-20240724161309436">
+<figcaption aria-hidden="true">image-20240724161309436</figcaption>
+</figure>
+<p>多头注意力机制具体实现</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MultiHeadAttention</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;多头注意力&quot;&quot;&quot;</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, key_size, query_size, value_size, </span></span></span><br><span class="line"><span class="params"><span class="function">                 num_hiddens, num_heads, </span></span></span><br><span class="line"><span class="params"><span class="function">                 dropout, bias=<span class="literal">False</span>, **kwargs</span>):</span></span><br><span class="line">        </span><br><span class="line">        <span class="built_in">super</span>(MultiHeadAttention, self).__init__(**kwargs)</span><br><span class="line">        self.num_heads = num_heads</span><br><span class="line">        self.attention = d2l.DotProductAttention(dropout)</span><br><span class="line">        self.W_q = nn.Linear(query_size, num_hiddens, bias=bias)</span><br><span class="line">        self.W_k = nn.Linear(key_size, num_hiddens, bias=bias)</span><br><span class="line">        self.W_v = nn.Linear(value_size, num_hiddens, bias=bias)</span><br><span class="line">        self.W_o = nn.Linear(num_hiddens, num_hiddens, bias=bias)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, queries, keys, values, valid_lens</span>):</span></span><br><span class="line">        <span class="comment"># queries，keys，values的形状: (batch_size，查询或者“键－值”对的个数，num_hiddens)</span></span><br><span class="line">        <span class="comment"># valid_lens　的形状: (batch_size，)或(batch_size，查询的个数)</span></span><br><span class="line">        <span class="comment"># 经过变换后，输出的queries，keys，values　的形状: </span></span><br><span class="line">        <span class="comment"># (batch_size*num_heads，查询或者“键－值”对的个数，num_hiddens/num_heads)</span></span><br><span class="line">        </span><br><span class="line">        queries = transpose_qkv(self.W_q(queries), self.num_heads)</span><br><span class="line">        keys = transpose_qkv(self.W_k(keys), self.num_heads)</span><br><span class="line">        values = transpose_qkv(self.W_v(values), self.num_heads)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> valid_lens <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            <span class="comment"># 在轴0，将第一项（标量或者矢量）复制num_heads次，然后如此复制第二项，然后诸如此类。</span></span><br><span class="line">            valid_lens = torch.repeat_interleave(</span><br><span class="line">                valid_lens, repeats=self.num_heads, dim=<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># output的形状:(batch_size*num_heads，查询的个数，num_hiddens/num_heads)</span></span><br><span class="line">        <span class="comment"># 将多头注意力的计算合并到一次计算</span></span><br><span class="line">        output = self.attention(queries, keys, values, valid_lens)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># output_concat的形状:(batch_size，查询的个数，num_hiddens)</span></span><br><span class="line">        output_concat = transpose_output(output, self.num_heads)</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> self.W_o(output_concat)</span><br><span class="line"></span><br><span class="line"> </span><br><span class="line"><span class="comment"># 为了能够使多个头并行计算，定义的两个转置函数。</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">transpose_qkv</span>(<span class="params">X, num_heads</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;为了多注意力头的并行计算而变换形状&quot;&quot;&quot;</span></span><br><span class="line">    <span class="comment"># 输入X的形状:(batch_size，查询或者“键－值”对的个数，num_hiddens)</span></span><br><span class="line">    <span class="comment"># 输出X的形状:(batch_size，查询或者“键－值”对的个数，num_heads，num_hiddens/num_heads)</span></span><br><span class="line">    X = X.reshape(X.shape[<span class="number">0</span>], X.shape[<span class="number">1</span>], num_heads, -<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 输出X的形状:(batch_size，num_heads，查询或者“键－值”对的个数, num_hiddens/num_heads)</span></span><br><span class="line">    <span class="comment"># 将第2，3维度交换位置</span></span><br><span class="line">    X = X.permute(<span class="number">0</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">3</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 最终输出的形状:(batch_size*num_heads, 查询或者“键－值”对的个数, num_hiddens/num_heads)</span></span><br><span class="line">    <span class="keyword">return</span> X.reshape(-<span class="number">1</span>, X.shape[<span class="number">2</span>], X.shape[<span class="number">3</span>])</span><br><span class="line"></span><br><span class="line"><span class="comment"># transpose_output函数反转了transpose_qkv函数的操作。</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">transpose_output</span>(<span class="params">X, num_heads</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;逆转transpose_qkv函数的操作&quot;&quot;&quot;</span></span><br><span class="line">    X = X.reshape(-<span class="number">1</span>, num_heads, X.shape[<span class="number">1</span>], X.shape[<span class="number">2</span>])</span><br><span class="line">    X = X.permute(<span class="number">0</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">3</span>)</span><br><span class="line">    <span class="keyword">return</span> X.reshape(X.shape[<span class="number">0</span>], X.shape[<span class="number">1</span>], -<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="自注意机制">自注意机制</h3>
+<p>模型的输入同时作为 Key Value Qurey</p>
+<p>和自己计算相似度（向量内积）最大=1</p>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240724161741228.png" alt="image-20240724161741228" style="zoom: 33%;"></p>
+<p>在计算Decoder时使用掩码（Mask）</p>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240724162135199.png" alt="image-20240724162135199" style="zoom: 50%;"></p>
+<p>Decoder第二个子层中使用Encoder的输出作为Key-Value，上一层的输出作为Query。</p>
+<p>在编码器和解码器中传递信息</p>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240724162544352.png" alt="image-20240724162544352" style="zoom:50%;"></p>
+<h2 id="基于位置的前馈网络">基于位置的前馈网络</h2>
+<p>基于位置的：前馈网络对序列中的所有位置的表示进行变换时使用的是同一个多层感知机（MLP）</p>
+<p>两层的感知机，并使用Relu激活函数</p>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240724162813771.png" alt="image-20240724162813771">
+<figcaption aria-hidden="true">image-20240724162813771</figcaption>
+</figure>
+<p>输入大小：（批量大小，时间步数或序列长度，隐单元数或特征维度）</p>
+<p>输出大小：（批量大小，时间步数，ffn_num_outputs）</p>
+<p>（pytorch默认对最后一个维度进行计算）</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PositionWiseFFN</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;基于位置的前馈网络&quot;&quot;&quot;</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, ffn_num_input, ffn_num_hiddens, ffn_num_outputs,</span></span></span><br><span class="line"><span class="params"><span class="function">                 **kwargs</span>):</span></span><br><span class="line">        </span><br><span class="line">        <span class="built_in">super</span>(PositionWiseFFN, self).__init__(**kwargs)</span><br><span class="line">        self.dense1 = nn.Linear(ffn_num_input, ffn_num_hiddens)</span><br><span class="line">        self.relu = nn.ReLU()</span><br><span class="line">        self.dense2 = nn.Linear(ffn_num_hiddens, ffn_num_outputs)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, X</span>):</span></span><br><span class="line">        <span class="keyword">return</span> self.dense2(self.relu(self.dense1(X)))</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Transformer vs RNN</p>
+</blockquote>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240724163422153.png" alt="image-20240724163422153" style="zoom:50%;"></p>
+<h2 id="残差连接和层规范化">残差连接和层规范化</h2>
+<p>层规范化和批量规范化的目标相同，但层规范化是基于特征维度进行规范化。</p>
+<p>对于BatchNorm来说，样本长度对计算方差影响比较大。
+而LayerNorm针对每个样本计算方差</p>
+<p>批量规范化在计算机视觉中被广泛应用，但在自然语言处理任务中（输入通常是变长序列）批量规范化通常不如层规范化的效果好。</p>
+<p>两个维度的情况</p>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240724154231420.png" alt="image-20240724154231420" style="zoom: 80%;"></p>
+<p>三个维度的情况</p>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240724154415275.png" alt="image-20240724154415275" style="zoom:80%;"></p>
+<p><span class="math inline">\(LayerNorm(x+Sublayer(x))\)</span>
+使用残差连接和层规范化来实现<code>AddNorm</code>类</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AddNorm</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;残差连接后进行层规范化&quot;&quot;&quot;</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, normalized_shape, dropout, **kwargs</span>):</span></span><br><span class="line">        <span class="built_in">super</span>(AddNorm, self).__init__(**kwargs)</span><br><span class="line">        self.dropout = nn.Dropout(dropout)</span><br><span class="line">        self.ln = nn.LayerNorm(normalized_shape)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, X, Y</span>):</span></span><br><span class="line">        <span class="keyword">return</span> self.ln(self.dropout(Y) + X)</span><br></pre></td></tr></table></figure>
+<h2 id="位置编码">位置编码</h2>
+<p>在处理词元序列时，循环神经网络是逐个的重复地处理词元的，
+而自注意力则因为并行计算而放弃了顺序操作。</p>
+<p>为了使用序列的顺序信息，通过在输入表示中添加 位置编码（positional
+encoding）来注入绝对的或相对的位置信息。</p>
+<p>位置编码可以通过学习得到也可以直接固定得到。
+（Transformer中使用固定的位置编码，Bert位置编码通过学习得来）</p>
+<blockquote>
+<p>计算注意力时只关注Key和Query向量之间的相似度。和该Query在序列中的相对位置无关，因此引入位置编码</p>
+</blockquote>
+<p>（也就表示同一个Query不管在序列中任何位置计算出的注意力是相同）（在输入时加入时序信息）</p>
+<p>Transformer中使用基于正弦函数和余弦函数的固定位置编码</p>
+<p>将Encoder和Decoder将输入映射到<span class="math inline">\(d_{model}=512\)</span>的向量，加
+上一个位置向量（计算如下）即加入了位置信息。</p>
+<p>假设输入表示<span class="math inline">\(𝑋∈𝑅^{𝑛×𝑑}\)</span>
+包含一个序列中𝑛个词元的𝑑维嵌入表示。 位置编码使用相同形状的位置嵌入矩阵$
+𝑃∈𝑅^{𝑛×𝑑}$</p>
+<p>输出𝑋+𝑃， 矩阵第𝑖行、第2𝑗列和2𝑗+1列上的元素为</p>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240725095145276.png" alt="image-20240725095145276">
+<figcaption aria-hidden="true">image-20240725095145276</figcaption>
+</figure>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PositionalEncoding</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;位置编码&quot;&quot;&quot;</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, num_hiddens, dropout, max_len=<span class="number">1000</span></span>):</span></span><br><span class="line">        <span class="built_in">super</span>(PositionalEncoding, self).__init__()</span><br><span class="line">        self.dropout = nn.Dropout(dropout)</span><br><span class="line">        <span class="comment"># 创建一个足够长的P</span></span><br><span class="line">        self.P = torch.zeros((<span class="number">1</span>, max_len, num_hiddens))</span><br><span class="line">        X = torch.arange(max_len, dtype=torch.float32).reshape(</span><br><span class="line">            -<span class="number">1</span>, <span class="number">1</span>) / torch.<span class="built_in">pow</span>(<span class="number">10000</span>, torch.arange(</span><br><span class="line">            <span class="number">0</span>, num_hiddens, <span class="number">2</span>, dtype=torch.float32) / num_hiddens)</span><br><span class="line">        self.P[:, :, <span class="number">0</span>::<span class="number">2</span>] = torch.sin(X)</span><br><span class="line">        self.P[:, :, <span class="number">1</span>::<span class="number">2</span>] = torch.cos(X)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, X</span>):</span></span><br><span class="line">        X = X + self.P[:, :X.shape[<span class="number">1</span>], :].to(X.device)</span><br><span class="line">        <span class="keyword">return</span> self.dropout(X)</span><br></pre></td></tr></table></figure>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240725095645828.png" alt="image-20240725095645828">
+<figcaption aria-hidden="true">image-20240725095645828</figcaption>
+</figure>
+<h2 id="编码器">编码器</h2>
+<p>编码器使用<strong>N=6</strong>独立层，每层包含两个子层</p>
+<ul>
+<li><strong>multi-head self-attention
+mechanism（多头注意力机制）</strong></li>
+<li><strong>position-wise fully connected feed-forward
+network.（简单说就是全连接层（MLP））</strong></li>
+</ul>
+<p>两个子层间采用<strong>残差连接</strong></p>
+<p>并使用<strong>层归一化</strong>处理 <span class="math inline">\(LayerNorm(x+Sublayer(x))\)</span></p>
+<p>固定每个层的输出为<span class="math inline">\(d_{model}=512\)</span></p>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240724180323352.png" alt="image-20240724180323352">
+<figcaption aria-hidden="true">image-20240724180323352</figcaption>
+</figure>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">EncoderBlock</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;Transformer编码器块&quot;&quot;&quot;</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, key_size, query_size, value_size, num_hiddens,</span></span></span><br><span class="line"><span class="params"><span class="function">                 norm_shape, ffn_num_input, ffn_num_hiddens, num_heads,</span></span></span><br><span class="line"><span class="params"><span class="function">                 dropout, use_bias=<span class="literal">False</span>, **kwargs</span>):</span></span><br><span class="line">        </span><br><span class="line">        <span class="built_in">super</span>(EncoderBlock, self).__init__(**kwargs)</span><br><span class="line">        self.attention = d2l.MultiHeadAttention(</span><br><span class="line">            key_size, query_size, value_size, num_hiddens, num_heads, dropout,</span><br><span class="line">            use_bias)</span><br><span class="line">        self.addnorm1 = AddNorm(norm_shape, dropout)</span><br><span class="line">        self.ffn = PositionWiseFFN(</span><br><span class="line">            ffn_num_input, ffn_num_hiddens, num_hiddens)</span><br><span class="line">        self.addnorm2 = AddNorm(norm_shape, dropout)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, X, valid_lens</span>):</span></span><br><span class="line">        Y = self.addnorm1(X, self.attention(X, X, X, valid_lens))</span><br><span class="line">        <span class="keyword">return</span> self.addnorm2(Y, self.ffn(Y))</span><br></pre></td></tr></table></figure>
+<p>Encoder堆叠了num_layers个EncoderBlock类的实例。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TransformerEncoder</span>(<span class="params">d2l.Encoder</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;Transformer编码器&quot;&quot;&quot;</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, vocab_size, key_size, query_size, value_size,</span></span></span><br><span class="line"><span class="params"><span class="function">                 num_hiddens, norm_shape, ffn_num_input, ffn_num_hiddens,</span></span></span><br><span class="line"><span class="params"><span class="function">                 num_heads, num_layers, dropout, use_bias=<span class="literal">False</span>, **kwargs</span>):</span></span><br><span class="line">        </span><br><span class="line">        <span class="built_in">super</span>(TransformerEncoder, self).__init__(**kwargs)</span><br><span class="line">        self.num_hiddens = num_hiddens</span><br><span class="line">        </span><br><span class="line">        self.embedding = nn.Embedding(vocab_size, num_hiddens)</span><br><span class="line">        self.pos_encoding = d2l.PositionalEncoding(num_hiddens, dropout)</span><br><span class="line">        </span><br><span class="line">        self.blks = nn.Sequential()</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(num_layers):</span><br><span class="line">            self.blks.add_module(<span class="string">&quot;block&quot;</span>+<span class="built_in">str</span>(i),</span><br><span class="line">                EncoderBlock(key_size, query_size, value_size, num_hiddens,</span><br><span class="line">                             norm_shape, ffn_num_input, ffn_num_hiddens,</span><br><span class="line">                             num_heads, dropout, use_bias))</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, X, valid_lens, *args</span>):</span></span><br><span class="line">        <span class="comment"># 因为位置编码值在-1和1之间，</span></span><br><span class="line">        <span class="comment"># 因此嵌入值乘以嵌入维度的平方根进行缩放，</span></span><br><span class="line">        <span class="comment"># 然后再与位置编码相加。</span></span><br><span class="line">        X = self.pos_encoding(self.embedding(X) * math.sqrt(self.num_hiddens))</span><br><span class="line">        </span><br><span class="line">        self.attention_weights = [<span class="literal">None</span>] * <span class="built_in">len</span>(self.blks)</span><br><span class="line">        <span class="keyword">for</span> i, blk <span class="keyword">in</span> <span class="built_in">enumerate</span>(self.blks):</span><br><span class="line">            X = blk(X, valid_lens)</span><br><span class="line">            self.attention_weights[</span><br><span class="line">                i] = blk.attention.attention.attention_weights</span><br><span class="line">            </span><br><span class="line">        <span class="keyword">return</span> X</span><br></pre></td></tr></table></figure>
+<h2 id="解码器">解码器</h2>
+<p>同样采用N=6的独立层</p>
+<p>相较于encoder多第三个子层<strong>掩码的多头注意力机制</strong></p>
+<p>（控制输入模型的序列部分可见。
+例如预测第t时刻，不应该看到t时刻以后的输入）</p>
+<p>Masked Multi-head Attention</p>
+<p>在DecoderBlock类中实现的每个层包含了三个子层：</p>
+<ol type="1">
+<li>解码器自注意力</li>
+<li>“编码器-解码器”注意力</li>
+<li>基于位置的前馈网络</li>
+</ol>
+<p>子层之间通过残差连接和层规范化</p>
+<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240725090842835.png" alt="image-20240725090842835" style="zoom:80%;"></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DecoderBlock</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;解码器中第i个块&quot;&quot;&quot;</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, key_size, query_size, value_size, num_hiddens,</span></span></span><br><span class="line"><span class="params"><span class="function">                 norm_shape, ffn_num_input, ffn_num_hiddens, num_heads,</span></span></span><br><span class="line"><span class="params"><span class="function">                 dropout, i, **kwargs</span>):</span></span><br><span class="line">        </span><br><span class="line">        <span class="built_in">super</span>(DecoderBlock, self).__init__(**kwargs)</span><br><span class="line">        self.i = i</span><br><span class="line">        </span><br><span class="line">        self.attention1 = d2l.MultiHeadAttention(</span><br><span class="line">            key_size, query_size, value_size, num_hiddens, num_heads, dropout)</span><br><span class="line">        self.addnorm1 = AddNorm(norm_shape, dropout)</span><br><span class="line">        </span><br><span class="line">        self.attention2 = d2l.MultiHeadAttention(</span><br><span class="line">            key_size, query_size, value_size, num_hiddens, num_heads, dropout)</span><br><span class="line">        self.addnorm2 = AddNorm(norm_shape, dropout)</span><br><span class="line">        </span><br><span class="line">        self.ffn = PositionWiseFFN(ffn_num_input, ffn_num_hiddens, num_hiddens)</span><br><span class="line">        self.addnorm3 = AddNorm(norm_shape, dropout)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, X, state</span>):</span></span><br><span class="line">        enc_outputs, enc_valid_lens = state[<span class="number">0</span>], state[<span class="number">1</span>]</span><br><span class="line">        <span class="comment"># 训练阶段，输出序列的所有词元都在同一时间处理，</span></span><br><span class="line">        <span class="comment"># 因此state[2][self.i]初始化为None。</span></span><br><span class="line">        <span class="comment"># 预测阶段，输出序列是通过词元一个接着一个解码的，</span></span><br><span class="line">        <span class="comment"># 因此state[2][self.i]包含着直到当前时间步第i个块解码的输出表示</span></span><br><span class="line">        <span class="comment"># state = [Encoder输出,mask长度, 直到当前时间步第i个块解码的输出表示]</span></span><br><span class="line">        <span class="comment"># X.shape = [batch_size, num_steps, d]</span></span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> state[<span class="number">2</span>][self.i] <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">            key_values = X</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            key_values = torch.cat((state[<span class="number">2</span>][self.i], X), axis=<span class="number">1</span>)</span><br><span class="line">        state[<span class="number">2</span>][self.i] = key_values</span><br><span class="line">        	</span><br><span class="line">        <span class="keyword">if</span> self.training:</span><br><span class="line">            batch_size, num_steps, _ = X.shape</span><br><span class="line">            <span class="comment"># dec_valid_lens的开头:(batch_size,num_steps),</span></span><br><span class="line">            <span class="comment"># 其中每一行是[1,2,...,num_steps]</span></span><br><span class="line">            dec_valid_lens = torch.arange(<span class="number">1</span>, num_steps + <span class="number">1</span>, device=X.device).repeat(batch_size, <span class="number">1</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            dec_valid_lens = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 自注意力</span></span><br><span class="line">        X2 = self.attention1(X, key_values, key_values, dec_valid_lens)</span><br><span class="line">        Y = self.addnorm1(X, X2)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 编码器－解码器注意力。</span></span><br><span class="line">        <span class="comment"># enc_outputs的开头:(batch_size,num_steps,num_hiddens)</span></span><br><span class="line">        Y2 = self.attention2(Y, enc_outputs, enc_outputs, enc_valid_lens)</span><br><span class="line">        Z = self.addnorm2(Y, Y2)</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> self.addnorm3(Z, self.ffn(Z)), state</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>构建了由num_layers个DecoderBlock实例组成的完整的Transformer解码器。</p>
+<p>最后，通过一个全连接层计算所有vocab_size个可能的输出词元的预测值。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TransformerDecoder</span>(<span class="params">d2l.AttentionDecoder</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, vocab_size, key_size, query_size, value_size,</span></span></span><br><span class="line"><span class="params"><span class="function">                 num_hiddens, norm_shape, ffn_num_input, ffn_num_hiddens,</span></span></span><br><span class="line"><span class="params"><span class="function">                 num_heads, num_layers, dropout, **kwargs</span>):</span></span><br><span class="line">        </span><br><span class="line">        <span class="built_in">super</span>(TransformerDecoder, self).__init__(**kwargs)</span><br><span class="line">        self.num_hiddens = num_hiddens</span><br><span class="line">        self.num_layers = num_layers</span><br><span class="line">        self.embedding = nn.Embedding(vocab_size, num_hiddens)</span><br><span class="line">        self.pos_encoding = d2l.PositionalEncoding(num_hiddens, dropout)</span><br><span class="line">        self.blks = nn.Sequential()</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(num_layers):</span><br><span class="line">            self.blks.add_module(<span class="string">&quot;block&quot;</span>+<span class="built_in">str</span>(i),</span><br><span class="line">                DecoderBlock(key_size, query_size, value_size, num_hiddens,</span><br><span class="line">                             norm_shape, ffn_num_input, ffn_num_hiddens,</span><br><span class="line">                             num_heads, dropout, i))</span><br><span class="line">        self.dense = nn.Linear(num_hiddens, vocab_size)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">init_state</span>(<span class="params">self, enc_outputs, enc_valid_lens, *args</span>):</span></span><br><span class="line">        <span class="keyword">return</span> [enc_outputs, enc_valid_lens, [<span class="literal">None</span>] * self.num_layers]</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, X, state</span>):</span></span><br><span class="line">        <span class="comment"># Embedding + Positional Encoding</span></span><br><span class="line">        X = self.pos_encoding(self.embedding(X) * math.sqrt(self.num_hiddens))</span><br><span class="line">        </span><br><span class="line">        self._attention_weights = [[<span class="literal">None</span>] * <span class="built_in">len</span>(self.blks) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span> (<span class="number">2</span>)]</span><br><span class="line">        <span class="keyword">for</span> i, blk <span class="keyword">in</span> <span class="built_in">enumerate</span>(self.blks):</span><br><span class="line">            X, state = blk(X, state)</span><br><span class="line">            <span class="comment"># 解码器自注意力权重</span></span><br><span class="line">            self._attention_weights[<span class="number">0</span>][i] = blk.attention1.attention.attention_weights</span><br><span class="line">            <span class="comment"># “编码器－解码器”自注意力权重</span></span><br><span class="line">            self._attention_weights[<span class="number">1</span>][i] = blk.attention2.attention.attention_weights</span><br><span class="line">            </span><br><span class="line">        <span class="keyword">return</span> self.dense(X), state</span><br><span class="line"></span><br><span class="line"><span class="meta">    @property</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">attention_weights</span>(<span class="params">self</span>):</span></span><br><span class="line">        <span class="keyword">return</span> self._attention_weights</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">encoder = TransformerEncoder(</span><br><span class="line">    <span class="built_in">len</span>(src_vocab), key_size, query_size, value_size, num_hiddens,</span><br><span class="line">    norm_shape, ffn_num_input, ffn_num_hiddens, num_heads,</span><br><span class="line">    num_layers, dropout)</span><br><span class="line">decoder = TransformerDecoder(</span><br><span class="line">    <span class="built_in">len</span>(tgt_vocab), key_size, query_size, value_size, num_hiddens,</span><br><span class="line">    norm_shape, ffn_num_input, ffn_num_hiddens, num_heads,</span><br><span class="line">    num_layers, dropout)</span><br><span class="line">net = d2l.EncoderDecoder(encoder, decoder)</span><br></pre></td></tr></table></figure>
+<h2 id="模型分析">模型分析</h2>
+<p>n为序列的长度，d为模型的维度<span class="math inline">\(d_{model}\)</span></p>
+<table>
+<colgroup>
+<col style="width: 30%">
+<col style="width: 23%">
+<col style="width: 24%">
+<col style="width: 22%">
+</colgroup>
+<thead>
+<tr>
+<th>Layer Type</th>
+<th>Complexity per Layer</th>
+<th>Sequential Operations</th>
+<th>Maximum Path Length</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Self-Attention</td>
+<td><span class="math inline">\(O(n^2d)\)</span></td>
+<td><span class="math inline">\(O(1)\)</span></td>
+<td><span class="math inline">\(O(1)\)</span></td>
+</tr>
+<tr>
+<td>Recurrent</td>
+<td><span class="math inline">\(O(nd^2)\)</span></td>
+<td><span class="math inline">\(O(n)\)</span></td>
+<td><span class="math inline">\(O(n)\)</span></td>
+</tr>
+<tr>
+<td>Convolutional</td>
+<td><span class="math inline">\(O(knd^2)\)</span></td>
+<td><span class="math inline">\(O(1)\)</span></td>
+<td><span class="math inline">\(O(log_k(n))\)</span></td>
+</tr>
+<tr>
+<td>Self-Attention(restricted)</td>
+<td><span class="math inline">\(O(rnd)\)</span></td>
+<td><span class="math inline">\(O(1)\)</span></td>
+<td><span class="math inline">\(O(n/r)\)</span></td>
+</tr>
+</tbody>
+</table>
+]]></content>
+      <categories>
+        <category>机器学习</category>
+        <category>LLM</category>
+      </categories>
   </entry>
   <entry>
     <title>二叉树遍历</title>
@@ -2009,7 +2243,8 @@ with Integers (poj.org)</a></p>
 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">vector&lt;vector&lt;<span class="keyword">int</span>&gt;&gt; <span class="built_in">levelOrder</span>(TreeNode* root) &#123;</span><br><span class="line">    queue&lt;TreeNode*&gt; myQueue;</span><br><span class="line">    vector&lt;vector&lt;<span class="keyword">int</span>&gt;&gt; ans;</span><br><span class="line">    <span class="keyword">if</span>(root == <span class="literal">nullptr</span>)&#123;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    myQueue.<span class="built_in">push</span>(root);</span><br><span class="line">    <span class="keyword">while</span>(!myQueue.<span class="built_in">empty</span>())&#123;</span><br><span class="line">        <span class="keyword">int</span> cnt = myQueue.<span class="built_in">size</span>();</span><br><span class="line">        vector&lt;<span class="keyword">int</span>&gt; temp;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i&lt;cnt; i++)&#123;</span><br><span class="line">            TreeNode *cur = myQueue.<span class="built_in">front</span>();</span><br><span class="line">            myQueue.<span class="built_in">pop</span>();</span><br><span class="line">            temp.<span class="built_in">push_back</span>(cur-&gt;val);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span>(cur-&gt;left != <span class="literal">nullptr</span>)&#123;</span><br><span class="line">                myQueue.<span class="built_in">push</span>(cur-&gt;left);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(cur-&gt;right != <span class="literal">nullptr</span>)&#123;</span><br><span class="line">                myQueue.<span class="built_in">push</span>(cur-&gt;right);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        ans.<span class="built_in">push_back</span>(temp);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
-        <category>算法笔记</category>
+        <category>算法</category>
+        <category>图论</category>
       </categories>
       <tags>
         <tag>二叉树</tag>
@@ -2046,7 +2281,14 @@ dp[i-1][j-k*v[i]]+w[i]*k), k=0,1,..,s[i]\)</span></p>
 <li>子序列不要求在原序列中连续</li>
 <li>字串要求连续</li>
 </ul>
-<h3 id="杨辉三角">杨辉三角</h3>
+<blockquote>
+<p><a href="https://leetcode.cn/problems/climbing-stairs/?envType=study-plan-v2&amp;envId=dynamic-programming">70.
+爬楼梯 - 力扣（LeetCode）</a></p>
+<p><a href="https://leetcode.cn/problems/min-cost-climbing-stairs/description/?envType=study-plan-v2&amp;envId=dynamic-programming">746.
+使用最小花费爬楼梯 - 力扣（LeetCode）</a></p>
+<p><a href="https://leetcode.cn/problems/house-robber/description/?envType=study-plan-v2&amp;envId=dynamic-programming">198.
+打家劫舍 - 力扣（LeetCode）</a></p>
+</blockquote>
 <h3 id="最长递增子序列">最长递增子序列</h3>
 <p>给定一个长度为 N
 的数列，求数值严格单调递增的子序列的长度最长是多少。</p>
@@ -2160,7 +2402,8 @@ dp[j]+dp[j-i]\)</span></p>
 <h2 id="记忆化搜索">记忆化搜索</h2>
 ]]></content>
       <categories>
-        <category>算法笔记</category>
+        <category>算法</category>
+        <category>DP</category>
       </categories>
       <tags>
         <tag>动态规划</tag>
@@ -2265,7 +2508,7 @@ dp[j]+dp[j-i]\)</span></p>
 <p>开创水墨山水画派</p>
 ]]></content>
       <categories>
-        <category>Hsy</category>
+        <category>HSY</category>
       </categories>
       <tags>
         <tag>语文</tag>
@@ -2382,7 +2625,7 @@ dp[j]+dp[j-i]\)</span></p>
 <p><strong>作品：</strong>清明、阿房宫赋、泊秦淮、赤壁。</p>
 ]]></content>
       <categories>
-        <category>Hsy</category>
+        <category>HSY</category>
       </categories>
       <tags>
         <tag>语文</tag>
@@ -2473,14 +2716,14 @@ AcWing题库</a></p>
 </blockquote>
 ]]></content>
       <categories>
-        <category>算法笔记</category>
+        <category>算法</category>
+        <category>其他</category>
       </categories>
   </entry>
   <entry>
     <title>交叉熵损失函数</title>
     <url>/2024/07/31/%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0/</url>
-    <content><![CDATA[<h1 id="损失函数">损失函数</h1>
-<h1 id="交叉熵损失函数">交叉熵损失函数</h1>
+    <content><![CDATA[<h1 id="交叉熵损失函数">交叉熵损失函数</h1>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"></span><br><span class="line"><span class="comment"># dim=0 按列进行计算，dim=1 按行进行计算</span></span><br><span class="line"><span class="comment"># softmax ——&gt; log_softmax --&gt; NLLLOSS--&gt; cross_entropy</span></span><br><span class="line"></span><br><span class="line">x = torch.randn(<span class="number">3</span>, <span class="number">5</span>, requires_grad=<span class="literal">True</span>)</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">tensor([[ 1.3962, -0.2568, -0.7142,  1.1941,  0.5695],</span></span><br><span class="line"><span class="string">        [-0.7136, -1.0663,  1.7642,  0.5170, -0.1858],</span></span><br><span class="line"><span class="string">        [ 0.0424, -0.3354, -0.9049,  0.6952,  1.3032]], requires_grad=True)</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line">y = torch.empty(<span class="number">3</span>, dtype=torch.long).random_(<span class="number">5</span>)</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">tensor([4, 3, 0])</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
 <h2 id="softmax">Softmax</h2>
 <p>Softmax是网络输出后第一步操作，其公式可表示为：</p>
@@ -2576,7 +2819,8 @@ n表示点数，m表示边数</p>
 <h3 id="匈牙利算法">匈牙利算法</h3>
 ]]></content>
       <categories>
-        <category>算法笔记</category>
+        <category>算法</category>
+        <category>图论</category>
       </categories>
       <tags>
         <tag>二分图</tag>
@@ -2584,6 +2828,32 @@ n表示点数，m表示边数</p>
         <tag>最小生成树</tag>
         <tag>最短距离</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>数学知识</title>
+    <url>/2024/08/02/%E6%95%B0%E5%AD%A6%E7%9F%A5%E8%AF%86/</url>
+    <content><![CDATA[<h1 id="数学知识">数学知识</h1>
+<h2 id="模运算">模运算</h2>
+<h4 id="两个数之和对m取余">两个数之和对m取余</h4>
+<p>定义 <span class="math inline">\(a = k_1m+r_1\)</span>, <span class="math inline">\(b=k_2m+r1\)</span></p>
+<p>计算两数相加对m取余的结果</p>
+<p><span class="math display">\[
+\begin{aligned}
+(a+b)\%m&amp;=(k_1m+r_1+k_2m+r_2)\%m\\
+&amp;=(r_1+r_2)\%m\\
+&amp;=(a\%m+b\%m)\%m
+\end{aligned}
+\]</span></p>
+<p>可以避免计算两数之和的结果，对于大数有效果</p>
+<blockquote>
+<p><a href="https://leetcode.cn/problems/find-the-divisibility-array-of-a-string/description/?envType=daily-question&amp;envId=2024-08-02">2575.
+找出字符串的可整除数组 - 力扣（LeetCode）</a></p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>算法</category>
+        <category>数学</category>
+      </categories>
   </entry>
   <entry>
     <title>数据结构</title>
@@ -2634,7 +2904,8 @@ AcWing题库</a></p>
 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">TrieNode</span>&#123;</span></span><br><span class="line">    <span class="keyword">bool</span> isend;</span><br><span class="line">    TrieNode* child[<span class="number">26</span>];</span><br><span class="line">&#125;;</span><br><span class="line">TrieNode *root;</span><br><span class="line"></span><br><span class="line"><span class="built_in">Trie</span>() &#123;</span><br><span class="line">    root = <span class="keyword">new</span> <span class="built_in">TrieNode</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">insert</span><span class="params">(string word)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> len = word.<span class="built_in">size</span>();</span><br><span class="line">    TrieNode* cur = root;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i&lt;len; i++)&#123;</span><br><span class="line">        <span class="keyword">int</span> u = word[i]-<span class="string">&#x27;a&#x27;</span>;</span><br><span class="line">        <span class="keyword">if</span>(!cur-&gt;child[u]) cur-&gt;child[u] = <span class="keyword">new</span> <span class="built_in">TrieNode</span>();</span><br><span class="line">        cur = cur-&gt;child[u];</span><br><span class="line">    &#125;</span><br><span class="line">    cur-&gt;isend = <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">search</span><span class="params">(string word)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> len = word.<span class="built_in">size</span>();</span><br><span class="line">    TrieNode* cur = root;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i&lt;len; i++)&#123;</span><br><span class="line">        <span class="keyword">int</span> u = word[i] - <span class="string">&#x27;a&#x27;</span>;</span><br><span class="line">        <span class="keyword">if</span>(!cur-&gt;child[u]) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        cur = cur-&gt;child[u];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> cur-&gt;isend;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
-        <category>算法笔记</category>
+        <category>算法</category>
+        <category>数据结构</category>
       </categories>
   </entry>
   <entry>
@@ -2754,7 +3025,7 @@ MyJtableModel负责对数据进行整理，MyJTableCellRender负责对文件图�
 <p>更多功能请查看说明文档</p>
 ]]></content>
       <categories>
-        <category>Project</category>
+        <category>CQU</category>
       </categories>
       <tags>
         <tag>java</tag>
@@ -2818,7 +3089,7 @@ KB, 包含 60,000 个标签)</li>
 <p>可以发现，模型识别的正确率随着模型训练次数的增加，在一定范围内增加。但是当超过一定的训练次数后，模型的识别正确率不会再增加，这有可能受限于神经网络的层数、隐藏层节点数量，以及手写数字图片的像素精度等因素。</p>
 ]]></content>
       <categories>
-        <category>Project</category>
+        <category>CQU</category>
       </categories>
       <tags>
         <tag>python</tag>
@@ -2896,7 +3167,7 @@ KB, 包含 60,000 个标签)</li>
 <p><strong>代表作：</strong>《韩非子》</p>
 ]]></content>
       <categories>
-        <category>Hsy</category>
+        <category>HSY</category>
       </categories>
       <tags>
         <tag>语文</tag>
@@ -3030,10 +3301,49 @@ house中烧咖啡的机器老鼠设计一个命令启停器。</strong></p>
 </figure>
 ]]></content>
       <categories>
-        <category>Homework</category>
+        <category>CQU</category>
       </categories>
       <tags>
         <tag>数字逻辑</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>诗经、楚辞</title>
+    <url>/2021/10/04/%E8%AF%97%E7%BB%8F%E3%80%81%E6%A5%9A%E8%BE%9E/</url>
+    <content><![CDATA[<h1 id="诗经楚辞">诗经、楚辞</h1>
+<h2 id="诗经">诗经</h2>
+<ul>
+<li><p>《诗经》又称《诗》和《诗三百》</p></li>
+<li><p>是我国第一部（最早）现实主义诗歌总集</p></li>
+<li><p>记录了周初到周末500年历史</p></li>
+<li><p>共305篇</p></li>
+</ul>
+<p><strong>诗经六义：</strong>风雅颂 赋比兴</p>
+<p><strong>风（内容）</strong>：十五国风，共160篇。多用复沓手法，多为民歌。</p>
+<p><strong>雅（题材）</strong>：《大雅》和《小雅》105篇
+多为贵族宫廷乐曲。</p>
+<p><strong>颂（音乐）</strong>：《周颂》、《商颂》、《鲁颂》</p>
+<p><strong>赋</strong>：铺陈直叙。</p>
+<p><strong>比</strong>：以彼物必此物。</p>
+<p><strong>兴</strong>：借物比喻，触物兴词，以次及彼。</p>
+<p><strong>《诗经》手法：</strong>重章叠句、情景交融、起兴手法、虚实结合。</p>
+<p><strong>诗经艺术特色：</strong>以四言为主，重章叠句，节奏简约明快，情致回环往复
+多用比兴手法，意蕴丰赡含蓄</p>
+<ul>
+<li><p>诗经中的国风被称为现代主义诗歌源头</p></li>
+<li><p>王国维在《人间词话》评价蒹葭是“最得风人深致”</p></li>
+</ul>
+<h2 id="楚辞">楚辞</h2>
+<ul>
+<li><p>是楚地民歌或者歌辞</p></li>
+<li><p>楚辞体是一种新诗体，一般采用四言或八言</p></li>
+</ul>
+]]></content>
+      <categories>
+        <category>HSY</category>
+      </categories>
+      <tags>
+        <tag>语文</tag>
       </tags>
   </entry>
   <entry>
@@ -3169,49 +3479,10 @@ gui的mvc模式设计用户的绘图流程，利用java的套接字编程实现�
 <p><strong>更多功能请查看说明文档</strong></p>
 ]]></content>
       <categories>
-        <category>Project</category>
+        <category>CQU</category>
       </categories>
       <tags>
         <tag>java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>诗经、楚辞</title>
-    <url>/2021/10/04/%E8%AF%97%E7%BB%8F%E3%80%81%E6%A5%9A%E8%BE%9E/</url>
-    <content><![CDATA[<h1 id="诗经楚辞">诗经、楚辞</h1>
-<h2 id="诗经">诗经</h2>
-<ul>
-<li><p>《诗经》又称《诗》和《诗三百》</p></li>
-<li><p>是我国第一部（最早）现实主义诗歌总集</p></li>
-<li><p>记录了周初到周末500年历史</p></li>
-<li><p>共305篇</p></li>
-</ul>
-<p><strong>诗经六义：</strong>风雅颂 赋比兴</p>
-<p><strong>风（内容）</strong>：十五国风，共160篇。多用复沓手法，多为民歌。</p>
-<p><strong>雅（题材）</strong>：《大雅》和《小雅》105篇
-多为贵族宫廷乐曲。</p>
-<p><strong>颂（音乐）</strong>：《周颂》、《商颂》、《鲁颂》</p>
-<p><strong>赋</strong>：铺陈直叙。</p>
-<p><strong>比</strong>：以彼物必此物。</p>
-<p><strong>兴</strong>：借物比喻，触物兴词，以次及彼。</p>
-<p><strong>《诗经》手法：</strong>重章叠句、情景交融、起兴手法、虚实结合。</p>
-<p><strong>诗经艺术特色：</strong>以四言为主，重章叠句，节奏简约明快，情致回环往复
-多用比兴手法，意蕴丰赡含蓄</p>
-<ul>
-<li><p>诗经中的国风被称为现代主义诗歌源头</p></li>
-<li><p>王国维在《人间词话》评价蒹葭是“最得风人深致”</p></li>
-</ul>
-<h2 id="楚辞">楚辞</h2>
-<ul>
-<li><p>是楚地民歌或者歌辞</p></li>
-<li><p>楚辞体是一种新诗体，一般采用四言或八言</p></li>
-</ul>
-]]></content>
-      <categories>
-        <category>Hsy</category>
-      </categories>
-      <tags>
-        <tag>语文</tag>
       </tags>
   </entry>
   <entry>
@@ -3295,7 +3566,7 @@ gui的mvc模式设计用户的绘图流程，利用java的套接字编程实现�
 <p>由适应度函数的进化曲线可得知，刚开始种群进化速度很快，当适应值接近最优值时进化速度放缓。由图像可知在接近100代种群时适应值收敛。说明遗传的收敛效果良好。</p>
 ]]></content>
       <categories>
-        <category>Project</category>
+        <category>CQU</category>
       </categories>
       <tags>
         <tag>遗传算法</tag>
