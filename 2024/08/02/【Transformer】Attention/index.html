@@ -1,0 +1,295 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>【Transformer】Attention | XcloveHsy's Blog</title><meta name="author" content="XuCong"><meta name="copyright" content="XuCong"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="【Transformer】Attention 注意力机制简单来说就是已知一个Query，以及一些Key-Value对 通过计算Query与每个Key之间的关联度，并通过Softmax计算得到每个Key对应Value的权重 利用权重计算Value的加权和作为Query的输出 如下图，Q1与K2之间的关联度比较高，从而对应V2在计算输出时会给出更大的权重。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【Transformer】Attention">
+<meta property="og:url" content="https://xclovehsy.github.io/2024/08/02/%E3%80%90Transformer%E3%80%91Attention/index.html">
+<meta property="og:site_name" content="XcloveHsy&#39;s Blog">
+<meta property="og:description" content="【Transformer】Attention 注意力机制简单来说就是已知一个Query，以及一些Key-Value对 通过计算Query与每个Key之间的关联度，并通过Softmax计算得到每个Key对应Value的权重 利用权重计算Value的加权和作为Query的输出 如下图，Q1与K2之间的关联度比较高，从而对应V2在计算输出时会给出更大的权重。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240805113648793.png">
+<meta property="article:published_time" content="2024-08-02T11:30:57.000Z">
+<meta property="article:modified_time" content="2024-08-05T06:22:18.585Z">
+<meta property="article:author" content="XuCong">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240805113648793.png"><link rel="shortcut icon" href="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/avatar.jpg"><link rel="canonical" href="https://xclovehsy.github.io/2024/08/02/%E3%80%90Transformer%E3%80%91Attention/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":1,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"简"},
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":230},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'mediumZoom',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '【Transformer】Attention',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-08-05 14:22:18'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/mouse.css"><meta name="generator" content="Hexo 5.4.0"></head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+document.addEventListener('pjax:send', () => {
+  Pace.restart()
+})
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">36</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">27</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">13</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa-solid fa-list"></i><span> 文章</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 清单</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240805113648793.png')"><nav id="nav"><span id="blog-info"><a href="/" title="XcloveHsy's Blog"><img class="site-icon" src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/avatar.jpg"/><span class="site-name">XcloveHsy's Blog</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa-solid fa-list"></i><span> 文章</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 清单</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">【Transformer】Attention</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-08-02T11:30:57.000Z" title="发表于 2024-08-02 19:30:57">2024-08-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-08-05T06:22:18.585Z" title="更新于 2024-08-05 14:22:18">2024-08-05</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/LLM/">LLM</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">2.3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>10分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="【Transformer】Attention"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="transformerattention">【Transformer】Attention</h1>
+<p>注意力机制简单来说就是已知一个Query，以及一些Key-Value对</p>
+<p>通过计算Query与每个Key之间的<strong>关联度</strong>，并通过Softmax计算得到每个Key对应Value的权重</p>
+<p>利用权重计算Value的<strong>加权和</strong>作为Query的输出</p>
+<p>如下图，Q1与K2之间的关联度比较高，从而对应V2在计算输出时会给出更大的权重。</p>
+<p>与K5关联度比较小，从而V5的权重也会小一些</p>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240805113648793.png" alt="image-20240805113648793">
+<figcaption aria-hidden="true">image-20240805113648793</figcaption>
+</figure>
+<h2 id="masked-softmax-operation">Masked Softmax Operation</h2>
+<p>注意力机制通过计算关联度的Softmax值得到一个概率分布作为注意力权重。</p>
+<p>但是在Transformer训练过程时，Decoder可以获得对应的所有输出，例如推理“I
+love you”中的love词时不应该将"love
+you"放入到注意力的计算中。因此在某些情况下，并非所有的值都应该被放入到注意力计算中。</p>
+<p>首先定义sequence_mask函数，传入2Dtensor以及对应valid_len(1D)将超过指定范围的元素设置为指定的value</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sequence_mask</span>(<span class="params">X, valid_len, value=<span class="number">0</span></span>):</span></span><br><span class="line">    <span class="comment"># X: 2D tensor [num_steps, d_model]</span></span><br><span class="line">    <span class="comment"># valid_len: 1D tensor [num_step]</span></span><br><span class="line">    maxlen = X.size(<span class="number">1</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># torch.arange(5)[None, :] 在tensor最前面维度上拓展一个维度 tensor([[0, 1, 2, 3, 4]])</span></span><br><span class="line">    <span class="comment"># torch.tensor([2, 3])[:, None] 相当于.reshape([-1, 1])</span></span><br><span class="line">    <span class="comment"># 广播机制 torch.arange(5)[None, :] &lt; torch.tensor([2, 3]).reshape([-1, 1]) </span></span><br><span class="line">    <span class="comment"># tensor([[ True,  True, False, False, False],</span></span><br><span class="line">    <span class="comment">#         [ True,  True,  True, False, False]])</span></span><br><span class="line">    </span><br><span class="line">    mask = torch.arange((maxlen), dtype=torch.float32, device=X.device)[<span class="literal">None</span>, :] &gt;= valid_len[:, <span class="literal">None</span>]</span><br><span class="line">    X[mask] = value</span><br><span class="line">    <span class="keyword">return</span> X</span><br><span class="line"></span><br><span class="line">sequence_mask(torch.rand(<span class="number">2</span>, <span class="number">5</span>), torch.tensor([<span class="number">2</span>, <span class="number">3</span>]))</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">tensor([[0.4102, 0.1974, 0.0000, 0.0000, 0.0000],</span></span><br><span class="line"><span class="string">        [0.6009, 0.8539, 0.3014, 0.0000, 0.0000]])</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+<p>定义masked_softmax函数，完成掩码以及Softmax操作</p>
+<p>通过指定一个有效序列长度，
+在计算Softmax时去掉超出指定范围的值（权重置为零）。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">masked_softmax</span>(<span class="params">X, valid_lens</span>):</span></span><br><span class="line">    <span class="comment"># X: 3D [batch_size, num_queries, num_kv_pairs]</span></span><br><span class="line">    <span class="comment"># valid_lens: 1D [batch_size] tensor([2, 3]) 表示第1、2个batch分别使用2、3的valid_lens</span></span><br><span class="line">    <span class="comment">#             2D [batch_size, num_steps] torch.tensor([[1, 3], [2, 4]]) 第1个batch的第1、2句分别使用1、3的valid_len</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> valid_lens <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        <span class="keyword">return</span> nn.functional.softmax(X, dim=-<span class="number">1</span>) <span class="comment"># 在最后一个维度上做softmax</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        shape = X.shape</span><br><span class="line">        <span class="keyword">if</span> valid_lens.dim() == <span class="number">1</span>:</span><br><span class="line">            <span class="comment"># 给一个tensor将其展开n次</span></span><br><span class="line">            <span class="comment"># torch.repeat_interleave(torch.tensor([10]), 5) -&gt; tensor([10, 10, 10, 10, 10])</span></span><br><span class="line">            valid_lens = torch.repeat_interleave(valid_lens, shape[<span class="number">1</span>])</span><br><span class="line">            </span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="comment"># 展开成一个维度</span></span><br><span class="line">            valid_lens = valid_lens.reshape(-<span class="number">1</span>)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 在最后一个维度将masked元素替换成负无穷，经过exp后变为0</span></span><br><span class="line">        <span class="comment"># 合并batch_size和num_steps两个维度再传入sequence_mask处理</span></span><br><span class="line">        X = sequence_mask(X.reshape(-<span class="number">1</span>, shape[-<span class="number">1</span>]), valid_lens, value=-<span class="number">1e6</span>)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 转回3D tensor并在最后一个维度做softmax</span></span><br><span class="line">        <span class="keyword">return</span> nn.functional.softmax(X.reshape(shape), dim=-<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<p>例如定义两个2×4矩阵表示的样本，这两个样本的有效长度分别为2和3。</p>
+<p>经过掩蔽softmax操作，超出有效长度的值都被掩蔽为0。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">masked_softmax(torch.rand(<span class="number">2</span>, <span class="number">2</span>, <span class="number">4</span>), torch.tensor([<span class="number">2</span>, <span class="number">3</span>]))</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">tensor([[[0.3718, 0.6282, 0.0000, 0.0000],</span></span><br><span class="line"><span class="string">         [0.3768, 0.6232, 0.0000, 0.0000]],</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        [[0.3184, 0.2974, 0.3841, 0.0000],</span></span><br><span class="line"><span class="string">         [0.3008, 0.3684, 0.3308, 0.0000]]])</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+<p>同样也可以使用二维tensor，为矩阵样本中的每一行指定有效长度。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">masked_softmax(torch.rand(<span class="number">2</span>, <span class="number">2</span>, <span class="number">4</span>), torch.tensor([<span class="number">2</span>, <span class="number">3</span>]))</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">tensor([[[1.0000, 0.0000, 0.0000, 0.0000],</span></span><br><span class="line"><span class="string">         [0.5771, 0.4229, 0.0000, 0.0000]],</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        [[0.2957, 0.4654, 0.2389, 0.0000],</span></span><br><span class="line"><span class="string">         [0.2381, 0.2024, 0.2127, 0.3467]]])</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+<h2 id="scaled-dot-product-attention">Scaled Dot-Product Attention</h2>
+<p>Transformer中所采用的是Scaled Dot-Product
+Attention作为注意力评分函数</p>
+<p>要求query和key相同的维度<span class="math inline">\(d_k\)</span>，
+value的维度可以和key不同<span class="math inline">\(d_v\)</span></p>
+<p>计算query与每个key之间的<strong>点乘</strong>，从几何的角度来看就是key在query上的投影，作为query与该key之间的相似程度</p>
+<p>内积相当于计算余弦值，越大表示相似度越高，如果两个向量正交余弦值=0，表示不相关</p>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240805114456973.png" alt="image-20240805114456973">
+<figcaption aria-hidden="true">image-20240805114456973</figcaption>
+</figure>
+<p>假设查询和键的所有元素都是独立的随机变量，
+并且都满足零均值和单位方差， 那么两个向量的点积的均值为0，方差为𝑑。</p>
+<p>为确保无论向量长度如何， 点积的方差在不考虑向量长度的情况下仍然是1，
+再将点积除以𝑑（即“缩放”）</p>
+<p>因此计算query与每个key之间的<strong>点乘</strong>后，除以<span class="math inline">\(\sqrt{d_k}\)</span>（为了避免exp后方差过大，归一化操作）</p>
+<p>再通过Softmax函数计算得到权重，最后乘上value得到注意力分数</p>
+<p>一般情况是多个query和多个key-value对计算注意力分数，为了并行计算通常采用矩阵的乘法
+<span class="math display">\[
+Attention(Q,K,V)=Softmax(\frac{QK^T}{\sqrt{d_k}})V
+\]</span> 计算的流程图如下</p>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240805115604743.png" alt="image-20240805115604743">
+<figcaption aria-hidden="true">image-20240805115604743</figcaption>
+</figure>
+<p>从矩阵的角度上看，Q矩阵首先和K的转置相乘，然后每个元素除以<span class="math inline">\(\sqrt{d_k}\)</span>，使得方差变为1</p>
+<p>在Decoder中可能会使用到Mask的操作，将Mask范围以外的元素置为一个非常小的数</p>
+<p>再通过Softmax计算权重（负无穷的exp为0）</p>
+<p>乘上V矩阵得到注意力分数</p>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240805120913349.png" alt="image-20240805120913349">
+<figcaption aria-hidden="true">image-20240805120913349</figcaption>
+</figure>
+<p>实现DotProductAttention类完成点乘注意力分数计算。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DotProductAttention</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, dropout, **kwargs</span>):</span></span><br><span class="line">        <span class="built_in">super</span>(DotProductAttention, self).__init__(**kwargs)</span><br><span class="line">        self.dropout = nn.Dropout(dropout)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, queries, keys, values, valid_lens=<span class="literal">None</span></span>):</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot; </span></span><br><span class="line"><span class="string">        :param queries: [batch_size, num_queries, d_query]</span></span><br><span class="line"><span class="string">        :param keys: [batch_size, num_kv_pairs, d_key] # d_query = d_key</span></span><br><span class="line"><span class="string">        :param values: [batch_size, num_kv_pairs, d_value]</span></span><br><span class="line"><span class="string">        :param valid_lens: [batch_size] or [batch_size, num_query]</span></span><br><span class="line"><span class="string">        :return: [batch_size, num_queries, d_value]</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        d = queries.shape[-<span class="number">1</span>]</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># bmm 批量矩阵乘法， 对分别对每个batch中的矩阵相乘</span></span><br><span class="line">        <span class="comment"># a, b = torch.rand((2, 3, 4)), torch.rand((2, 4, 5))</span></span><br><span class="line">        <span class="comment"># torch.bmm(a, b).shape -&gt; torch.Size([2, 3, 5])</span></span><br><span class="line">        scores = torch.bmm(queries, keys.transpose(<span class="number">1</span>,<span class="number">2</span>)) / math.sqrt(d)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 掩码操作+Softmax</span></span><br><span class="line">        self.attention_weights = masked_softmax(scores, valid_lens)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># Dropout后乘上value矩阵</span></span><br><span class="line">        <span class="keyword">return</span> torch.bmm(self.dropout(self.attention_weights), values)</span><br></pre></td></tr></table></figure>
+<p>从测试数据中可以看出输入输出的维度分别为：</p>
+<p>Q: (batch_size, num_queries, d_key)</p>
+<p>K: (batch_size, num_kv_qairs, d_key)</p>
+<p>V: (batch_size, num_kv_qairs, d_value)</p>
+<p><strong>Ouput: (batch_size, num_queries, d_value)</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">batch_size, num_q, num_kv,d_k, d_v = <span class="number">2</span>, <span class="number">3</span>, <span class="number">10</span>, <span class="number">5</span>, <span class="number">6</span> </span><br><span class="line">queries = torch.rand((batch_size, num_q, d_k))</span><br><span class="line">keys = torch.rand((batch_size, num_kv, d_k))</span><br><span class="line">values = torch.rand((batch_size, num_kv, d_v))</span><br><span class="line">valid_lens = torch.tensor([<span class="number">2</span>, <span class="number">6</span>])</span><br><span class="line">attention = DotProductAttention(dropout=<span class="number">0.5</span>)</span><br><span class="line">attention.<span class="built_in">eval</span>()</span><br><span class="line">attention(queries, keys, values, valid_lens).shape <span class="comment"># torch.Size([2, 3, 6])</span></span><br></pre></td></tr></table></figure>
+<h2 id="multi-head-attention">Multi-Head Attention</h2>
+<p>在给定一个的查询、键和值时，如果仅仅考虑使用一个注意力函数计算往往会表现不太好</p>
+<p>参考CNN网络中的多通道，使用多个卷积核识别不同的图像模式以提取多个维度的特征</p>
+<p>因此Transformer希望使用相同的注意力机制学习到不同的特征，
+然后将不同的特征组合起来以获得更多的序列信息</p>
+<p>在前面的点乘注意力机制中没有可以学习的参数，而线性层中有可以学习的参数</p>
+<p>Transformer通过独立学习得到的ℎ组不同的Linear层，将Q,K,V投影到低维空间</p>
+<p>将h组的Q,K,V分别计算注意力（并行实现）</p>
+<p>最后将h个注意力的输出拼接到一起，再通过一个线性层（可学习）产生最终输出。</p>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240805124645884.png" alt="image-20240805124645884">
+<figcaption aria-hidden="true">image-20240805124645884</figcaption>
+</figure>
+<p>多头注意力可以使模型从不同的表达空间中获得特征，并组合在一起，相较于普通的单头注意力机制有更好的特征提取能力</p>
+<p><span class="math display">\[
+MultiHead(Q,K,V)=Concat(head_1,...,head_h)W^o
+\]</span></p>
+<p><span class="math display">\[
+where\ head_i=Attention(QW^Q_i,KW^K_i,VW^V_i)
+\]</span></p>
+<p>其中<span class="math inline">\(W^Q_i∈R^{d_{model}×d_k},\
+W^K_i∈R^{d_{model}×d_k},\ W^V_i∈R^{d_{model}\
+×d_v},W^O∈R^{hd_v×d_{model}}\)</span></p>
+<p>MultiHeadAttention类实现中考虑到涉及多个注意力头的计算，为了并行实现提高效率，因此将tensor进行转换，将head的维度放到batch的维度，这样可以一次实现对所有注意力头的计算。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MultiHeadAttention</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, key_size, query_size, value_size, num_hiddens,</span></span></span><br><span class="line"><span class="params"><span class="function">                 num_heads, dropout, bias=<span class="literal">False</span>, **kwargs</span>):</span></span><br><span class="line">        <span class="built_in">super</span>(MultiHeadAttention, self).__init__(**kwargs)</span><br><span class="line">        self.num_heads = num_heads</span><br><span class="line">        self.attention = DotProductAttention(dropout)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># Linear 默认对最后一个维度做计算</span></span><br><span class="line">        <span class="comment"># 这里的num_hiddens是指多个头合在一起的维度，单个头是num_hiddens/num_heads</span></span><br><span class="line">        self.W_q = nn.Linear(query_size, num_hiddens, bias=bias)</span><br><span class="line">        self.W_k = nn.Linear(key_size, num_hiddens, bias=bias)</span><br><span class="line">        self.W_v = nn.Linear(value_size, num_hiddens, bias=bias)</span><br><span class="line">        self.W_o = nn.Linear(num_hiddens, num_hiddens, bias=bias)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, queries, keys, values, valid_lens</span>):</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot; </span></span><br><span class="line"><span class="string">        :param queries: [batch_size, num_queries, d_query]</span></span><br><span class="line"><span class="string">        :param keys: [batch_size, num_kv_pairs, d_key] # d_query = d_key</span></span><br><span class="line"><span class="string">        :param values: [batch_size, num_kv_pairs, d_value]</span></span><br><span class="line"><span class="string">        :param valid_lens: [batch_size] or [batch_size, num_query]</span></span><br><span class="line"><span class="string">        :return: [batch_size, num_queries, num_hiddens]</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 变换后的形状 [batch_size*num_heads, num_queries, num_hiddens/num_heads]</span></span><br><span class="line">        queries = transpose_qkv(self.W_q(queries), self.num_heads)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 变换后的形状 [batch_size*num_heads, num_kv_pairs, num_hiddens/num_heads]</span></span><br><span class="line">        keys = transpose_qkv(self.W_k(keys), self.num_heads)</span><br><span class="line">        values = transpose_qkv(self.W_v(values), self.num_heads)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> valid_lens <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            <span class="comment"># 在第0个维度上，将第一个标量复制num_heads次，然后复制第二个。。</span></span><br><span class="line">            valid_lens = torch.repeat_interleave(valid_lens, repeats=self.num_heads, dim=<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 将多头注意力的计算合并到一次完成</span></span><br><span class="line">        <span class="comment"># [batch_size*num_heads, num_queries, num_hiddens/num_heads]</span></span><br><span class="line">        output = self.attention(queries, keys, values, valid_lens)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># [batch_size, num_queries, num_hiddens]</span></span><br><span class="line">        output_concat = transpose_output(output, self.num_heads)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 最后再通过一个线性层</span></span><br><span class="line">        <span class="keyword">return</span> self.W_o(output_concat)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">transpose_qkv</span>(<span class="params">X, num_heads</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;通过变换矩阵形状实现多头注意力的并行计算&quot;&quot;&quot;</span></span><br><span class="line">    <span class="comment"># X: [batch_size, num_q/num_kv, num_hidden] </span></span><br><span class="line">    <span class="comment">#    --&gt; [batch_size, num_q/num_kv, num_heads, num_hidden/num_heads]</span></span><br><span class="line">    X = X.reshape(X.shape[<span class="number">0</span>], X.shape[<span class="number">1</span>], num_heads, -<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 将第1、2维交换位置</span></span><br><span class="line">    <span class="comment"># [batch_size, num_heads, num_q/num_kv, num_hidden/num_heads]</span></span><br><span class="line">    X = X.permute(<span class="number">0</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">3</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 合并0、1维</span></span><br><span class="line">    <span class="comment"># [batch_size*num_heads, num_q/num_kv, num_hidden/num_heads]</span></span><br><span class="line">    <span class="keyword">return</span> X.reshape(-<span class="number">1</span>, X.shape[<span class="number">2</span>], X.shape[<span class="number">3</span>])</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">transpose_output</span>(<span class="params">X, num_heads</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;逆转transpose_qkv操作&quot;&quot;&quot;</span></span><br><span class="line">    X = X.reshape(-<span class="number">1</span>, num_heads, X.shape[<span class="number">1</span>], X.shape[<span class="number">2</span>])</span><br><span class="line">    X = X.permute(<span class="number">0</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">3</span>)</span><br><span class="line">    <span class="keyword">return</span> X.reshape(X.shape[<span class="number">0</span>], X.shape[<span class="number">1</span>], -<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<p>可以看出多头注意力的输入输出维度:</p>
+<p>Q: (batch_size, num_queries, d_key)</p>
+<p>K: (batch_size, num_kv_qairs, d_key)</p>
+<p>V: (batch_size, num_kv_qairs, d_value)</p>
+<p><strong>Ouput: (batch_size, num_queries, num_hiddens)</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">num_hiddens, num_heads = <span class="number">100</span>, <span class="number">5</span></span><br><span class="line">attention = MultiHeadAttention(num_hiddens, num_hiddens, num_hiddens,</span><br><span class="line">                               num_hiddens, num_heads, <span class="number">0.5</span>)</span><br><span class="line">attention.<span class="built_in">eval</span>()</span><br><span class="line">batch_size, num_queries = <span class="number">2</span>, <span class="number">4</span></span><br><span class="line">num_kvpairs, valid_lens =  <span class="number">6</span>, torch.tensor([<span class="number">3</span>, <span class="number">2</span>])</span><br><span class="line">X = torch.ones((batch_size, num_queries, num_hiddens))</span><br><span class="line">Y = torch.ones((batch_size, num_kvpairs, num_hiddens))</span><br><span class="line">attention(X, Y, Y, valid_lens).shape <span class="comment"># torch.Size([2, 4, 100])</span></span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://xclovehsy.github.io">XuCong</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://xclovehsy.github.io/2024/08/02/%E3%80%90Transformer%E3%80%91Attention/">https://xclovehsy.github.io/2024/08/02/%E3%80%90Transformer%E3%80%91Attention/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://xclovehsy.github.io" target="_blank">XcloveHsy's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240805113648793.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2024/08/05/%E3%80%90Transformer%E3%80%91Position-wise%20FFN/" title="【Transformer】Position-wise FFN"><img class="cover" src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240805140934105.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">【Transformer】Position-wise FFN</div></div></a></div><div class="next-post pull-right"><a href="/2024/08/02/%E3%80%90Transformer%E3%80%91Positional%20Encoding/" title="【Transformer】Positional Encoding"><img class="cover" src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240802184231821.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">【Transformer】Positional Encoding</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">XuCong</div><div class="author-info__description">Nothing is impossible</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">36</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">27</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">13</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/xclovehsy" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:xclovehsy@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#transformerattention"><span class="toc-number">1.</span> <span class="toc-text">【Transformer】Attention</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#masked-softmax-operation"><span class="toc-number">1.1.</span> <span class="toc-text">Masked Softmax Operation</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#scaled-dot-product-attention"><span class="toc-number">1.2.</span> <span class="toc-text">Scaled Dot-Product Attention</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#multi-head-attention"><span class="toc-number">1.3.</span> <span class="toc-text">Multi-Head Attention</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2024/08/05/%E3%80%90Transformer%E3%80%91Decoder/" title="【Transformer】Decoder"><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/0676ccc24555cb5ff34066fdba3c678.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="【Transformer】Decoder"/></a><div class="content"><a class="title" href="/2024/08/05/%E3%80%90Transformer%E3%80%91Decoder/" title="【Transformer】Decoder">【Transformer】Decoder</a><time datetime="2024-08-05T01:28:22.000Z" title="发表于 2024-08-05 09:28:22">2024-08-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/08/05/%E3%80%90Transformer%E3%80%91Encoder/" title="【Transformer】Encoder"><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/fe5f0cce85b881d78b503c951bb1f58.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="【Transformer】Encoder"/></a><div class="content"><a class="title" href="/2024/08/05/%E3%80%90Transformer%E3%80%91Encoder/" title="【Transformer】Encoder">【Transformer】Encoder</a><time datetime="2024-08-05T01:28:07.000Z" title="发表于 2024-08-05 09:28:07">2024-08-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/08/05/%E3%80%90Transformer%E3%80%91Residual%20and%20LayerNorm/" title="【Transformer】Residual and LayerNorm"><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240805144748910.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="【Transformer】Residual and LayerNorm"/></a><div class="content"><a class="title" href="/2024/08/05/%E3%80%90Transformer%E3%80%91Residual%20and%20LayerNorm/" title="【Transformer】Residual and LayerNorm">【Transformer】Residual and LayerNorm</a><time datetime="2024-08-05T01:21:48.000Z" title="发表于 2024-08-05 09:21:48">2024-08-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/08/05/%E3%80%90Transformer%E3%80%91Position-wise%20FFN/" title="【Transformer】Position-wise FFN"><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240805140934105.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="【Transformer】Position-wise FFN"/></a><div class="content"><a class="title" href="/2024/08/05/%E3%80%90Transformer%E3%80%91Position-wise%20FFN/" title="【Transformer】Position-wise FFN">【Transformer】Position-wise FFN</a><time datetime="2024-08-05T01:12:38.000Z" title="发表于 2024-08-05 09:12:38">2024-08-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/08/02/%E3%80%90Transformer%E3%80%91Attention/" title="【Transformer】Attention"><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240805113648793.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="【Transformer】Attention"/></a><div class="content"><a class="title" href="/2024/08/02/%E3%80%90Transformer%E3%80%91Attention/" title="【Transformer】Attention">【Transformer】Attention</a><time datetime="2024-08-02T11:30:57.000Z" title="发表于 2024-08-02 19:30:57">2024-08-02</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240805113648793.png')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By XuCong</div><div class="footer_custom_text">Hi, welcome to xclovehsy's blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">简</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="/js/tw_cn.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js"></script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.1
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, '']
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.min.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typesetPromise()
+}</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=4.13.0"></script></div></div></body></html>
