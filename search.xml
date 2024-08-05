@@ -909,251 +909,6 @@ Q(s, a ; \mathbf{w})=V(s ; \mathbf{w}^V)+A(s, a ;
       </tags>
   </entry>
   <entry>
-    <title>【RL】Multi-Agent Learning</title>
-    <url>/2024/07/31/RL%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%BA%94%EF%BC%89/</url>
-    <content><![CDATA[<h1 id="rlmulti-agent-learning">【RL】Multi-Agent Learning</h1>
-<p>一个系统中存在多个决策者</p>
-<p><strong>面临的困难</strong></p>
-<ul>
-<li><p>环境非平稳变化（马尔科夫特性不再满足），每个智能体所对应的环境包含了其他智能体的策略，其他智能体策略的变化导致环境变化的非平稳性。</p></li>
-<li><p>局部可观，智能体只能观测到环境的部分状态</p></li>
-<li><p>集中式学习不可行，需要一个集中式控制中心与智能体之间进行大量的信息交互，神经网络的输入输出维度会随智能体数目指数增大，难以收敛。</p></li>
-</ul>
-<h2 id="基本概念">基本概念</h2>
-<h3 id="agent的关系">Agent的关系</h3>
-<ul>
-<li><p>Fully
-cooperative，两个Agent需要相互配合才能完成任务（工业机器人）</p></li>
-<li><p>Fully
-competitive，一方的收益是另一方的损失（捕食者和猎物）</p></li>
-<li><p>Mixed Cooperative &amp;
-competitive，既有竞争又有合作（足球机器人，队伍内是合作，队伍间是博弈）</p></li>
-<li><p>Self-interested，利己主义，只想最大化自己的利益，动作可能让别人获益or损失，不关心别人的利益（股票的期货交易系统、无人车）</p></li>
-</ul>
-<h3 id="state-action">State &amp; Action</h3>
-<p>There are <span class="math inline">\(n\)</span> agents.</p>
-<p>Let <span class="math inline">\(S\)</span> be the state.</p>
-<p>Let <span class="math inline">\(A^i\)</span> be the <span class="math inline">\(i\)</span>-th agent's action.</p>
-<p>State transition: <span class="math inline">\(p\left(s^{\prime} \mid
-s, a^1, \cdots, a^n\right)=\mathbb{P}\left(S^{\prime}=s^{\prime} \mid
-S=s, A^1=a^1, \cdots, A^n=a^n\right).\)</span></p>
-<p>The next state, <span class="math inline">\(S^{\prime}\)</span>,
-depends on all the agents' actions.</p>
-<p>每个Agent的Action都可能影响Env的下个State，所以每个Agent都可以影响其他Agent</p>
-<h3 id="rewards">Rewards</h3>
-<p>Let <span class="math inline">\(R^i\)</span> be the reward received
-by the <span class="math inline">\(i\)</span>-th agent.</p>
-<p>Fully cooperative: <span class="math inline">\(R^1=R^2=\cdots=R^n\)</span>.</p>
-<p>Fully competitive: <span class="math inline">\(R^1
-\propto-R^2\)</span>.</p>
-<p><span class="math inline">\(R^i\)</span> depends on <span class="math inline">\(A^i\)</span> as well as all the other agents'
-actions <span class="math inline">\(\left\{A^j\right\}_{j \neq
-i}\)</span>.</p>
-<h3 id="returns">Returns</h3>
-<p>Let <span class="math inline">\(R_t^i\)</span> be the reward received
-by the <span class="math inline">\(i\)</span>-th agent at time <span class="math inline">\(t\)</span>. Return (of the <span class="math inline">\(i\)</span>-th agent): <span class="math display">\[
-U_t^i=R_t^i+R_{t+1}^i+R_{t+2}^i+R_{t+3}^i+\cdots
-\]</span></p>
-<p>Discounted return (of the <span class="math inline">\(i\)</span>-th
-agent): <span class="math display">\[
-U_t^i=R_t^i+\gamma \cdot R_{t+1}^i+\gamma^2 \cdot R_{t+2}^i+\gamma^3
-\cdot R_{t+3}^i+\cdots
-\]</span></p>
-<p>Here, <span class="math inline">\(\gamma \in[0,1]\)</span> is the
-discount rate.</p>
-<h3 id="policy-network">Policy Network</h3>
-<p>Each agent has its own policy network: <span class="math inline">\(\pi\left(a^i \mid s ;
-\boldsymbol{\theta}^i\right)\)</span>.</p>
-<p>Policy networks can be exchangeable: <span class="math inline">\(\boldsymbol{\theta}^1=\boldsymbol{\theta}^2=\cdots=\boldsymbol{\theta}^n\)</span>.</p>
-<ul>
-<li>Self-driving cars can have the same policy.</li>
-</ul>
-<p>Policy networks can be nonexchangeable: <span class="math inline">\(\boldsymbol{\theta}^i \neq
-\boldsymbol{\theta}^j\)</span>.</p>
-<ul>
-<li>Soccer players have different roles, e.g., striker, defender,
-goalkeeper.</li>
-</ul>
-<h3 id="state-value-function">State-Value Function</h3>
-<p>State-value of the <span class="math inline">\(i\)</span>-th agent:
-(不仅依赖自己的策略，同时依赖其他所有Agent的策略) <span class="math display">\[
-V^i\left(s_t ; \boldsymbol{\theta}^1, \cdots,
-\boldsymbol{\theta}^n\right)=\mathbb{E}\left[U_t^i \mid S_t=s_t\right] .
-\]</span></p>
-<p>The expectation is taken w.r.t. all the future actions and states
-except <span class="math inline">\(S_t\)</span>.</p>
-<p>Randomness in actions: <span class="math inline">\(A_t^j \sim
-\pi\left(\cdot \mid s_t ; \boldsymbol{\theta}^j\right)\)</span>, for all
-<span class="math inline">\(j=1, \cdots, n\)</span>. (That is why the
-state-value <span class="math inline">\(V^i\)</span> depends on <span class="math inline">\(\boldsymbol{\theta}^1, \cdots,
-\boldsymbol{\theta}^n\)</span>.)</p>
-<h2 id="nash-equilibrium纳什均衡">Nash Equilibrium（纳什均衡）</h2>
-<p>Multi-Agent问题收敛的条件</p>
-<p>当其他所有Agent的政策保持不变时，第 <span class="math inline">\(i\)</span>
-个Agent无法通过改变自己的Policy获得更好的预期收益。</p>
-<p>每个Agent都在对其他Agent的Policy做出最佳反应。</p>
-<p>在这种平衡状态下，大家都没动机去改变自己策略</p>
-<p>如果使用Single-Agent的策略梯度算法直接用于Mulit-Agent问题上</p>
-<figure>
-<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231206092127067.png" alt="image-20231206092127067">
-<figcaption aria-hidden="true">image-20231206092127067</figcaption>
-</figure>
-<p>The <span class="math inline">\(i\)</span>-th agent's policy network:
-<span class="math inline">\(\pi\left(a^i \mid s ;
-\boldsymbol{\theta}^i\right)\)</span>.</p>
-<p>The <span class="math inline">\(i\)</span>-th agent's state-value
-function: <span class="math inline">\(V^i\left(s ;
-\boldsymbol{\theta}^1, \cdots,
-\boldsymbol{\theta}^n\right)\)</span>.</p>
-<p>Objective function: <span class="math inline">\(J^i\left(\boldsymbol{\theta}^1, \cdots,
-\boldsymbol{\theta}^n\right)=\mathbb{E}_S\left[V^i\left(S ;
-\boldsymbol{\theta}^1, \cdots,
-\boldsymbol{\theta}^n\right)\right]\)</span>.</p>
-<p>Learn the policy network's parameter, <span class="math inline">\(\boldsymbol{\theta}^i\)</span>, by <span class="math display">\[
-\max _{\boldsymbol{\theta}^i} J^i\left(\boldsymbol{\theta}^1, \cdots,
-\boldsymbol{\theta}^n\right)
-\]</span></p>
-<ul>
-<li>The <span class="math inline">\(1^{\text {st }}\)</span> agent
-solves: <span class="math inline">\(\quad \max
-_{\theta^1}J^1\left(\boldsymbol{\theta}^1, \boldsymbol{\theta}^2,
-\cdots, \boldsymbol{\theta}^n)\right.\)</span>.</li>
-<li>The <span class="math inline">\(2^{\text {nd }}\)</span> agent
-solves: <span class="math inline">\(\quad \max _{\theta^2}
-J^2\left(\boldsymbol{\theta}^1, \boldsymbol{\theta}^2, \cdots,
-\boldsymbol{\theta}^n\right)\)</span>.</li>
-<li>...</li>
-<li>The <span class="math inline">\(n^{\text {th }}\)</span> agent
-solves: <span class="math inline">\(\quad \max _{\boldsymbol{\theta}^n}
-J^n\left(\boldsymbol{\theta}^1, \boldsymbol{\theta}^2, \cdots,
-\boldsymbol{\theta}^n\right)\)</span>.</li>
-</ul>
-<p>每个Agent没有共同的目标，各自更新自己的<span class="math inline">\(\theta^i\)</span>，一个Agent更新策略，可能导致其他所有Agent的目标函数发生变化，大家的目标函数都在不停的发生变化，导致训练很难收敛</p>
-<p>所以不能将Single-Agent的训练策略应用与Multi-Agent问题</p>
-<h2 id="centralized-vs-decentralized">Centralized Vs Decentralized</h2>
-<h3 id="architectures">Architectures</h3>
-<ul>
-<li><p>Fully
-decentralized，每个Agent都用自己观测到的observation、reward去训练策略，Agent之间不通信</p></li>
-<li><p>Fully
-centralized，所有Agent将信息发给中央控制器，中央控制器负责做decision，Agent负责执行</p></li>
-<li><p>Centralized training with decentralized
-execution，中央控制器在训练阶段收集各Agent信息，帮助训练Agent策略网络，训练结束后，Agent自己利用策略网络做decision，不依赖中央控制器通信</p></li>
-</ul>
-<h3 id="partial-observation">Partial Observation</h3>
-<p>An agent may or may not have full knowledge of the state, <span class="math inline">\(s\)</span>.</p>
-<p>Let <span class="math inline">\(o^i\)</span> be the <span class="math inline">\(i\)</span>-th agent's observation.</p>
-<p>Partial observation: <span class="math inline">\(o^i \neq
-S\)</span>.</p>
-<p>Full observation: <span class="math inline">\(\quad
-o^1=\cdots=o^n=s\)</span>.</p>
-<h3 id="fully-decentralized">Fully Decentralized</h3>
-<p>本质就是Single-Agent reinforce learning</p>
-<figure>
-<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231206094004380.png" alt="image-20231206094004380">
-<figcaption aria-hidden="true">image-20231206094004380</figcaption>
-</figure>
-<p>The <span class="math inline">\(i\)</span>-th agent has a policy
-network (actor): <span class="math inline">\(\pi\left(a^i \mid o^i ;
-\boldsymbol{\theta}^i\right)\)</span>.</p>
-<p>The <span class="math inline">\(i\)</span>-th agent has a value
-network (critic): <span class="math inline">\(q\left(o^i, a^i ;
-\mathbf{w}^i\right)\)</span>.</p>
-<p>Agents do not share observations and actions.</p>
-<p>Train the policy and value networks in the same way as the
-single-agent setting.</p>
-<p>This does not work well.</p>
-<h3 id="fully-centralized">Fully Centralized</h3>
-<p>各Agent中没有策略网络，将观测到的信息传递给中央控制器，控制器负责做决策。
-<span class="math display">\[
-\pi\left(a^i \mid o^1, \cdots, o^n ; \boldsymbol{\theta}^i\right) \text
-{, for all } i=1,2, \cdots, n \text {. }
-\]</span> <img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231206094349263.png" alt="image-20231206094349263"></p>
-<p>Let <span class="math inline">\(\mathbf{a}=\left[a^1, a^2, \cdots,
-a^n\right]\)</span> contain all the agents' actions.</p>
-<p>Let <span class="math inline">\(\mathbf{o}=\left[o^1, o^2, \cdots,
-o^n\right]\)</span> contain all the agents' observations.</p>
-<p>The central controller knows <span class="math inline">\(\mathbf{a},
-\mathbf{o}\)</span>, and all the rewards.</p>
-<p>The controller has <span class="math inline">\(n\)</span> policy
-networks and <span class="math inline">\(n\)</span> value networks:</p>
-<ul>
-<li>Policy network (actor) for the <span class="math inline">\(i\)</span>-th agent: <span class="math inline">\(\pi\left(a^i \mid o ;
-\boldsymbol{\theta}^i\right)\)</span>.</li>
-<li>Value network (critic) for the <span class="math inline">\(i\)</span>-th agent: <span class="math inline">\(q\left(o, \mathbf{a} ;
-\mathbf{w}^i\right)\)</span>.</li>
-</ul>
-<p><strong>Centralized Training:</strong> Training is performed by the
-controller.</p>
-<ul>
-<li>The controller knows all the observations, actions, and
-rewards.</li>
-<li>Train <span class="math inline">\(\pi\left(a^i \mid 0 ;
-\boldsymbol{\theta}^i\right)\)</span> using policy gradient.</li>
-<li>Train <span class="math inline">\(q\left(\mathbf{o}, \mathbf{a} ;
-\mathbf{w}^i\right)\)</span> using TD algorithm.</li>
-</ul>
-<p><strong>Centralized Execution:</strong> Decisions are made by the
-controller.</p>
-<ul>
-<li>For all <span class="math inline">\(i\)</span>, the <span class="math inline">\(i\)</span>-th agent sends its observation, <span class="math inline">\(o^i\)</span>, to the controller.</li>
-<li>The controller knows <span class="math inline">\(\mathbf{o}=\left[o^1, o^2, \cdots,
-o^n\right]\)</span>.</li>
-<li>For all <span class="math inline">\(i\)</span>, the controller
-samples action by <span class="math inline">\(a^i \sim \pi\left(\cdot
-\mid \mathbf{o} ; \boldsymbol{\theta}^i\right)\)</span> and sends <span class="math inline">\(a^i\)</span> to the <span class="math inline">\(i\)</span>-th agent.</li>
-</ul>
-<p>中央控制器知道全局的信息，可以帮所有Agent做出好的决策</p>
-<p>但执行速度较慢，Agent都没有决策权，需要等中央来做决策（发送、同步信息都需要花时间，等最慢的Agent）</p>
-<h3 id="centralized-training-with-decentralized-execution">Centralized
-Training with Decentralized Execution</h3>
-<p>Each agent has its own policy network (actor): <span class="math inline">\(\pi\left(a^i \mid o^i ;
-\boldsymbol{\theta}^i\right)\)</span>.</p>
-<p>The central controller has <span class="math inline">\(n\)</span>
-value networks (critics): <span class="math inline">\(q\left(0,
-\mathbf{a} ; \mathbf{w}^i\right)\)</span>.</p>
-<p><strong>Centralized Training:</strong> During training, the central
-controller knows all the agents' observations, actions, and rewards.</p>
-<p><strong>Decentralized Execution:</strong> During execution, the
-central controller and its value networks are not used.</p>
-<h4 id="训练阶段">训练阶段</h4>
-<figure>
-<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231206095643649.png" alt="image-20231206095643649">
-<figcaption aria-hidden="true">image-20231206095643649</figcaption>
-</figure>
-<p>The central controller trains the critics, <span class="math inline">\(q\left(\mathbf{o}, \mathbf{a} ;
-\mathbf{w}^i\right)\)</span>, for all <span class="math inline">\(i\)</span>.</p>
-<p>To update <span class="math inline">\(\mathbf{w}^i\)</span>,
-<strong>TD algorithm</strong> takes as inputs:</p>
-<ul>
-<li>All the actions: <span class="math inline">\(\mathrm{a}=\left[a^1,
-a^2, \cdots, a^n\right]\)</span>.</li>
-<li>All the observations: <span class="math inline">\(\mathbf{o}=\left[o^1, o^2, \cdots,
-o^n\right]\)</span>.</li>
-<li>The <span class="math inline">\(i\)</span>-th reward: <span class="math inline">\(r^i\)</span>.</li>
-</ul>
-<figure>
-<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231206095819592.png" alt="image-20231206095819592">
-<figcaption aria-hidden="true">image-20231206095819592</figcaption>
-</figure>
-<p>Each agent locally trains the actor, <span class="math inline">\(\pi\left(a^i \mid o^i ;
-\boldsymbol{\theta}^i\right)\)</span>, using <strong>policy
-gradient.</strong></p>
-<p>To update <span class="math inline">\(\boldsymbol{\theta}^i\)</span>,
-the policy gradient algorithm takes as input <span class="math inline">\(\left(a^i, o^i, a^i\right)\)</span>,</p>
-<h4 id="执行阶段">执行阶段</h4>
-<figure>
-<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231206100104303.png" alt="image-20231206100104303">
-<figcaption aria-hidden="true">image-20231206100104303</figcaption>
-</figure>
-<p>每个Agent独立接受observation，依据自己的策略网络做决策，Agent之间不通信</p>
-]]></content>
-      <categories>
-        <category>机器学习</category>
-        <category>强化学习</category>
-      </categories>
-  </entry>
-  <entry>
     <title>【RL】Actor&amp;Critic</title>
     <url>/2024/07/31/RL%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%EF%BC%88%E5%9B%9B%EF%BC%89/</url>
     <content><![CDATA[<h1 id="rlactorcritic">【RL】Actor&amp;Critic</h1>
@@ -1521,6 +1276,251 @@ lower_bound()/upper_bound()， 迭代器的++，--</p>
       </tags>
   </entry>
   <entry>
+    <title>【RL】Multi-Agent Learning</title>
+    <url>/2024/07/31/RL%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%BA%94%EF%BC%89/</url>
+    <content><![CDATA[<h1 id="rlmulti-agent-learning">【RL】Multi-Agent Learning</h1>
+<p>一个系统中存在多个决策者</p>
+<p><strong>面临的困难</strong></p>
+<ul>
+<li><p>环境非平稳变化（马尔科夫特性不再满足），每个智能体所对应的环境包含了其他智能体的策略，其他智能体策略的变化导致环境变化的非平稳性。</p></li>
+<li><p>局部可观，智能体只能观测到环境的部分状态</p></li>
+<li><p>集中式学习不可行，需要一个集中式控制中心与智能体之间进行大量的信息交互，神经网络的输入输出维度会随智能体数目指数增大，难以收敛。</p></li>
+</ul>
+<h2 id="基本概念">基本概念</h2>
+<h3 id="agent的关系">Agent的关系</h3>
+<ul>
+<li><p>Fully
+cooperative，两个Agent需要相互配合才能完成任务（工业机器人）</p></li>
+<li><p>Fully
+competitive，一方的收益是另一方的损失（捕食者和猎物）</p></li>
+<li><p>Mixed Cooperative &amp;
+competitive，既有竞争又有合作（足球机器人，队伍内是合作，队伍间是博弈）</p></li>
+<li><p>Self-interested，利己主义，只想最大化自己的利益，动作可能让别人获益or损失，不关心别人的利益（股票的期货交易系统、无人车）</p></li>
+</ul>
+<h3 id="state-action">State &amp; Action</h3>
+<p>There are <span class="math inline">\(n\)</span> agents.</p>
+<p>Let <span class="math inline">\(S\)</span> be the state.</p>
+<p>Let <span class="math inline">\(A^i\)</span> be the <span class="math inline">\(i\)</span>-th agent's action.</p>
+<p>State transition: <span class="math inline">\(p\left(s^{\prime} \mid
+s, a^1, \cdots, a^n\right)=\mathbb{P}\left(S^{\prime}=s^{\prime} \mid
+S=s, A^1=a^1, \cdots, A^n=a^n\right).\)</span></p>
+<p>The next state, <span class="math inline">\(S^{\prime}\)</span>,
+depends on all the agents' actions.</p>
+<p>每个Agent的Action都可能影响Env的下个State，所以每个Agent都可以影响其他Agent</p>
+<h3 id="rewards">Rewards</h3>
+<p>Let <span class="math inline">\(R^i\)</span> be the reward received
+by the <span class="math inline">\(i\)</span>-th agent.</p>
+<p>Fully cooperative: <span class="math inline">\(R^1=R^2=\cdots=R^n\)</span>.</p>
+<p>Fully competitive: <span class="math inline">\(R^1
+\propto-R^2\)</span>.</p>
+<p><span class="math inline">\(R^i\)</span> depends on <span class="math inline">\(A^i\)</span> as well as all the other agents'
+actions <span class="math inline">\(\left\{A^j\right\}_{j \neq
+i}\)</span>.</p>
+<h3 id="returns">Returns</h3>
+<p>Let <span class="math inline">\(R_t^i\)</span> be the reward received
+by the <span class="math inline">\(i\)</span>-th agent at time <span class="math inline">\(t\)</span>. Return (of the <span class="math inline">\(i\)</span>-th agent): <span class="math display">\[
+U_t^i=R_t^i+R_{t+1}^i+R_{t+2}^i+R_{t+3}^i+\cdots
+\]</span></p>
+<p>Discounted return (of the <span class="math inline">\(i\)</span>-th
+agent): <span class="math display">\[
+U_t^i=R_t^i+\gamma \cdot R_{t+1}^i+\gamma^2 \cdot R_{t+2}^i+\gamma^3
+\cdot R_{t+3}^i+\cdots
+\]</span></p>
+<p>Here, <span class="math inline">\(\gamma \in[0,1]\)</span> is the
+discount rate.</p>
+<h3 id="policy-network">Policy Network</h3>
+<p>Each agent has its own policy network: <span class="math inline">\(\pi\left(a^i \mid s ;
+\boldsymbol{\theta}^i\right)\)</span>.</p>
+<p>Policy networks can be exchangeable: <span class="math inline">\(\boldsymbol{\theta}^1=\boldsymbol{\theta}^2=\cdots=\boldsymbol{\theta}^n\)</span>.</p>
+<ul>
+<li>Self-driving cars can have the same policy.</li>
+</ul>
+<p>Policy networks can be nonexchangeable: <span class="math inline">\(\boldsymbol{\theta}^i \neq
+\boldsymbol{\theta}^j\)</span>.</p>
+<ul>
+<li>Soccer players have different roles, e.g., striker, defender,
+goalkeeper.</li>
+</ul>
+<h3 id="state-value-function">State-Value Function</h3>
+<p>State-value of the <span class="math inline">\(i\)</span>-th agent:
+(不仅依赖自己的策略，同时依赖其他所有Agent的策略) <span class="math display">\[
+V^i\left(s_t ; \boldsymbol{\theta}^1, \cdots,
+\boldsymbol{\theta}^n\right)=\mathbb{E}\left[U_t^i \mid S_t=s_t\right] .
+\]</span></p>
+<p>The expectation is taken w.r.t. all the future actions and states
+except <span class="math inline">\(S_t\)</span>.</p>
+<p>Randomness in actions: <span class="math inline">\(A_t^j \sim
+\pi\left(\cdot \mid s_t ; \boldsymbol{\theta}^j\right)\)</span>, for all
+<span class="math inline">\(j=1, \cdots, n\)</span>. (That is why the
+state-value <span class="math inline">\(V^i\)</span> depends on <span class="math inline">\(\boldsymbol{\theta}^1, \cdots,
+\boldsymbol{\theta}^n\)</span>.)</p>
+<h2 id="nash-equilibrium纳什均衡">Nash Equilibrium（纳什均衡）</h2>
+<p>Multi-Agent问题收敛的条件</p>
+<p>当其他所有Agent的政策保持不变时，第 <span class="math inline">\(i\)</span>
+个Agent无法通过改变自己的Policy获得更好的预期收益。</p>
+<p>每个Agent都在对其他Agent的Policy做出最佳反应。</p>
+<p>在这种平衡状态下，大家都没动机去改变自己策略</p>
+<p>如果使用Single-Agent的策略梯度算法直接用于Mulit-Agent问题上</p>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231206092127067.png" alt="image-20231206092127067">
+<figcaption aria-hidden="true">image-20231206092127067</figcaption>
+</figure>
+<p>The <span class="math inline">\(i\)</span>-th agent's policy network:
+<span class="math inline">\(\pi\left(a^i \mid s ;
+\boldsymbol{\theta}^i\right)\)</span>.</p>
+<p>The <span class="math inline">\(i\)</span>-th agent's state-value
+function: <span class="math inline">\(V^i\left(s ;
+\boldsymbol{\theta}^1, \cdots,
+\boldsymbol{\theta}^n\right)\)</span>.</p>
+<p>Objective function: <span class="math inline">\(J^i\left(\boldsymbol{\theta}^1, \cdots,
+\boldsymbol{\theta}^n\right)=\mathbb{E}_S\left[V^i\left(S ;
+\boldsymbol{\theta}^1, \cdots,
+\boldsymbol{\theta}^n\right)\right]\)</span>.</p>
+<p>Learn the policy network's parameter, <span class="math inline">\(\boldsymbol{\theta}^i\)</span>, by <span class="math display">\[
+\max _{\boldsymbol{\theta}^i} J^i\left(\boldsymbol{\theta}^1, \cdots,
+\boldsymbol{\theta}^n\right)
+\]</span></p>
+<ul>
+<li>The <span class="math inline">\(1^{\text {st }}\)</span> agent
+solves: <span class="math inline">\(\quad \max
+_{\theta^1}J^1\left(\boldsymbol{\theta}^1, \boldsymbol{\theta}^2,
+\cdots, \boldsymbol{\theta}^n)\right.\)</span>.</li>
+<li>The <span class="math inline">\(2^{\text {nd }}\)</span> agent
+solves: <span class="math inline">\(\quad \max _{\theta^2}
+J^2\left(\boldsymbol{\theta}^1, \boldsymbol{\theta}^2, \cdots,
+\boldsymbol{\theta}^n\right)\)</span>.</li>
+<li>...</li>
+<li>The <span class="math inline">\(n^{\text {th }}\)</span> agent
+solves: <span class="math inline">\(\quad \max _{\boldsymbol{\theta}^n}
+J^n\left(\boldsymbol{\theta}^1, \boldsymbol{\theta}^2, \cdots,
+\boldsymbol{\theta}^n\right)\)</span>.</li>
+</ul>
+<p>每个Agent没有共同的目标，各自更新自己的<span class="math inline">\(\theta^i\)</span>，一个Agent更新策略，可能导致其他所有Agent的目标函数发生变化，大家的目标函数都在不停的发生变化，导致训练很难收敛</p>
+<p>所以不能将Single-Agent的训练策略应用与Multi-Agent问题</p>
+<h2 id="centralized-vs-decentralized">Centralized Vs Decentralized</h2>
+<h3 id="architectures">Architectures</h3>
+<ul>
+<li><p>Fully
+decentralized，每个Agent都用自己观测到的observation、reward去训练策略，Agent之间不通信</p></li>
+<li><p>Fully
+centralized，所有Agent将信息发给中央控制器，中央控制器负责做decision，Agent负责执行</p></li>
+<li><p>Centralized training with decentralized
+execution，中央控制器在训练阶段收集各Agent信息，帮助训练Agent策略网络，训练结束后，Agent自己利用策略网络做decision，不依赖中央控制器通信</p></li>
+</ul>
+<h3 id="partial-observation">Partial Observation</h3>
+<p>An agent may or may not have full knowledge of the state, <span class="math inline">\(s\)</span>.</p>
+<p>Let <span class="math inline">\(o^i\)</span> be the <span class="math inline">\(i\)</span>-th agent's observation.</p>
+<p>Partial observation: <span class="math inline">\(o^i \neq
+S\)</span>.</p>
+<p>Full observation: <span class="math inline">\(\quad
+o^1=\cdots=o^n=s\)</span>.</p>
+<h3 id="fully-decentralized">Fully Decentralized</h3>
+<p>本质就是Single-Agent reinforce learning</p>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231206094004380.png" alt="image-20231206094004380">
+<figcaption aria-hidden="true">image-20231206094004380</figcaption>
+</figure>
+<p>The <span class="math inline">\(i\)</span>-th agent has a policy
+network (actor): <span class="math inline">\(\pi\left(a^i \mid o^i ;
+\boldsymbol{\theta}^i\right)\)</span>.</p>
+<p>The <span class="math inline">\(i\)</span>-th agent has a value
+network (critic): <span class="math inline">\(q\left(o^i, a^i ;
+\mathbf{w}^i\right)\)</span>.</p>
+<p>Agents do not share observations and actions.</p>
+<p>Train the policy and value networks in the same way as the
+single-agent setting.</p>
+<p>This does not work well.</p>
+<h3 id="fully-centralized">Fully Centralized</h3>
+<p>各Agent中没有策略网络，将观测到的信息传递给中央控制器，控制器负责做决策。
+<span class="math display">\[
+\pi\left(a^i \mid o^1, \cdots, o^n ; \boldsymbol{\theta}^i\right) \text
+{, for all } i=1,2, \cdots, n \text {. }
+\]</span> <img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231206094349263.png" alt="image-20231206094349263"></p>
+<p>Let <span class="math inline">\(\mathbf{a}=\left[a^1, a^2, \cdots,
+a^n\right]\)</span> contain all the agents' actions.</p>
+<p>Let <span class="math inline">\(\mathbf{o}=\left[o^1, o^2, \cdots,
+o^n\right]\)</span> contain all the agents' observations.</p>
+<p>The central controller knows <span class="math inline">\(\mathbf{a},
+\mathbf{o}\)</span>, and all the rewards.</p>
+<p>The controller has <span class="math inline">\(n\)</span> policy
+networks and <span class="math inline">\(n\)</span> value networks:</p>
+<ul>
+<li>Policy network (actor) for the <span class="math inline">\(i\)</span>-th agent: <span class="math inline">\(\pi\left(a^i \mid o ;
+\boldsymbol{\theta}^i\right)\)</span>.</li>
+<li>Value network (critic) for the <span class="math inline">\(i\)</span>-th agent: <span class="math inline">\(q\left(o, \mathbf{a} ;
+\mathbf{w}^i\right)\)</span>.</li>
+</ul>
+<p><strong>Centralized Training:</strong> Training is performed by the
+controller.</p>
+<ul>
+<li>The controller knows all the observations, actions, and
+rewards.</li>
+<li>Train <span class="math inline">\(\pi\left(a^i \mid 0 ;
+\boldsymbol{\theta}^i\right)\)</span> using policy gradient.</li>
+<li>Train <span class="math inline">\(q\left(\mathbf{o}, \mathbf{a} ;
+\mathbf{w}^i\right)\)</span> using TD algorithm.</li>
+</ul>
+<p><strong>Centralized Execution:</strong> Decisions are made by the
+controller.</p>
+<ul>
+<li>For all <span class="math inline">\(i\)</span>, the <span class="math inline">\(i\)</span>-th agent sends its observation, <span class="math inline">\(o^i\)</span>, to the controller.</li>
+<li>The controller knows <span class="math inline">\(\mathbf{o}=\left[o^1, o^2, \cdots,
+o^n\right]\)</span>.</li>
+<li>For all <span class="math inline">\(i\)</span>, the controller
+samples action by <span class="math inline">\(a^i \sim \pi\left(\cdot
+\mid \mathbf{o} ; \boldsymbol{\theta}^i\right)\)</span> and sends <span class="math inline">\(a^i\)</span> to the <span class="math inline">\(i\)</span>-th agent.</li>
+</ul>
+<p>中央控制器知道全局的信息，可以帮所有Agent做出好的决策</p>
+<p>但执行速度较慢，Agent都没有决策权，需要等中央来做决策（发送、同步信息都需要花时间，等最慢的Agent）</p>
+<h3 id="centralized-training-with-decentralized-execution">Centralized
+Training with Decentralized Execution</h3>
+<p>Each agent has its own policy network (actor): <span class="math inline">\(\pi\left(a^i \mid o^i ;
+\boldsymbol{\theta}^i\right)\)</span>.</p>
+<p>The central controller has <span class="math inline">\(n\)</span>
+value networks (critics): <span class="math inline">\(q\left(0,
+\mathbf{a} ; \mathbf{w}^i\right)\)</span>.</p>
+<p><strong>Centralized Training:</strong> During training, the central
+controller knows all the agents' observations, actions, and rewards.</p>
+<p><strong>Decentralized Execution:</strong> During execution, the
+central controller and its value networks are not used.</p>
+<h4 id="训练阶段">训练阶段</h4>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231206095643649.png" alt="image-20231206095643649">
+<figcaption aria-hidden="true">image-20231206095643649</figcaption>
+</figure>
+<p>The central controller trains the critics, <span class="math inline">\(q\left(\mathbf{o}, \mathbf{a} ;
+\mathbf{w}^i\right)\)</span>, for all <span class="math inline">\(i\)</span>.</p>
+<p>To update <span class="math inline">\(\mathbf{w}^i\)</span>,
+<strong>TD algorithm</strong> takes as inputs:</p>
+<ul>
+<li>All the actions: <span class="math inline">\(\mathrm{a}=\left[a^1,
+a^2, \cdots, a^n\right]\)</span>.</li>
+<li>All the observations: <span class="math inline">\(\mathbf{o}=\left[o^1, o^2, \cdots,
+o^n\right]\)</span>.</li>
+<li>The <span class="math inline">\(i\)</span>-th reward: <span class="math inline">\(r^i\)</span>.</li>
+</ul>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231206095819592.png" alt="image-20231206095819592">
+<figcaption aria-hidden="true">image-20231206095819592</figcaption>
+</figure>
+<p>Each agent locally trains the actor, <span class="math inline">\(\pi\left(a^i \mid o^i ;
+\boldsymbol{\theta}^i\right)\)</span>, using <strong>policy
+gradient.</strong></p>
+<p>To update <span class="math inline">\(\boldsymbol{\theta}^i\)</span>,
+the policy gradient algorithm takes as input <span class="math inline">\(\left(a^i, o^i, a^i\right)\)</span>,</p>
+<h4 id="执行阶段">执行阶段</h4>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20231206100104303.png" alt="image-20231206100104303">
+<figcaption aria-hidden="true">image-20231206100104303</figcaption>
+</figure>
+<p>每个Agent独立接受observation，依据自己的策略网络做决策，Agent之间不通信</p>
+]]></content>
+      <categories>
+        <category>机器学习</category>
+        <category>强化学习</category>
+      </categories>
+  </entry>
+  <entry>
     <title>UniStudent新生报道系统</title>
     <url>/2022/09/10/UniStudent%20%E6%96%B0%E7%94%9F%E6%8A%A5%E9%81%93%E7%B3%BB%E7%BB%9F/</url>
     <content><![CDATA[<h1 id="unistudent新生报道系统">UniStudent新生报道系统</h1>
@@ -1752,37 +1752,6 @@ s;~, &amp;, |, ^&gt;&gt;, &lt;&lt;==, !=[]​count()  返回有多少个1​any
       </tags>
   </entry>
   <entry>
-    <title>Hexo博客搭建</title>
-    <url>/2022/09/08/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/</url>
-    <content><![CDATA[<h1 id="hexo博客搭建">Hexo博客搭建</h1>
-<h2 id="推送博客文件">推送博客文件</h2>
-<h3 id="清空之前的文件">清空之前的文件</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br></pre></td></tr></table></figure>
-<h3 id="生成静态文章">生成静态文章</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo generate</span><br><span class="line"></span><br><span class="line"># 简写</span><br><span class="line">hexo g</span><br></pre></td></tr></table></figure>
-<h3 id="部署博客">部署博客</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo deploy </span><br><span class="line"></span><br><span class="line"># 简写 </span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
-<h2 id="本地测试">本地测试</h2>
-<h3 id="生成静态文件">生成静态文件</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo g</span><br></pre></td></tr></table></figure>
-<h3 id="打开本地服务器">打开本地服务器</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo server</span><br></pre></td></tr></table></figure>
-<h2 id="写文章">写文章</h2>
-<h3 id="新建文章">新建文章</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo new &quot;title&quot;</span><br></pre></td></tr></table></figure>
-<h3 id="新建草稿文件">新建草稿文件</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo new draft &quot;title&quot;</span><br></pre></td></tr></table></figure>
-<h3 id="新建界面">新建界面</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo new page &quot;title&quot;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>常用技巧</category>
-      </categories>
-      <tags>
-        <tag>hexo</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Linux常用指令</title>
     <url>/2022/09/09/linux%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4/</url>
     <content><![CDATA[<h1 id="linux常用指令">Linux常用指令</h1>
@@ -1834,6 +1803,37 @@ s;~, &amp;, |, ^&gt;&gt;, &lt;&lt;==, !=[]​count()  返回有多少个1​any
       </categories>
       <tags>
         <tag>linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hexo博客搭建</title>
+    <url>/2022/09/08/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/</url>
+    <content><![CDATA[<h1 id="hexo博客搭建">Hexo博客搭建</h1>
+<h2 id="推送博客文件">推送博客文件</h2>
+<h3 id="清空之前的文件">清空之前的文件</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br></pre></td></tr></table></figure>
+<h3 id="生成静态文章">生成静态文章</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo generate</span><br><span class="line"></span><br><span class="line"># 简写</span><br><span class="line">hexo g</span><br></pre></td></tr></table></figure>
+<h3 id="部署博客">部署博客</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo deploy </span><br><span class="line"></span><br><span class="line"># 简写 </span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
+<h2 id="本地测试">本地测试</h2>
+<h3 id="生成静态文件">生成静态文件</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo g</span><br></pre></td></tr></table></figure>
+<h3 id="打开本地服务器">打开本地服务器</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo server</span><br></pre></td></tr></table></figure>
+<h2 id="写文章">写文章</h2>
+<h3 id="新建文章">新建文章</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo new &quot;title&quot;</span><br></pre></td></tr></table></figure>
+<h3 id="新建草稿文件">新建草稿文件</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo new draft &quot;title&quot;</span><br></pre></td></tr></table></figure>
+<h3 id="新建界面">新建界面</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo new page &quot;title&quot;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>常用技巧</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -1928,6 +1928,18 @@ with Integers (poj.org)</a></p>
         <tag>线段树</tag>
         <tag>区间求和</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>【Transformer】Decoder</title>
+    <url>/2024/08/05/%E3%80%90Transformer%E3%80%91Decoder/</url>
+    <content><![CDATA[
+]]></content>
+  </entry>
+  <entry>
+    <title>【Transformer】Encoder</title>
+    <url>/2024/08/05/%E3%80%90Transformer%E3%80%91Encoder/</url>
+    <content><![CDATA[
+]]></content>
   </entry>
   <entry>
     <title>【Transformer】Attention</title>
@@ -2035,18 +2047,6 @@ W^K_i∈R^{d_{model}×d_k},\ W^V_i∈R^{d_{model}\
         <category>机器学习</category>
         <category>LLM</category>
       </categories>
-  </entry>
-  <entry>
-    <title>【Transformer】Encoder</title>
-    <url>/2024/08/05/%E3%80%90Transformer%E3%80%91Encoder/</url>
-    <content><![CDATA[
-]]></content>
-  </entry>
-  <entry>
-    <title>【Transformer】Decoder</title>
-    <url>/2024/08/05/%E3%80%90Transformer%E3%80%91Decoder/</url>
-    <content><![CDATA[
-]]></content>
   </entry>
   <entry>
     <title>【Transformer】Positional Encoding</title>
@@ -3088,6 +3088,71 @@ AcWing题库</a></p>
       </categories>
   </entry>
   <entry>
+    <title>MLP手写数字识别</title>
+    <url>/2022/09/10/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%AF%86%E5%88%AB%E6%89%8B%E5%86%99%E6%95%B0%E5%AD%97/</url>
+    <content><![CDATA[<h1 id="mlp手写数字识别">MLP手写数字识别</h1>
+<blockquote>
+<p>github项目：https://github.com/xclovehsy/digitalRecANNs</p>
+</blockquote>
+<h2 id="项目简介">项目简介</h2>
+<p>构建一个神经网络，利用梯度下降法实现参数的更新，最终实现对0-9的10个手写数字的识别。</p>
+<p>其中，MNIST 数据集在 http://yann.lecun.com/exdb/mnist/ 获取,
+它包含了四个部分:</p>
+<ul>
+<li>Training set images: train-images-idx3-ubyte.gz (9.9 MB, 解压后 47
+MB, 包含 60,000 个样本)</li>
+<li>Training set labels: train-labels-idx1-ubyte.gz (29 KB, 解压后 60
+KB, 包含 60,000 个标签)</li>
+<li>Test set images: t10k-images-idx3-ubyte.gz (1.6 MB, 解压后 7.8 MB,
+包含 10,000 个样本)</li>
+<li>Test set labels: t10k-labels-idx1-ubyte.gz (5KB, 解压后 10 KB, 包含
+10,000 个标签)</li>
+</ul>
+<h2 id="算法思路">算法思路</h2>
+<h3 id="数据预处理">数据预处理</h3>
+<p>MNIST手写数字图片集为60000条训练数据以及10000条测试数据。每一条为785个数字。每一条数据的第一个为数字的正确值，接下来的784个为图片的像素点，可以组成一篇28×28的像素的图片。数据预处理为纵向的784个数字矩阵，标签为纵向的10个数字，该每个数值介于0.01到0.99代表了识别为对应数字的概率。</p>
+<h3 id="模型架构">模型架构</h3>
+<p>这里我采用三层的神经网络模型，即一个输入层、一个隐藏层、一个输出层。</p>
+<h3 id="参数说明">参数说明</h3>
+<ul>
+<li>Rate为神经网络模型梯度下降算法的学习率</li>
+<li>epochs为神经网络模型训练的次数</li>
+<li>input_num为神经网络模型的输入层节点数量即784个图片像素</li>
+<li>hide_num为隐藏层节点数量</li>
+<li>output_num为输出层节点数量</li>
+<li>激活函数选用scipy中的expit函数</li>
+</ul>
+<h3 id="函数定义">函数定义</h3>
+<p>这里的神经网络模型主要有两个函数，一个训练函数net_train以及一个识别函数net_query。</p>
+<ul>
+<li><p>net_train训练函数通过传入的手写数字图片数据对神经网络模型进行训练，利用梯度下降算法对权重矩阵进行更新。识别函数通过图片数据以及神经网络模型进行计算的到对应数字的识别匹配概率。</p></li>
+<li><p>load_mnist函数负责加载MNIST数据集中的数据，show_result函数随机获取测试集中的部分数字对神经网络模型的识别结果进行展示。</p></li>
+</ul>
+<h2 id="结果分析">结果分析</h2>
+<h3 id="实验结果">实验结果</h3>
+<p>当将神经网络训练次数设置为10时，训练测试神经网络模型结果如下，并给出测试集中随机20张手写数值识别结果如下；</p>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209072154162.gif" alt="img">
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209072154171.gif" alt="img">
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<h3 id="结果分析-1">结果分析</h3>
+<p>从实验结果可以看到，神经网络模型的正确识别率很高，在经过60000条数据训练后，识别的成功率高达95%以上。</p>
+<p>将模型训练次数设置为1、5、10对神经网络模型进行训练并测试，可以看到当训练次数设置为1时，模型正确识别率为95.57%；当训练次数为5时，模型的正确识别率为97.23%；当训练次数设置为10时，模型的正确识别率为97.23%。</p>
+<p>可以发现，模型识别的正确率随着模型训练次数的增加，在一定范围内增加。但是当超过一定的训练次数后，模型的识别正确率不会再增加，这有可能受限于神经网络的层数、隐藏层节点数量，以及手写数字图片的像素精度等因素。</p>
+]]></content>
+      <categories>
+        <category>CQU</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>mlp</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Java文件管理器</title>
     <url>/2022/09/11/%E6%96%87%E4%BB%B6%E7%AE%A1%E7%90%86%E5%99%A8%E7%9A%84java%E5%AE%9E%E7%8E%B0/</url>
     <content><![CDATA[<h1 id="java文件管理器">Java文件管理器</h1>
@@ -3208,71 +3273,6 @@ MyJtableModel负责对数据进行整理，MyJTableCellRender负责对文件图�
       </categories>
       <tags>
         <tag>java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>MLP手写数字识别</title>
-    <url>/2022/09/10/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%AF%86%E5%88%AB%E6%89%8B%E5%86%99%E6%95%B0%E5%AD%97/</url>
-    <content><![CDATA[<h1 id="mlp手写数字识别">MLP手写数字识别</h1>
-<blockquote>
-<p>github项目：https://github.com/xclovehsy/digitalRecANNs</p>
-</blockquote>
-<h2 id="项目简介">项目简介</h2>
-<p>构建一个神经网络，利用梯度下降法实现参数的更新，最终实现对0-9的10个手写数字的识别。</p>
-<p>其中，MNIST 数据集在 http://yann.lecun.com/exdb/mnist/ 获取,
-它包含了四个部分:</p>
-<ul>
-<li>Training set images: train-images-idx3-ubyte.gz (9.9 MB, 解压后 47
-MB, 包含 60,000 个样本)</li>
-<li>Training set labels: train-labels-idx1-ubyte.gz (29 KB, 解压后 60
-KB, 包含 60,000 个标签)</li>
-<li>Test set images: t10k-images-idx3-ubyte.gz (1.6 MB, 解压后 7.8 MB,
-包含 10,000 个样本)</li>
-<li>Test set labels: t10k-labels-idx1-ubyte.gz (5KB, 解压后 10 KB, 包含
-10,000 个标签)</li>
-</ul>
-<h2 id="算法思路">算法思路</h2>
-<h3 id="数据预处理">数据预处理</h3>
-<p>MNIST手写数字图片集为60000条训练数据以及10000条测试数据。每一条为785个数字。每一条数据的第一个为数字的正确值，接下来的784个为图片的像素点，可以组成一篇28×28的像素的图片。数据预处理为纵向的784个数字矩阵，标签为纵向的10个数字，该每个数值介于0.01到0.99代表了识别为对应数字的概率。</p>
-<h3 id="模型架构">模型架构</h3>
-<p>这里我采用三层的神经网络模型，即一个输入层、一个隐藏层、一个输出层。</p>
-<h3 id="参数说明">参数说明</h3>
-<ul>
-<li>Rate为神经网络模型梯度下降算法的学习率</li>
-<li>epochs为神经网络模型训练的次数</li>
-<li>input_num为神经网络模型的输入层节点数量即784个图片像素</li>
-<li>hide_num为隐藏层节点数量</li>
-<li>output_num为输出层节点数量</li>
-<li>激活函数选用scipy中的expit函数</li>
-</ul>
-<h3 id="函数定义">函数定义</h3>
-<p>这里的神经网络模型主要有两个函数，一个训练函数net_train以及一个识别函数net_query。</p>
-<ul>
-<li><p>net_train训练函数通过传入的手写数字图片数据对神经网络模型进行训练，利用梯度下降算法对权重矩阵进行更新。识别函数通过图片数据以及神经网络模型进行计算的到对应数字的识别匹配概率。</p></li>
-<li><p>load_mnist函数负责加载MNIST数据集中的数据，show_result函数随机获取测试集中的部分数字对神经网络模型的识别结果进行展示。</p></li>
-</ul>
-<h2 id="结果分析">结果分析</h2>
-<h3 id="实验结果">实验结果</h3>
-<p>当将神经网络训练次数设置为10时，训练测试神经网络模型结果如下，并给出测试集中随机20张手写数值识别结果如下；</p>
-<figure>
-<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209072154162.gif" alt="img">
-<figcaption aria-hidden="true">img</figcaption>
-</figure>
-<figure>
-<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/img/202209072154171.gif" alt="img">
-<figcaption aria-hidden="true">img</figcaption>
-</figure>
-<h3 id="结果分析-1">结果分析</h3>
-<p>从实验结果可以看到，神经网络模型的正确识别率很高，在经过60000条数据训练后，识别的成功率高达95%以上。</p>
-<p>将模型训练次数设置为1、5、10对神经网络模型进行训练并测试，可以看到当训练次数设置为1时，模型正确识别率为95.57%；当训练次数为5时，模型的正确识别率为97.23%；当训练次数设置为10时，模型的正确识别率为97.23%。</p>
-<p>可以发现，模型识别的正确率随着模型训练次数的增加，在一定范围内增加。但是当超过一定的训练次数后，模型的识别正确率不会再增加，这有可能受限于神经网络的层数、隐藏层节点数量，以及手写数字图片的像素精度等因素。</p>
-]]></content>
-      <categories>
-        <category>CQU</category>
-      </categories>
-      <tags>
-        <tag>python</tag>
-        <tag>mlp</tag>
       </tags>
   </entry>
   <entry>
@@ -3626,45 +3626,6 @@ gui的mvc模式设计用户的绘图流程，利用java的套接字编程实现�
       </tags>
   </entry>
   <entry>
-    <title>诗经、楚辞</title>
-    <url>/2021/10/04/%E8%AF%97%E7%BB%8F%E3%80%81%E6%A5%9A%E8%BE%9E/</url>
-    <content><![CDATA[<h1 id="诗经楚辞">诗经、楚辞</h1>
-<h2 id="诗经">诗经</h2>
-<ul>
-<li><p>《诗经》又称《诗》和《诗三百》</p></li>
-<li><p>是我国第一部（最早）现实主义诗歌总集</p></li>
-<li><p>记录了周初到周末500年历史</p></li>
-<li><p>共305篇</p></li>
-</ul>
-<p><strong>诗经六义：</strong>风雅颂 赋比兴</p>
-<p><strong>风（内容）</strong>：十五国风，共160篇。多用复沓手法，多为民歌。</p>
-<p><strong>雅（题材）</strong>：《大雅》和《小雅》105篇
-多为贵族宫廷乐曲。</p>
-<p><strong>颂（音乐）</strong>：《周颂》、《商颂》、《鲁颂》</p>
-<p><strong>赋</strong>：铺陈直叙。</p>
-<p><strong>比</strong>：以彼物必此物。</p>
-<p><strong>兴</strong>：借物比喻，触物兴词，以次及彼。</p>
-<p><strong>《诗经》手法：</strong>重章叠句、情景交融、起兴手法、虚实结合。</p>
-<p><strong>诗经艺术特色：</strong>以四言为主，重章叠句，节奏简约明快，情致回环往复
-多用比兴手法，意蕴丰赡含蓄</p>
-<ul>
-<li><p>诗经中的国风被称为现代主义诗歌源头</p></li>
-<li><p>王国维在《人间词话》评价蒹葭是“最得风人深致”</p></li>
-</ul>
-<h2 id="楚辞">楚辞</h2>
-<ul>
-<li><p>是楚地民歌或者歌辞</p></li>
-<li><p>楚辞体是一种新诗体，一般采用四言或八言</p></li>
-</ul>
-]]></content>
-      <categories>
-        <category>HSY</category>
-      </categories>
-      <tags>
-        <tag>语文</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>旅行商问题</title>
     <url>/2022/09/09/%E9%81%97%E4%BC%A0%E7%AE%97%E6%B3%95%E8%A7%A3%E5%86%B3%E6%97%85%E8%A1%8C%E5%95%86%E9%97%AE%E9%A2%98/</url>
     <content><![CDATA[<h1 id="旅行商问题">旅行商问题</h1>
@@ -3749,6 +3710,45 @@ gui的mvc模式设计用户的绘图流程，利用java的套接字编程实现�
       </categories>
       <tags>
         <tag>遗传算法</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>诗经、楚辞</title>
+    <url>/2021/10/04/%E8%AF%97%E7%BB%8F%E3%80%81%E6%A5%9A%E8%BE%9E/</url>
+    <content><![CDATA[<h1 id="诗经楚辞">诗经、楚辞</h1>
+<h2 id="诗经">诗经</h2>
+<ul>
+<li><p>《诗经》又称《诗》和《诗三百》</p></li>
+<li><p>是我国第一部（最早）现实主义诗歌总集</p></li>
+<li><p>记录了周初到周末500年历史</p></li>
+<li><p>共305篇</p></li>
+</ul>
+<p><strong>诗经六义：</strong>风雅颂 赋比兴</p>
+<p><strong>风（内容）</strong>：十五国风，共160篇。多用复沓手法，多为民歌。</p>
+<p><strong>雅（题材）</strong>：《大雅》和《小雅》105篇
+多为贵族宫廷乐曲。</p>
+<p><strong>颂（音乐）</strong>：《周颂》、《商颂》、《鲁颂》</p>
+<p><strong>赋</strong>：铺陈直叙。</p>
+<p><strong>比</strong>：以彼物必此物。</p>
+<p><strong>兴</strong>：借物比喻，触物兴词，以次及彼。</p>
+<p><strong>《诗经》手法：</strong>重章叠句、情景交融、起兴手法、虚实结合。</p>
+<p><strong>诗经艺术特色：</strong>以四言为主，重章叠句，节奏简约明快，情致回环往复
+多用比兴手法，意蕴丰赡含蓄</p>
+<ul>
+<li><p>诗经中的国风被称为现代主义诗歌源头</p></li>
+<li><p>王国维在《人间词话》评价蒹葭是“最得风人深致”</p></li>
+</ul>
+<h2 id="楚辞">楚辞</h2>
+<ul>
+<li><p>是楚地民歌或者歌辞</p></li>
+<li><p>楚辞体是一种新诗体，一般采用四言或八言</p></li>
+</ul>
+]]></content>
+      <categories>
+        <category>HSY</category>
+      </categories>
+      <tags>
+        <tag>语文</tag>
       </tags>
   </entry>
 </search>
