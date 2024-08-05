@@ -1226,56 +1226,6 @@ Proximal Policy Optimization（DPPO）</h2>
       </tags>
   </entry>
   <entry>
-    <title>STL技巧</title>
-    <url>/2024/07/30/STL/</url>
-    <content><![CDATA[<h1 id="stl技巧">STL技巧</h1>
-<h2 id="vector数组">vector数组</h2>
-<p>变长数组，倍增的思想</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()  返回元素个数</span><br><span class="line"><span class="built_in">empty</span>()  返回是否为空</span><br><span class="line"><span class="built_in">clear</span>()  清空</span><br><span class="line"><span class="built_in">front</span>()/<span class="built_in">back</span>()</span><br><span class="line"><span class="built_in">push_back</span>()/<span class="built_in">pop_back</span>()</span><br><span class="line"><span class="built_in">begin</span>()/<span class="built_in">end</span>()</span><br><span class="line">[]</span><br><span class="line">\\ 支持比较运算，按字典序</span><br></pre></td></tr></table></figure>
-<h2 id="pairint-int二元组">pair&lt;int, int&gt;二元组</h2>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">first, 第一个元素</span><br><span class="line">second, 第二个元素</span><br><span class="line">支持比较运算，以first为第一关键字，以second为第二关键字（字典序）</span><br></pre></td></tr></table></figure>
-<h2 id="string字符串">string字符串</h2>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()/<span class="built_in">length</span>()  返回字符串长度</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">clear</span>()</span><br><span class="line"><span class="built_in">substr</span>(起始下标，(子串长度))  返回子串</span><br><span class="line"><span class="built_in">c_str</span>()  返回字符串所在字符数组的起始地址</span><br></pre></td></tr></table></figure>
-<h2 id="queue队列">queue队列</h2>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">push</span>()  向队尾插入一个元素</span><br><span class="line"><span class="built_in">front</span>()  返回队头元素</span><br><span class="line"><span class="built_in">back</span>()  返回队尾元素</span><br><span class="line"><span class="built_in">pop</span>()  弹出队头元素</span><br></pre></td></tr></table></figure>
-<h2 id="priority_queue优先队列">priority_queue优先队列</h2>
-<p>默认是大根堆 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">push</span>()  \\ 插入一个元素</span><br><span class="line"><span class="built_in">top</span>()  返回堆顶元素</span><br><span class="line"><span class="built_in">pop</span>()  弹出堆顶元素</span><br><span class="line">定义成小根堆的方式：priority_queue&lt;<span class="keyword">int</span>, vector&lt;<span class="keyword">int</span>&gt;, greater&lt;<span class="keyword">int</span>&gt;&gt; q;</span><br></pre></td></tr></table></figure></p>
-<h2 id="stack栈">stack栈</h2>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">push</span>()  向栈顶插入一个元素</span><br><span class="line"><span class="built_in">top</span>()  返回栈顶元素</span><br><span class="line"><span class="built_in">pop</span>()  弹出栈顶元素</span><br></pre></td></tr></table></figure>
-<h2 id="deque双端队列">deque双端队列</h2>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">clear</span>()</span><br><span class="line"><span class="built_in">front</span>()/<span class="built_in">back</span>()</span><br><span class="line"><span class="built_in">push_back</span>()/<span class="built_in">pop_back</span>()</span><br><span class="line"><span class="built_in">push_front</span>()/<span class="built_in">pop_front</span>()</span><br><span class="line"><span class="built_in">begin</span>()/<span class="built_in">end</span>()</span><br><span class="line">[]</span><br></pre></td></tr></table></figure>
-<h2 id="set集合map字典">set集合&amp;map字典</h2>
-<p>基于平衡二叉树（红黑树），动态维护有序序列 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">clear</span>()</span><br><span class="line"><span class="built_in">begin</span>()/<span class="built_in">end</span>()</span><br><span class="line">++, -- 返回前驱和后继，时间复杂度 <span class="built_in">O</span>(logn)</span><br></pre></td></tr></table></figure></p>
-<h3 id="setmultiset">set&amp;multiset</h3>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">insert</span>()  插入一个数</span><br><span class="line"><span class="built_in">find</span>()  查找一个数</span><br><span class="line"><span class="built_in">count</span>()  返回某一个数的个数</span><br><span class="line"><span class="built_in">erase</span>()</span><br><span class="line">    (<span class="number">1</span>) 输入是一个数x，删除所有<span class="function">x   <span class="title">O</span><span class="params">(k + logn)</span></span></span><br><span class="line"><span class="function">    <span class="params">(<span class="number">2</span>)</span> 输入一个迭代器，删除这个迭代器</span></span><br><span class="line"><span class="function"><span class="title">lower_bound</span><span class="params">()</span>/<span class="title">upper_bound</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    <span class="title">lower_bound</span><span class="params">(x)</span>  返回大于等于x的最小的数的迭代器</span></span><br><span class="line"><span class="function">    <span class="title">upper_bound</span><span class="params">(x)</span>  返回大于x的最小的数的迭代器</span></span><br></pre></td></tr></table></figure>
-<h3 id="mapmultimap">map&amp;multimap</h3>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">insert</span>()  插入的数是一个<span class="function">pair</span></span><br><span class="line"><span class="function"><span class="title">erase</span><span class="params">()</span>  输入的参数是pair或者迭代器</span></span><br><span class="line"><span class="function"><span class="title">find</span><span class="params">()</span></span></span><br><span class="line"><span class="function">[]  注意multimap不支持此操作。 时间复杂度是 <span class="title">O</span><span class="params">(logn)</span></span></span><br><span class="line"><span class="function"><span class="title">lower_bound</span><span class="params">()</span>/<span class="title">upper_bound</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure>
-<h2 id="unordered哈希表">unordered哈希表</h2>
-<ul>
-<li><p>unordered_set</p></li>
-<li><p>unordered_map</p></li>
-<li><p>unordered_multiset</p></li>
-<li><p>unordered_multimap</p></li>
-</ul>
-<p>和上面类似，增删改查的时间复杂度是 O(1) 不支持
-lower_bound()/upper_bound()， 迭代器的++，--</p>
-<h2 id="bitset圧位">bitset圧位</h2>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">bitset&lt;10000&gt; s;</span><br><span class="line">~, &amp;, |, ^</span><br><span class="line">&gt;&gt;, &lt;&lt;</span><br><span class="line">==, !=</span><br><span class="line">[]</span><br><span class="line"></span><br><span class="line"><span class="built_in">count</span>()  返回有多少个<span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">any</span>()  判断是否至少有一个<span class="number">1</span></span><br><span class="line"><span class="built_in">none</span>()  判断是否全为<span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span>()  把所有位置成<span class="number">1</span></span><br><span class="line"><span class="built_in">set</span>(k, v)  将第k位变成v</span><br><span class="line"><span class="built_in">reset</span>()  把所有位变成<span class="number">0</span></span><br><span class="line"><span class="built_in">flip</span>()  等价于~</span><br><span class="line"><span class="built_in">flip</span>(k) 把第k位取反</span><br></pre></td></tr></table></figure>
-<h2 id="stringint转换">string&amp;int转换</h2>
-<h3 id="string2int">string2int</h3>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"></span><br><span class="line">string num = <span class="string">&quot;123&quot;</span>;</span><br><span class="line"><span class="keyword">int</span> x = <span class="built_in">atoi</span>(num.<span class="built_in">c_str</span>());</span><br></pre></td></tr></table></figure>
-<h3 id="int2string">int2string</h3>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> x = <span class="number">123</span>;</span><br><span class="line">string num = <span class="built_in">to_string</span>(x);</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>c++</tag>
-        <tag>STL</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>【RL】Multi-Agent Learning</title>
     <url>/2024/07/31/RL%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%BA%94%EF%BC%89/</url>
     <content><![CDATA[<h1 id="rlmulti-agent-learning">【RL】Multi-Agent Learning</h1>
@@ -1521,6 +1471,56 @@ the policy gradient algorithm takes as input <span class="math inline">\(\left(a
       </categories>
   </entry>
   <entry>
+    <title>STL技巧</title>
+    <url>/2024/07/30/STL/</url>
+    <content><![CDATA[<h1 id="stl技巧">STL技巧</h1>
+<h2 id="vector数组">vector数组</h2>
+<p>变长数组，倍增的思想</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()  返回元素个数</span><br><span class="line"><span class="built_in">empty</span>()  返回是否为空</span><br><span class="line"><span class="built_in">clear</span>()  清空</span><br><span class="line"><span class="built_in">front</span>()/<span class="built_in">back</span>()</span><br><span class="line"><span class="built_in">push_back</span>()/<span class="built_in">pop_back</span>()</span><br><span class="line"><span class="built_in">begin</span>()/<span class="built_in">end</span>()</span><br><span class="line">[]</span><br><span class="line">\\ 支持比较运算，按字典序</span><br></pre></td></tr></table></figure>
+<h2 id="pairint-int二元组">pair&lt;int, int&gt;二元组</h2>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">first, 第一个元素</span><br><span class="line">second, 第二个元素</span><br><span class="line">支持比较运算，以first为第一关键字，以second为第二关键字（字典序）</span><br></pre></td></tr></table></figure>
+<h2 id="string字符串">string字符串</h2>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()/<span class="built_in">length</span>()  返回字符串长度</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">clear</span>()</span><br><span class="line"><span class="built_in">substr</span>(起始下标，(子串长度))  返回子串</span><br><span class="line"><span class="built_in">c_str</span>()  返回字符串所在字符数组的起始地址</span><br></pre></td></tr></table></figure>
+<h2 id="queue队列">queue队列</h2>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">push</span>()  向队尾插入一个元素</span><br><span class="line"><span class="built_in">front</span>()  返回队头元素</span><br><span class="line"><span class="built_in">back</span>()  返回队尾元素</span><br><span class="line"><span class="built_in">pop</span>()  弹出队头元素</span><br></pre></td></tr></table></figure>
+<h2 id="priority_queue优先队列">priority_queue优先队列</h2>
+<p>默认是大根堆 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">push</span>()  \\ 插入一个元素</span><br><span class="line"><span class="built_in">top</span>()  返回堆顶元素</span><br><span class="line"><span class="built_in">pop</span>()  弹出堆顶元素</span><br><span class="line">定义成小根堆的方式：priority_queue&lt;<span class="keyword">int</span>, vector&lt;<span class="keyword">int</span>&gt;, greater&lt;<span class="keyword">int</span>&gt;&gt; q;</span><br></pre></td></tr></table></figure></p>
+<h2 id="stack栈">stack栈</h2>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">push</span>()  向栈顶插入一个元素</span><br><span class="line"><span class="built_in">top</span>()  返回栈顶元素</span><br><span class="line"><span class="built_in">pop</span>()  弹出栈顶元素</span><br></pre></td></tr></table></figure>
+<h2 id="deque双端队列">deque双端队列</h2>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">clear</span>()</span><br><span class="line"><span class="built_in">front</span>()/<span class="built_in">back</span>()</span><br><span class="line"><span class="built_in">push_back</span>()/<span class="built_in">pop_back</span>()</span><br><span class="line"><span class="built_in">push_front</span>()/<span class="built_in">pop_front</span>()</span><br><span class="line"><span class="built_in">begin</span>()/<span class="built_in">end</span>()</span><br><span class="line">[]</span><br></pre></td></tr></table></figure>
+<h2 id="set集合map字典">set集合&amp;map字典</h2>
+<p>基于平衡二叉树（红黑树），动态维护有序序列 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">size</span>()</span><br><span class="line"><span class="built_in">empty</span>()</span><br><span class="line"><span class="built_in">clear</span>()</span><br><span class="line"><span class="built_in">begin</span>()/<span class="built_in">end</span>()</span><br><span class="line">++, -- 返回前驱和后继，时间复杂度 <span class="built_in">O</span>(logn)</span><br></pre></td></tr></table></figure></p>
+<h3 id="setmultiset">set&amp;multiset</h3>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">insert</span>()  插入一个数</span><br><span class="line"><span class="built_in">find</span>()  查找一个数</span><br><span class="line"><span class="built_in">count</span>()  返回某一个数的个数</span><br><span class="line"><span class="built_in">erase</span>()</span><br><span class="line">    (<span class="number">1</span>) 输入是一个数x，删除所有<span class="function">x   <span class="title">O</span><span class="params">(k + logn)</span></span></span><br><span class="line"><span class="function">    <span class="params">(<span class="number">2</span>)</span> 输入一个迭代器，删除这个迭代器</span></span><br><span class="line"><span class="function"><span class="title">lower_bound</span><span class="params">()</span>/<span class="title">upper_bound</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    <span class="title">lower_bound</span><span class="params">(x)</span>  返回大于等于x的最小的数的迭代器</span></span><br><span class="line"><span class="function">    <span class="title">upper_bound</span><span class="params">(x)</span>  返回大于x的最小的数的迭代器</span></span><br></pre></td></tr></table></figure>
+<h3 id="mapmultimap">map&amp;multimap</h3>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">insert</span>()  插入的数是一个<span class="function">pair</span></span><br><span class="line"><span class="function"><span class="title">erase</span><span class="params">()</span>  输入的参数是pair或者迭代器</span></span><br><span class="line"><span class="function"><span class="title">find</span><span class="params">()</span></span></span><br><span class="line"><span class="function">[]  注意multimap不支持此操作。 时间复杂度是 <span class="title">O</span><span class="params">(logn)</span></span></span><br><span class="line"><span class="function"><span class="title">lower_bound</span><span class="params">()</span>/<span class="title">upper_bound</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure>
+<h2 id="unordered哈希表">unordered哈希表</h2>
+<ul>
+<li><p>unordered_set</p></li>
+<li><p>unordered_map</p></li>
+<li><p>unordered_multiset</p></li>
+<li><p>unordered_multimap</p></li>
+</ul>
+<p>和上面类似，增删改查的时间复杂度是 O(1) 不支持
+lower_bound()/upper_bound()， 迭代器的++，--</p>
+<h2 id="bitset圧位">bitset圧位</h2>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">bitset&lt;10000&gt; s;</span><br><span class="line">~, &amp;, |, ^</span><br><span class="line">&gt;&gt;, &lt;&lt;</span><br><span class="line">==, !=</span><br><span class="line">[]</span><br><span class="line"></span><br><span class="line"><span class="built_in">count</span>()  返回有多少个<span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">any</span>()  判断是否至少有一个<span class="number">1</span></span><br><span class="line"><span class="built_in">none</span>()  判断是否全为<span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span>()  把所有位置成<span class="number">1</span></span><br><span class="line"><span class="built_in">set</span>(k, v)  将第k位变成v</span><br><span class="line"><span class="built_in">reset</span>()  把所有位变成<span class="number">0</span></span><br><span class="line"><span class="built_in">flip</span>()  等价于~</span><br><span class="line"><span class="built_in">flip</span>(k) 把第k位取反</span><br></pre></td></tr></table></figure>
+<h2 id="stringint转换">string&amp;int转换</h2>
+<h3 id="string2int">string2int</h3>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"></span><br><span class="line">string num = <span class="string">&quot;123&quot;</span>;</span><br><span class="line"><span class="keyword">int</span> x = <span class="built_in">atoi</span>(num.<span class="built_in">c_str</span>());</span><br></pre></td></tr></table></figure>
+<h3 id="int2string">int2string</h3>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> x = <span class="number">123</span>;</span><br><span class="line">string num = <span class="built_in">to_string</span>(x);</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>c++</tag>
+        <tag>STL</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>UniStudent新生报道系统</title>
     <url>/2022/09/10/UniStudent%20%E6%96%B0%E7%94%9F%E6%8A%A5%E9%81%93%E7%B3%BB%E7%BB%9F/</url>
     <content><![CDATA[<h1 id="unistudent新生报道系统">UniStudent新生报道系统</h1>
@@ -1752,6 +1752,37 @@ s;~, &amp;, |, ^&gt;&gt;, &lt;&lt;==, !=[]​count()  返回有多少个1​any
       </tags>
   </entry>
   <entry>
+    <title>Hexo博客搭建</title>
+    <url>/2022/09/08/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/</url>
+    <content><![CDATA[<h1 id="hexo博客搭建">Hexo博客搭建</h1>
+<h2 id="推送博客文件">推送博客文件</h2>
+<h3 id="清空之前的文件">清空之前的文件</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br></pre></td></tr></table></figure>
+<h3 id="生成静态文章">生成静态文章</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo generate</span><br><span class="line"></span><br><span class="line"># 简写</span><br><span class="line">hexo g</span><br></pre></td></tr></table></figure>
+<h3 id="部署博客">部署博客</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo deploy </span><br><span class="line"></span><br><span class="line"># 简写 </span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
+<h2 id="本地测试">本地测试</h2>
+<h3 id="生成静态文件">生成静态文件</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo g</span><br></pre></td></tr></table></figure>
+<h3 id="打开本地服务器">打开本地服务器</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo server</span><br></pre></td></tr></table></figure>
+<h2 id="写文章">写文章</h2>
+<h3 id="新建文章">新建文章</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo new &quot;title&quot;</span><br></pre></td></tr></table></figure>
+<h3 id="新建草稿文件">新建草稿文件</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo new draft &quot;title&quot;</span><br></pre></td></tr></table></figure>
+<h3 id="新建界面">新建界面</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo new page &quot;title&quot;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>常用技巧</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Linux常用指令</title>
     <url>/2022/09/09/linux%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4/</url>
     <content><![CDATA[<h1 id="linux常用指令">Linux常用指令</h1>
@@ -1803,37 +1834,6 @@ s;~, &amp;, |, ^&gt;&gt;, &lt;&lt;==, !=[]​count()  返回有多少个1​any
       </categories>
       <tags>
         <tag>linux</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Hexo博客搭建</title>
-    <url>/2022/09/08/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/</url>
-    <content><![CDATA[<h1 id="hexo博客搭建">Hexo博客搭建</h1>
-<h2 id="推送博客文件">推送博客文件</h2>
-<h3 id="清空之前的文件">清空之前的文件</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br></pre></td></tr></table></figure>
-<h3 id="生成静态文章">生成静态文章</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo generate</span><br><span class="line"></span><br><span class="line"># 简写</span><br><span class="line">hexo g</span><br></pre></td></tr></table></figure>
-<h3 id="部署博客">部署博客</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo deploy </span><br><span class="line"></span><br><span class="line"># 简写 </span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
-<h2 id="本地测试">本地测试</h2>
-<h3 id="生成静态文件">生成静态文件</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo g</span><br></pre></td></tr></table></figure>
-<h3 id="打开本地服务器">打开本地服务器</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo server</span><br></pre></td></tr></table></figure>
-<h2 id="写文章">写文章</h2>
-<h3 id="新建文章">新建文章</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo new &quot;title&quot;</span><br></pre></td></tr></table></figure>
-<h3 id="新建草稿文件">新建草稿文件</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo new draft &quot;title&quot;</span><br></pre></td></tr></table></figure>
-<h3 id="新建界面">新建界面</h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo new page &quot;title&quot;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>常用技巧</category>
-      </categories>
-      <tags>
-        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -1928,18 +1928,6 @@ with Integers (poj.org)</a></p>
         <tag>线段树</tag>
         <tag>区间求和</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>【Transformer】Decoder</title>
-    <url>/2024/08/05/%E3%80%90Transformer%E3%80%91Decoder/</url>
-    <content><![CDATA[
-]]></content>
-  </entry>
-  <entry>
-    <title>【Transformer】Encoder</title>
-    <url>/2024/08/05/%E3%80%90Transformer%E3%80%91Encoder/</url>
-    <content><![CDATA[
-]]></content>
   </entry>
   <entry>
     <title>【Transformer】Attention</title>
@@ -2049,6 +2037,52 @@ W^K_i∈R^{d_{model}×d_k},\ W^V_i∈R^{d_{model}\
       </categories>
   </entry>
   <entry>
+    <title>【Transformer】Decoder</title>
+    <url>/2024/08/05/%E3%80%90Transformer%E3%80%91Decoder/</url>
+    <content><![CDATA[
+]]></content>
+  </entry>
+  <entry>
+    <title>【Transformer】Encoder</title>
+    <url>/2024/08/05/%E3%80%90Transformer%E3%80%91Encoder/</url>
+    <content><![CDATA[<h1 id="transformerencoder">【Transformer】Encoder</h1>
+<p>Transformer编码器由N个EncoderBlock堆叠而成，每个EncoderBlock有两个子层：</p>
+<ul>
+<li>Multi-Head Attention (Self-Attention)
+<ul>
+<li>Add (残差连接)</li>
+<li>Norm (层归一化)</li>
+</ul></li>
+<li>Positionwise Feed Forward Network
+<ul>
+<li>Add (残差连接)</li>
+<li>Norm (层归一化)</li>
+</ul></li>
+</ul>
+<p><span class="math inline">\(EncoderBlock_i\)</span>的输出给到下一层，作为<span class="math inline">\(EncoderBlock_{i+1}（i=1,2,..,n-1）\)</span>的输入</p>
+<p>将<span class="math inline">\(EncoderBlock_{n}\)</span>的输出给到解码器的各层中</p>
+<p><span class="math inline">\(EncoderBlock_{n}\)</span>的结构如下所示</p>
+<figure>
+<img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240805154949444.png" alt="image-20240805154949444">
+<figcaption aria-hidden="true">image-20240805154949444</figcaption>
+</figure>
+<p>前面已实现MultiHeadAttention、AddNorm、PositionWiseFFN等模块，这里首先实现EncoderBlock。</p>
+<p>其中包含两个子层： 多头注意力机制、基于位置前馈神经网络</p>
+<p>每个子层之间均使用残差连接和Layer normalization</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">EncoderBlock</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;Transformer编码器块&quot;&quot;&quot;</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, key_size, query_size, value_size, num_hiddens,</span></span></span><br><span class="line"><span class="params"><span class="function">                 norm_shape, ffn_num_input, ffn_num_hiddens, num_heads,</span></span></span><br><span class="line"><span class="params"><span class="function">                 dropout, use_bias=<span class="literal">False</span>, **kwargs</span>):</span></span><br><span class="line">        <span class="built_in">super</span>(EncoderBlock, self).__init__(**kwargs)</span><br><span class="line">        self.attention = MultiHeadAttention(key_size, query_size, value_size, </span><br><span class="line">                                            num_hiddens, num_heads, dropout,use_bias)</span><br><span class="line">        self.addnorm1 = AddNorm(norm_shape, dropout)</span><br><span class="line">        self.ffn = PositionWiseFFN(ffn_num_input, ffn_num_hiddens, num_hiddens)</span><br><span class="line">        self.addnorm2 = AddNorm(norm_shape, dropout)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, X, valid_lens</span>):</span></span><br><span class="line">        Y = self.addnorm1(X, self.attention(X, X, X, valid_lens))</span><br><span class="line">        <span class="keyword">return</span> self.addnorm2(Y, self.ffn(Y))</span><br></pre></td></tr></table></figure>
+<p>可以看出EncoderBlock并不会改变输入的形状</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">X = torch.ones((<span class="number">2</span>, <span class="number">100</span>, <span class="number">24</span>))</span><br><span class="line">valid_lens = torch.tensor([<span class="number">3</span>, <span class="number">2</span>])</span><br><span class="line">encoder_blk = EncoderBlock(<span class="number">24</span>, <span class="number">24</span>, <span class="number">24</span>, <span class="number">24</span>, [<span class="number">100</span>, <span class="number">24</span>], <span class="number">24</span>, <span class="number">48</span>, <span class="number">8</span>, <span class="number">0.5</span>)</span><br><span class="line">encoder_blk.<span class="built_in">eval</span>()</span><br><span class="line">encoder_blk(X, valid_lens).shape <span class="comment"># torch.Size([2, 100, 24])</span></span><br></pre></td></tr></table></figure>
+<p>利用n个EncoderBlock类堆叠起来实现Transformer的解码器</p>
+<p>由于这里使用的是值范围在<span class="math inline">\(-1\)</span>和<span class="math inline">\(1\)</span>之间的固定位置编码，因此通过学习得到的输入的嵌入表示的值需要先乘以嵌入维度的平方根进行重新缩放，然后再与位置编码相加。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TransformerEncoder</span>(<span class="params">d2l.Encoder</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;Transformer编码器&quot;&quot;&quot;</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, vocab_size, key_size, query_size, value_size,</span></span></span><br><span class="line"><span class="params"><span class="function">                 num_hiddens, norm_shape, ffn_num_input, ffn_num_hiddens,</span></span></span><br><span class="line"><span class="params"><span class="function">                 num_heads, num_layers, dropout, use_bias=<span class="literal">False</span>, **kwargs</span>):</span></span><br><span class="line">        <span class="built_in">super</span>(TransformerEncoder, self).__init__(**kwargs)</span><br><span class="line">        self.num_hiddens = num_hiddens</span><br><span class="line">        self.embedding = nn.Embedding(vocab_size, num_hiddens)</span><br><span class="line">        self.pos_encoding = d2l.PositionalEncoding(num_hiddens, dropout)</span><br><span class="line">        self.blks = nn.Sequential()</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(num_layers):</span><br><span class="line">            self.blks.add_module(<span class="string">&quot;block&quot;</span>+<span class="built_in">str</span>(i),</span><br><span class="line">                EncoderBlock(key_size, query_size, value_size, num_hiddens,</span><br><span class="line">                             norm_shape, ffn_num_input, ffn_num_hiddens,</span><br><span class="line">                             num_heads, dropout, use_bias))</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, X, valid_lens, *args</span>):</span></span><br><span class="line">        <span class="comment"># 因为位置编码值在-1和1之间，</span></span><br><span class="line">        <span class="comment"># 因此嵌入值乘以嵌入维度的平方根进行缩放，</span></span><br><span class="line">        <span class="comment"># 然后再与位置编码相加。</span></span><br><span class="line">        X = self.pos_encoding(self.embedding(X) * math.sqrt(self.num_hiddens))</span><br><span class="line">        self.attention_weights = [<span class="literal">None</span>] * <span class="built_in">len</span>(self.blks)</span><br><span class="line">        <span class="keyword">for</span> i, blk <span class="keyword">in</span> <span class="built_in">enumerate</span>(self.blks):</span><br><span class="line">            X = blk(X, valid_lens)</span><br><span class="line">            self.attention_weights[i] = blk.attention.attention.attention_weights</span><br><span class="line">        <span class="keyword">return</span> X</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">encoder = TransformerEncoder(<span class="number">200</span>, <span class="number">24</span>, <span class="number">24</span>, <span class="number">24</span>, <span class="number">24</span>, [<span class="number">100</span>, <span class="number">24</span>], <span class="number">24</span>, <span class="number">48</span>, <span class="number">8</span>, <span class="number">2</span>, <span class="number">0.5</span>)</span><br><span class="line">encoder.<span class="built_in">eval</span>()</span><br><span class="line">encoder(torch.ones((<span class="number">2</span>, <span class="number">100</span>), dtype=torch.long), valid_lens).shape</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>机器学习</category>
+        <category>LLM</category>
+      </categories>
+  </entry>
+  <entry>
     <title>【Transformer】Positional Encoding</title>
     <url>/2024/08/02/%E3%80%90Transformer%E3%80%91Positional%20Encoding/</url>
     <content><![CDATA[<h1 id="transformerpositional-encoding">【Transformer】Positional
@@ -2141,21 +2175,27 @@ FFN(x)=max(0,xW_1+b_1)W_2+b_2
 LayerNorm</h1>
 <p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240805142301818.png" alt="image-20240805142301818" style="zoom:80%;"></p>
 <h2 id="layer-normal">Layer Normal</h2>
+<p>Layer Normalization
+的作用是把神经网络中隐藏层归一为标准正态分布，也就是$ i.i.d
+$独立同分布，以起到加快训练速度，加速收敛的作用</p>
+<p>其中<span class="math inline">\(\mu_j\)</span>表示均值，<span class="math inline">\(\sigma^2_j\)</span>为方差，加 <span class="math inline">\(\epsilon\)</span>是为了防止分母为 0 <span class="math display">\[
+LayerNorm(x)=\frac{x_{ij}-\mu _j}{\sqrt{\sigma^2_j+\epsilon}}
+\]</span></p>
 <p>层规范化和批量规范化的目标相同，但Layer
 Normal是基于特征维度进行规范化。</p>
 <p>对于Batch Normal来说，样本长度对计算方差影响比较大。 而Layer
 Normal针对每个样本计算方差</p>
-<p>对于两个维度的情况，Batch Normal对于每个feature来做归一化，Layer
-Normal则以样本为单位做归一化</p>
+<p>对于两个维度的情况，Batch Normal对于每个feature来做normal，Layer
+Normal则以样本为单位做normal</p>
 <figure>
 <img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240805143242244.png" alt="image-20240805143242244">
 <figcaption aria-hidden="true">image-20240805143242244</figcaption>
 </figure>
 <p>对于三个维度的情况，在自然语言处理任务中，句子的长度往往不一致，有的很长有的很短</p>
 <p>Batch
-normal会考虑所有的句子来归一化，如果训练集和测试集句子长度分布差距巨大，会给训练带来麻烦</p>
+normal会考虑所有的句子来normal，如果训练集和测试集句子长度分布差距巨大，会给训练带来麻烦</p>
 <p>Layer
-normal则对句子内进行归一化处理，最大程度避免句子长度不一的问题</p>
+normal则对句子内进行normal处理，最大程度避免句子长度不一的问题</p>
 <figure>
 <img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240805144748910.png" alt="image-20240805144748910">
 <figcaption aria-hidden="true">image-20240805144748910</figcaption>
@@ -2163,10 +2203,15 @@ normal则对句子内进行归一化处理，最大程度避免句子长度不�
 <p>因此Batch
 normal在计算机视觉中被广泛应用，但在自然语言处理任务中（输入通常是变长序列）Batch
 normal通常不如Layer normal化的效果好</p>
-<p>通过pytorch内置的LayerNorm和BatchNorm1模块实现归一化处理</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">ln = nn.LayerNorm(<span class="number">2</span>)</span><br><span class="line">bn = nn.BatchNorm1d(<span class="number">2</span>)</span><br><span class="line">X = torch.tensor([[<span class="number">1</span>, <span class="number">2</span>], [<span class="number">2</span>, <span class="number">3</span>]], dtype=torch.float32)</span><br><span class="line"><span class="comment"># 在训练模式下计算X的均值和方差</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;layer norm:&#x27;</span>, ln(X), <span class="string">&#x27;\nbatch norm:&#x27;</span>, bn(X))</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">ln = nn.LayerNorm(2)</span></span><br><span class="line"><span class="string">bn = nn.BatchNorm1d(2)</span></span><br><span class="line"><span class="string">X = torch.tensor([[1, 2], [2, 3]], dtype=torch.float32)</span></span><br><span class="line"><span class="string"># 在训练模式下计算X的均值和方差</span></span><br><span class="line"><span class="string">print(&#x27;layer norm:&#x27;, ln(X), &#x27;\nbatch norm:&#x27;, bn(X))</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+<p>通过pytorch内置的LayerNorm和BatchNorm1模块实现normal处理</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">ln = nn.LayerNorm(<span class="number">2</span>)</span><br><span class="line">bn = nn.BatchNorm1d(<span class="number">2</span>)</span><br><span class="line">X = torch.tensor([[<span class="number">1</span>, <span class="number">2</span>], [<span class="number">2</span>, <span class="number">3</span>]], dtype=torch.float32)</span><br><span class="line">ln(X), bn(X)</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">(tensor([[-1.0000,  1.0000],</span></span><br><span class="line"><span class="string">         [-1.0000,  1.0000]], grad_fn=&lt;NativeLayerNormBackward0&gt;),</span></span><br><span class="line"><span class="string"> tensor([[-1.0000, -1.0000],</span></span><br><span class="line"><span class="string">         [ 1.0000,  1.0000]], grad_fn=&lt;NativeBatchNormBackward0&gt;))</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+<p>可以看出LayerNorm对样本内部实现了normal，BatchNorm1d则对feature实现了normal</p>
+<p>使用残差连接和LayerNorm来实现AddNorm类</p>
+<p>计算公式： <span class="math inline">\(LayerNorm(x+Sublayer(x))\)</span></p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AddNorm</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;残差连接后进行层规范化&quot;&quot;&quot;</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, normalized_shape, dropout, **kwargs</span>):</span></span><br><span class="line">        <span class="built_in">super</span>(AddNorm, self).__init__(**kwargs)</span><br><span class="line">        self.dropout = nn.Dropout(dropout)</span><br><span class="line">        self.ln = nn.LayerNorm(normalized_shape)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, X, Y</span>):</span></span><br><span class="line">        <span class="keyword">return</span> self.ln(self.dropout(Y) + X)</span><br></pre></td></tr></table></figure>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">add_norm = AddNorm([<span class="number">3</span>, <span class="number">4</span>], <span class="number">0.5</span>)</span><br><span class="line">add_norm.<span class="built_in">eval</span>()</span><br><span class="line">add_norm(torch.ones((<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>)), torch.ones((<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>))).shape</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">torch.Size([2, 3, 4])</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+<p>LayerNorm模块传入的参数为层归一化对应维度的形状</p>
+<p>并且要求X、Y的形状相同才能实现残差连接</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">add_norm = AddNorm([<span class="number">3</span>, <span class="number">4</span>], <span class="number">0.5</span>)</span><br><span class="line">add_norm.<span class="built_in">eval</span>()</span><br><span class="line">add_norm(torch.ones((<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>)), torch.ones((<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>))).shape <span class="comment"># torch.Size([2, 3, 4])</span></span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>机器学习</category>
@@ -2186,22 +2231,6 @@ normal通常不如Layer normal化的效果好</p>
 <img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240724172359971.png" alt="image-20240724172359971">
 <figcaption aria-hidden="true">image-20240724172359971</figcaption>
 </figure>
-<h3 id="编码器">编码器</h3>
-<p>Transformer编码器由N个EncoderBlock堆叠而成，每个EncoderBlock有两个子层：</p>
-<ul>
-<li>Multi-Head Attention (Self-Attention)
-<ul>
-<li>Add (残差连接)</li>
-<li>Norm (层归一化)</li>
-</ul></li>
-<li>Positionwise Feed Forward Network
-<ul>
-<li>Add (残差连接)</li>
-<li>Norm (层归一化)</li>
-</ul></li>
-</ul>
-<p><span class="math inline">\(EncoderBlock_i\)</span>的输出给到下一层，作为<span class="math inline">\(EncoderBlock_{i+1}（i=1,2,..,n-1）\)</span>的输入</p>
-<p>将<span class="math inline">\(EncoderBlock_{n}\)</span>的输出给到解码器的各层中</p>
 <h3 id="解码器">解码器</h3>
 <p>Transformer编码器由N个DecoderBlock堆叠而成，每个DecoderBlock有三个子层：</p>
 <ul>
@@ -2231,20 +2260,7 @@ normal通常不如Layer normal化的效果好</p>
 <p>Decoder第二个子层中使用Encoder的输出作为Key-Value，上一层的输出作为Query。</p>
 <p>在编码器和解码器中传递信息</p>
 <p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240724162544352.png" alt="image-20240724162544352" style="zoom:50%;"></p>
-<h2 id="残差连接和层规范化">残差连接和层规范化</h2>
-<p>层规范化和批量规范化的目标相同，但层规范化是基于特征维度进行规范化。</p>
-<p>对于BatchNorm来说，样本长度对计算方差影响比较大。
-而LayerNorm针对每个样本计算方差</p>
-<p>批量规范化在计算机视觉中被广泛应用，但在自然语言处理任务中（输入通常是变长序列）批量规范化通常不如层规范化的效果好。</p>
-<p>两个维度的情况</p>
-<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240724154231420.png" alt="image-20240724154231420" style="zoom: 80%;"></p>
-<p>三个维度的情况</p>
-<p><img src="https://xc-figure.oss-cn-hangzhou.aliyuncs.com/blogImg/image-20240724154415275.png" alt="image-20240724154415275" style="zoom:80%;"></p>
-<p><span class="math inline">\(LayerNorm(x+Sublayer(x))\)</span>
-使用残差连接和层规范化来实现<code>AddNorm</code>类</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AddNorm</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;残差连接后进行层规范化&quot;&quot;&quot;</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, normalized_shape, dropout, **kwargs</span>):</span></span><br><span class="line">        <span class="built_in">super</span>(AddNorm, self).__init__(**kwargs)</span><br><span class="line">        self.dropout = nn.Dropout(dropout)</span><br><span class="line">        self.ln = nn.LayerNorm(normalized_shape)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, X, Y</span>):</span></span><br><span class="line">        <span class="keyword">return</span> self.ln(self.dropout(Y) + X)</span><br></pre></td></tr></table></figure>
-<h2 id="位置编码">位置编码</h2>
-<h2 id="编码器-1">编码器</h2>
+<h2 id="编码器">编码器</h2>
 <p>编码器使用<strong>N=6</strong>独立层，每层包含两个子层</p>
 <ul>
 <li><strong>multi-head self-attention
@@ -3626,6 +3642,45 @@ gui的mvc模式设计用户的绘图流程，利用java的套接字编程实现�
       </tags>
   </entry>
   <entry>
+    <title>诗经、楚辞</title>
+    <url>/2021/10/04/%E8%AF%97%E7%BB%8F%E3%80%81%E6%A5%9A%E8%BE%9E/</url>
+    <content><![CDATA[<h1 id="诗经楚辞">诗经、楚辞</h1>
+<h2 id="诗经">诗经</h2>
+<ul>
+<li><p>《诗经》又称《诗》和《诗三百》</p></li>
+<li><p>是我国第一部（最早）现实主义诗歌总集</p></li>
+<li><p>记录了周初到周末500年历史</p></li>
+<li><p>共305篇</p></li>
+</ul>
+<p><strong>诗经六义：</strong>风雅颂 赋比兴</p>
+<p><strong>风（内容）</strong>：十五国风，共160篇。多用复沓手法，多为民歌。</p>
+<p><strong>雅（题材）</strong>：《大雅》和《小雅》105篇
+多为贵族宫廷乐曲。</p>
+<p><strong>颂（音乐）</strong>：《周颂》、《商颂》、《鲁颂》</p>
+<p><strong>赋</strong>：铺陈直叙。</p>
+<p><strong>比</strong>：以彼物必此物。</p>
+<p><strong>兴</strong>：借物比喻，触物兴词，以次及彼。</p>
+<p><strong>《诗经》手法：</strong>重章叠句、情景交融、起兴手法、虚实结合。</p>
+<p><strong>诗经艺术特色：</strong>以四言为主，重章叠句，节奏简约明快，情致回环往复
+多用比兴手法，意蕴丰赡含蓄</p>
+<ul>
+<li><p>诗经中的国风被称为现代主义诗歌源头</p></li>
+<li><p>王国维在《人间词话》评价蒹葭是“最得风人深致”</p></li>
+</ul>
+<h2 id="楚辞">楚辞</h2>
+<ul>
+<li><p>是楚地民歌或者歌辞</p></li>
+<li><p>楚辞体是一种新诗体，一般采用四言或八言</p></li>
+</ul>
+]]></content>
+      <categories>
+        <category>HSY</category>
+      </categories>
+      <tags>
+        <tag>语文</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>旅行商问题</title>
     <url>/2022/09/09/%E9%81%97%E4%BC%A0%E7%AE%97%E6%B3%95%E8%A7%A3%E5%86%B3%E6%97%85%E8%A1%8C%E5%95%86%E9%97%AE%E9%A2%98/</url>
     <content><![CDATA[<h1 id="旅行商问题">旅行商问题</h1>
@@ -3710,45 +3765,6 @@ gui的mvc模式设计用户的绘图流程，利用java的套接字编程实现�
       </categories>
       <tags>
         <tag>遗传算法</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>诗经、楚辞</title>
-    <url>/2021/10/04/%E8%AF%97%E7%BB%8F%E3%80%81%E6%A5%9A%E8%BE%9E/</url>
-    <content><![CDATA[<h1 id="诗经楚辞">诗经、楚辞</h1>
-<h2 id="诗经">诗经</h2>
-<ul>
-<li><p>《诗经》又称《诗》和《诗三百》</p></li>
-<li><p>是我国第一部（最早）现实主义诗歌总集</p></li>
-<li><p>记录了周初到周末500年历史</p></li>
-<li><p>共305篇</p></li>
-</ul>
-<p><strong>诗经六义：</strong>风雅颂 赋比兴</p>
-<p><strong>风（内容）</strong>：十五国风，共160篇。多用复沓手法，多为民歌。</p>
-<p><strong>雅（题材）</strong>：《大雅》和《小雅》105篇
-多为贵族宫廷乐曲。</p>
-<p><strong>颂（音乐）</strong>：《周颂》、《商颂》、《鲁颂》</p>
-<p><strong>赋</strong>：铺陈直叙。</p>
-<p><strong>比</strong>：以彼物必此物。</p>
-<p><strong>兴</strong>：借物比喻，触物兴词，以次及彼。</p>
-<p><strong>《诗经》手法：</strong>重章叠句、情景交融、起兴手法、虚实结合。</p>
-<p><strong>诗经艺术特色：</strong>以四言为主，重章叠句，节奏简约明快，情致回环往复
-多用比兴手法，意蕴丰赡含蓄</p>
-<ul>
-<li><p>诗经中的国风被称为现代主义诗歌源头</p></li>
-<li><p>王国维在《人间词话》评价蒹葭是“最得风人深致”</p></li>
-</ul>
-<h2 id="楚辞">楚辞</h2>
-<ul>
-<li><p>是楚地民歌或者歌辞</p></li>
-<li><p>楚辞体是一种新诗体，一般采用四言或八言</p></li>
-</ul>
-]]></content>
-      <categories>
-        <category>HSY</category>
-      </categories>
-      <tags>
-        <tag>语文</tag>
       </tags>
   </entry>
 </search>
